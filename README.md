@@ -1,4 +1,4 @@
-# alpha
+Grocery Australia
 
 ## Project setup
 ```
