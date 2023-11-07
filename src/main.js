@@ -7,11 +7,22 @@ import Login from './Login.vue';
 import Explore from './Explore.vue';
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
+import './registerServiceWorker'
 
 Vue.config.productionTip = false;
 
 // Use the router
 Vue.use(VueRouter);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then((registration) => {
+      console.log('Service Worker registered with scope:', registration.scope);
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error);
+    });
+}
 
 // Define routes
 const routes = [
@@ -27,6 +38,7 @@ const router = new VueRouter({
   mode: 'history',
   routes
 });
+
 
 new Vue({
   vuetify,
