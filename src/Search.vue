@@ -7,7 +7,7 @@
     <v-container>
 
       <!-- Search bar -->
-      <v-toolbar class="py-3">
+      <v-toolbar class="py-5">
         <v-btn
           icon
           class="d-lg-none d-xl-flex"
@@ -308,38 +308,40 @@
         <v-col cols="12">
           <h2>Crazy Deals at Woolworths</h2>
         </v-col>
-        <v-col v-for="deal in weeklyDeals_w" :key="deal.name" cols="6" md="2">
-          <v-card
-            class="rounded elevation-2 mt-3 transition-shadow hover:shadow-lg"
-          >
-            <v-img
-              :src="deal.image"
-              height="150"
-              class="product-image position-relative"
-            >
-              <v-col class="fill-height" align="center" justify="center">
-                <!-- Flex utility classes for centering -->
-                <!-- This is empty, so you might want to add some content or remove this -->
-              </v-col>
-            </v-img>
-            <v-card-text class="truncate-text py-1" >
-              {{ deal.size }} | {{ deal.name }}
+        <v-col
+          cols="12"
+          xs="12"
+          sm="6"
+          md="3"
+          lg="3"
+          v-for="deal in weeklyDeals_w" 
+          :key="deal.name"
+        >
+          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+            <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+            <v-toolbar color="transparent" flat>
+              <v-avatar color="yellow" rounded width="100" height="35">
+                <span class="black--text text-subtitle-2 font-weight-bold p-0">
+                  Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+                </span>
+              </v-avatar>
+            </v-toolbar>
+            <v-card-text class="text-h5">
+              <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
+              <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
             </v-card-text>
-            <v-row class="my-0 pt-0">
-              <v-col cols="12" md="12" class="py-0">
-                <v-card-title
-                  v-if="deal.woolworths_price"
-                  class="green--text py-0"
-                >
-                  Now ${{ deal.woolworths_price }}
-                </v-card-title>
-              </v-col>
-              <v-col cols="12" md="12" class="py-2">
-                <v-card-text class="red--text py-0">
-                  was ${{ deal.coles_price }}
-                </v-card-text>
-              </v-col>
-            </v-row>
+            <v-card-title class="black--text font-weight-bold text-h6" style="display: inline-block; word-break: break-word;">
+              {{ deal.name }} | {{deal.size}}
+            </v-card-title>
+            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+              <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+                Add To List
+              </v-btn>
+              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                Listen
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -410,17 +412,6 @@
           WoolMania: true,
           IGADeals: true,
         },
-        category: 0, // Initialize with the active category index
-        groceryCategories: [
-          { name: "Breakfast", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/202915.jpg" },
-          { name: "Frozen", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/093915.jpg" },
-          { name: "Vegetables", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/134681.jpg" },
-          { name: "Fruits", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/133211.jpg" },
-          { name: "Eggs", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/077170.jpg" },
-          { name: "Milk", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/405010.jpg" },
-          { name: "Essentials", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/048650.jpg" },
-          { name: "Oral Hygenie", keyword: "https://cdn0.woolworths.media/content/wowproductimages/large/826546.jpg" },
-        ],
         searchTerm: '',
         postalCode: null,
         searchSuggestions:[],
@@ -764,5 +755,20 @@
     background-color: orange !important;
     border-radius: 5px;
   }
+
+  .v-card__title {
+    padding-top: 16px;
+    padding-left: 16px;
+  }
+
+  .v-card__text {
+    padding-left: 16px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .v-application .text-subtitle-1 {
+    line-height: 1.3rem;
+}
 
 </style>
