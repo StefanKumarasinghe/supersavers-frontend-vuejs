@@ -1,21 +1,152 @@
 from typing import List, Union , Optional
 import httpx
 import json
-import difflib
-import re
+
 import spacy
 import asyncio
 import time
+from passlib.context import CryptContext
+from fuzzywuzzy import fuzz
+from difflib import SequenceMatcher
 
-from functools import lru_cache
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Body
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from functools import lru_cache
+from typing import List, Optional
+from datetime import datetime, timedelta  # Add this line for timedelta and datetime
+
+from fuzzywuzzy import fuzz
+from difflib import SequenceMatcher
+
+from fastapi.middleware.cors import CORSMiddleware
+from concurrent.futures import ThreadPoolExecutor
+
+
+from concurrent.futures import ThreadPoolExecutor
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from typing import Optional
+
+# Define your User model
+class User(BaseModel):
+    username: str
+    email: str
+    hashed_password: str
+
+# Your user database
+users_db = []
+
+# FastAPI app instance
+app = FastAPI()
+
+# Security configurations
+SECRET_KEY = "YOUR_SECRET_KEY"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Generate access token
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Dependency to verify token and get current user
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    return username
+
+# User registration endpoint
+@app.post("/register")
+async def register_user(user: User):
+    hashed_password = pwd_context.hash(user.hashed_password)
+    user_data = {"username": user.username,"email": user.email, "hashed_password": hashed_password}
+    users_db.append(user_data)
+
+    # Generate access token for the registered user
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+
+    return {"message": "User registered successfully", "access_token": access_token, "token_type": "bearer"}
+
+# Login endpoint to generate access token
+@app.post("/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = next((x for x in users_db if x["username"] == form_data.username), None)
+    if user is None or not pwd_context.verify(form_data.password, user["hashed_password"]):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+# Protected route
+@app.get("/protected")
+async def protected_route(current_user: str = Depends(get_current_user)):
+    return {"message": "This is a protected route", "user": current_user}
+
+codes_storage={} 
+
+class Item(BaseModel):
+    item: str
+    woolworths_code: str
+    coles_code: str
+    iga_code: str
+
+@app.post('/add_item_notify')
+async def add_item(
+    item: Item = Body(...),
+    current_user: str = Depends(get_current_user)
+):
+    # Store the codes in memory along with the user information
+    codes_storage.append({
+        'user': current_user,
+        'item': item.item,
+        'woolworths_code': item.woolworths_code,
+        'coles_code': item.coles_code,
+        'iga_code': item.iga_code
+    })
+@app.post('/remove_item_notify')
+async def add_item(
+    item: Item = Body(...),
+    current_user: str = Depends(get_current_user)
+):
+    # Store the codes in memory along with the user information
+    codes_storage.remove({
+        'user': current_user,
+        'item': item.item
+    })
+    return {'message': f'Item {item.item} removed successfully by user {current_user}.'}
 
 # Define the in-memory cache and the maximum cache duration
 CACHE = {}
+product_database = {}
 CACHE_DURATION = 3600  # seconds or 5 minutes
+
+
+
 
 def is_cache_valid(query: str) -> bool:
     """Check if cache for a query is still valid."""
@@ -26,13 +157,13 @@ WOOLWORTHS_COOKIES = None
 
 origins = [
     "http://localhost",
-    "http://localhost:8082",
+    "http://localhost:8080",
     "http://127.0.0.1:8000",
     "http://127.0.0.1",
     # Add any other origins you want to allow here
 ]
 
-app = FastAPI()
+
 nlp = spacy.load("en_core_web_md")
 app.add_middleware(
     CORSMiddleware,
@@ -43,10 +174,10 @@ app.add_middleware(
 )
 
 Woolworths_URL = "https://www.woolworths.com.au/apis/ui/Search/products"
-Coles_URL = "https://www.coles.com.au/_next/data/20231027.01_v3.57.0/en/search.json?q={}"
+Coles_URL = "https://www.coles.com.au/_next/data/20231115.01_v3.59.0/en/search.json?q={}"
 CHEMIST_WAREHOUSE_URL = "https://pds.chemistwarehouse.com.au/suggest?identifier=AU&search={}"
-ALDI_URL = "https://www.stockcheck.aldi.com.au/api/products"
-IGA_URL = "https://www.igashop.com.au/api/storefront/stores/52511/search?misspelling=true&q={query}&take=20"
+
+IGA_URL = "https://www.igashop.com.au/api/storefront/stores/52511/search?misspelling=true&q={query}&take=5"
 
 
 
@@ -67,81 +198,146 @@ class Product(BaseModel):
     
 
 
-def semantic_similarity(str1: str, str2: str) -> float:
-    """Compute semantic similarity between two strings using spaCy."""
-    doc1 = nlp(str1)
-    doc2 = nlp(str2)
-    return doc1.similarity(doc2)
 
 
-def fuzzy_match(str1: str, str2: str) -> bool:
-    """Return True if strings are similar, else False."""
-    if not str1 or not str2:  # Check if any string is empty or None
-        return False
-    return difflib.SequenceMatcher(None, str1, str2).ratio() > 0.8
-PRICE_TOLERANCE = 0.2  # 20%
+PRICE_TOLERANCE = 0.20  # Define your price tolerance here
 
-def is_similar(woolworths_product: dict, coles_product: dict) -> bool:
+
+
+def update_product_database(w_product,coles_code=None,iga_code=None):
+    barcode = w_product['Products'][0]["Stockcode"]
+    if barcode:
+        product_database[barcode] = {
+
+            'name': w_product['Name'],
+            'size': w_product['Products'][0].get("PackageSize", "N/A"),
+            'brand':  w_product['Products'][0].get("Brand", "Woolworths"),
+            'coles_code': coles_code,
+            'iga_code': iga_code,
+            'verified': False,
+            'visibility':False
+        }
+
+
+def semantic_similarity(str1, str2):
+    return fuzz.ratio(str1, str2)
+
+def fuzzy_match(str1, str2):
+    # Implement fuzzy string matching logic here
+    return fuzz.token_sort_ratio(str1, str2) > 80
+
+def is_similarwc(woolworths_product: dict, coles_product: dict) -> bool:
     try:
         brand1 = woolworths_product['Products'][0]['Brand']
         brand2 = coles_product.get('brand', '')
-       
-        
 
-        # Get the undiscounted prices
         woolworths_undiscounted_price = woolworths_product.get("Products", [{}])[0].get("WasPrice", 0)
         coles_was_price = coles_product.get('pricing', {}).get('was', 0)
-        # If coles_was_price is 0, then calculate it using 'now' and 'saveAmount'
+
         if coles_was_price == 0:
             coles_undiscounted_price = coles_product.get('pricing', {}).get('now', 0)
         else:
             coles_undiscounted_price = coles_was_price
-   
-        
-        # Compute name and description similarity
-        name1 = (woolworths_product.get('Name', '') + woolworths_product['Products'][0]['Description'] )
 
-        name2 = (coles_product.get('name', '') + coles_product.get('description', '') )
-
+        name1 = (woolworths_product.get('Name', '') + woolworths_product['Products'][0]['Description'])
+        name2 = (coles_product.get('name', '') + coles_product.get('description', ''))
         similarity_score = semantic_similarity(name1, name2)
 
-        
-
-        if similarity_score < 0.45:
-            return False
-        
-
-        # Check if size of Woolworths is in the name or description of Coles. If it is, return True immediately.
-        size_w = woolworths_product['Products'][0].get("PackageSize", "N/A").lower()
-        
-        if size_w in coles_product.get('name', '').lower() or size_w in coles_product.get('description', '').lower():
-            
-                # Check if the undiscounted prices of both products are similar within a tolerance
-                if not (1 - PRICE_TOLERANCE) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + PRICE_TOLERANCE) * woolworths_undiscounted_price:
-                    return False
-
-   
-                return True
-
-        # If name similarity check passed, then check size similarity
-        if brand1.lower() != "woolworths" or brand1.lower() != "coles":
-            if brand2.lower()!="woolworths" or brand2.lower()!="coles":
-                if not (fuzzy_match(brand1,brand2)):
-                    return False;
-        size_c = coles_product.get('size', '').lower()
-        similarity_score = semantic_similarity(size_w, size_c)
         if similarity_score < 0.70:
             return False
-        # Check if the undiscounted prices of both products are similar within a tolerance
-        if not (1 - PRICE_TOLERANCE) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + PRICE_TOLERANCE) * woolworths_undiscounted_price:
-            return False
-        print(size_w+" : "+coles_product.get('name', '').lower())
+        
+        woolworths_category = woolworths_product["Products"][0]["AdditionalAttributes"].get("sapsubcategoryname")
+        coles_category = coles_product.get("merchandiseHeir", {}).get("category", None)
 
-    
+        # Check if both categories exist before comparing
+        if woolworths_category is not None and coles_category is not None:
+            similarity_score = semantic_similarity(woolworths_category, coles_category)
+
+            # Adjust the threshold based on your preference
+            if similarity_score < 0.30:
+                return False
+        else:
+            # Handle the case where one or both categories are missing
+            return False
+
+        
+
+
+
+        size_w = woolworths_product['Products'][0].get("PackageSize", "N/A").lower()
+        size_c = coles_product.get('size', '').lower()
+
+        if not (size_w in coles_product.get('name', '').lower() or size_w in coles_product.get('description', '').lower() or semantic_similarity(size_w, size_c)>0.95):
+            if not (1 - PRICE_TOLERANCE) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + PRICE_TOLERANCE) * woolworths_undiscounted_price:
+                return False
+        if brand1 and brand2:
+         if not fuzzy_match(brand1, brand2):
+            if (brand1.lower() not in {"woolworths", "coles"} ) or (brand2.lower() not in {"woolworths", "coles"}):
+                return False
          
+
+        
+        similarity_score = semantic_similarity(size_w, size_c)
+        if similarity_score < 0.90:
+            return False
+        else:
+            if brand1 and brand2:
+             if (brand1.lower() not in {"woolworths", "coles"} ) or (brand2.lower() not in {"woolworths", "coles"}):
+              if not (1 - 0.01) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + 0.01) * woolworths_undiscounted_price:
+               return False
+             else:
+                if not (1 - 0.1) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + 0.1) * woolworths_undiscounted_price:
+                 return False
+            else:
+                if not (1 - 0.2) * woolworths_undiscounted_price <= coles_undiscounted_price <= (1 + 0.2) * woolworths_undiscounted_price:
+                 return False
+
+
+     
+
         return True
 
     except Exception as e:
+        return False
+
+
+def is_similarwi(woolworths_product: dict, iga_product: dict) -> bool:
+    try:
+        brand1 = woolworths_product['Products'][0]['Brand']
+        brand2 = iga_product['brand']
+
+        name1 = woolworths_product.get('Name', '')
+        name2 = iga_product['name']
+
+        woolworths_undiscounted_price = woolworths_product.get("Products", [{}])[0].get("WasPrice", 0)
+        iga_price = iga_product['wasPrice']
+
+        if not iga_price:
+            iga_price = iga_product['price']
+
+        similarity_score = semantic_similarity(name1, name2)
+
+        if similarity_score < 0.75:
+            return False
+
+        if not (1 - PRICE_TOLERANCE) * woolworths_undiscounted_price <= iga_price <= (1 + PRICE_TOLERANCE) * woolworths_undiscounted_price:
+            return False
+
+        size_w = woolworths_product['Products'][0].get("PackageSize", "N/A")
+        size_i = iga_product['size']
+
+        if semantic_similarity(str(size_w), str(size_i)) < 0.75:
+            return False
+
+        if brand1.lower() != "woolworths" and brand1.lower() != "iga":
+            if brand2.lower() != "woolworths" and brand2.lower() != "iga":
+                if not fuzzy_match(brand1, brand2):
+                    return False
+
+        return True
+
+    except Exception as e:
+        print(e)
         return False
 
 
@@ -150,9 +346,8 @@ def is_similar(woolworths_product: dict, coles_product: dict) -> bool:
 async def search_products(query: str,code:str):
     query = query.lower().strip()
     code = code.strip()
-    if is_cache_valid(query):
-        return CACHE[query]['result']
-    print("Function is being executed!")
+    #if is_cache_valid(query):
+    #    return CACHE[query]['result']
     woolworths_headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json",
@@ -164,12 +359,7 @@ async def search_products(query: str,code:str):
         "Sec-Fetch-Site": "same-origin",
         "Cookie": ""
     }
-    aldi_payload = {
-    "query": query,
-    "state": "VIC",
-    "lat": "-37.8112",
-    "lng": "144.9646"
-    }
+
     iga_headers = {
     "Accept": "application/json",
     "User-Agent": "Mozilla/5.0 ..."
@@ -177,7 +367,7 @@ async def search_products(query: str,code:str):
     woolworths_response = None
     coles_response = None
     chemist_response = None
-    aldi_response = None
+
     iga_response = None
 
 
@@ -211,10 +401,9 @@ async def search_products(query: str,code:str):
             client.post(Woolworths_URL, headers=woolworths_headers, json=woolworths_payload),
             client.get(Coles_URL.format(query)),
             client.get(CHEMIST_WAREHOUSE_URL.format(query)),
-            client.post(ALDI_URL, json=aldi_payload),
             client.get(IGA_URL.format(query=query), headers=iga_headers)
         )
-        woolworths_response, coles_response, chemist_response, aldi_response, iga_response = results
+        woolworths_response, coles_response, chemist_response, iga_response = results
     
         
     if woolworths_response is None or woolworths_response.status_code != 200:
@@ -222,8 +411,6 @@ async def search_products(query: str,code:str):
     
     if coles_response.status_code != 200:
         raise HTTPException(status_code=coles_response.status_code, detail="Failed to fetch data from Coles")
-    if aldi_response.status_code != 200:
-        raise HTTPException(status_code=aldi_response.status_code, detail="Failed to fetch data from ALDI")
 
 
     try:
@@ -245,162 +432,216 @@ async def search_products(query: str,code:str):
         } for prod in data['suggestionGroups'][2]['suggestions']]
     except (IndexError, KeyError, ValueError):
         chemist_products = []
-    try:
-        aldi_products_raw = aldi_response.json()
-        aldi_products = [{
-            'name': prod['product_name'],
-            'price': prod['price_float'],
-            'image': prod['image'],
-            'brand': prod['product_category'],  # Not exactly the brand but the closest thing we have
-        } for prod in aldi_products_raw]
-    except (json.decoder.JSONDecodeError, KeyError, ValueError):
-        aldi_products = []
 
     try:
         iga_data = iga_response.json()
         iga_products = [{
+            'id': item['barcode'],
             'name': item['name'],
-            'price': float(item['priceNumeric']),
+            'wasPrice': float(item.get('wasPriceNumeric', 0)),  # Use get to handle missing key
+            'price': float(item.get('priceNumeric', 0)),  # Use get to handle missing key
             'image': item['image']['default'],
             'brand': item['brand'],
-            'size': item.get('unitOfSize', {}).get('size', None)
+            'size': item.get('unitOfSize', {}).get('size', 0),  # Use get to handle missing key
         } for item in iga_data['items']]
     except (json.decoder.JSONDecodeError, KeyError, ValueError):
         iga_products = []
 
 
 
-    return merge_results(woolworths_products, coles_products, chemist_products, aldi_products, iga_products,query)
+
+    return merge_results(woolworths_products, coles_products, chemist_products, iga_products,query)
 
 
-def merge_results(woolworths: List[dict], coles: List[dict], chemist: List[dict], aldi_products: List[dict], iga_products: List[dict], query :str) -> List[Product]:
+from itertools import combinations
+
+def merge_results(woolworths: List[dict], coles: List[dict], chemist: List[dict], iga_products: List[dict], query :str) -> List[Product]:
     combined_products = []
-    exclusive_woolworths = []
-    exclusive_coles = []
-    exclusive_chemist = []
-    exclusive_aldi = []
-    exclusive_iga = []
+    # Define a set to keep track of unique product names
+    unique_product_names = set()
 
-    for a_product in aldi_products:
-        exclusive_aldi.append(Product(
-            name=a_product['name'],
-            woolworths_price=None,
-            coles_price=None,
-            chemist_price=None,
-            aldi_price=a_product['price'],
-            image=a_product['image'],
-            source="ALDI",
-            description="Available only at ALDI.",
-            size=None,
-            brand=a_product['brand']
-        ))
 
-    for i_product in iga_products:
-        exclusive_iga.append(Product(
-            name=i_product['name'],
-            woolworths_price=None,
-            coles_price=None,
-            chemist_price=None,
-            aldi_price=None,
-            iga_price=i_product['price'],
-            image=i_product['image'],
-            source="IGA",
-            description="Available only at IGA.",
-            size=None,
-            brand=i_product['brand']
-        ))
-
+   
     for w_product in woolworths:
-        w_matched = False
-        for c_index, c_product in enumerate(coles):
-            if is_similar(w_product, c_product):
-                woolworths_price = w_product['Products'][0]['Price']
-                coles_price=c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None
-                product_name = w_product['Name']
-                product_image = w_product['Products'][0]['LargeImageFile']
-                size = w_product['Products'][0].get("PackageSize", "N/A")
-                brand = w_product['Products'][0].get("Brand", "Woolworths")
+        barcode = w_product['Products'][0]["Stockcode"]
+        # Check if the product is in the in-memory database
+        if barcode in product_database:
+            
+            product_info = product_database[barcode]
+            if (product_info['visibility']):
+                continue
+            
+                
+            # Check if the product name is already in the set
+            if product_info['name'] not in unique_product_names:
+                # Find the corresponding product in Coles using the stored code
+                coles_price = None
+        
+                if product_info['coles_code']:
+                
+                    for c_product in coles:
+                        
+                       
+                        if c_product.get('name') == product_info['coles_code']:
+                            
+                            coles_price = c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None
+                            break
 
+                # Find the corresponding product in IGA using the stored code
+                iga_price = None
+                if product_info['iga_code']:
+                    for i_product in iga_products:
+                        if i_product['name'] == product_info['iga_code']:
+                            iga_price = i_product['price']
+                            break
+              
                 combined_products.append(Product(
-                    name=product_name,
-                    woolworths_price=woolworths_price,
+                    name=product_info['name'],
+                    woolworths_price=w_product['Products'][0]['Price'],
                     coles_price=coles_price,
                     chemist_price=None,
                     aldi_price=None,
-                    image=product_image,
+                    iga_price=iga_price,
+                    image=w_product['Products'][0]['LargeImageFile'],
                     source="Combined",
-                    description="Available across multiple stores.",
-                    size=size,
-                    brand=brand
+                    description=f"Available at Woolworths, Coles, and IGA",
+                    size=product_info['size'],
+                    brand=product_info['brand']
                 ))
-                coles.pop(c_index)
-                w_matched = True
+                
+                # Add the product name to the set
+    if  len(combined_products) > 3: 
+     print('Fetched from ASX')    
+     return combined_products
+
+   
+    for w_product in woolworths:
+        for c_product in coles:
+            for i_product in iga_products:
+                if is_similarwc(w_product, c_product) and is_similarwi(w_product, i_product):
+                    product_name = w_product['Name']
+
+                    # Check if the product name is already in the set
+                    if product_name not in unique_product_names:
+                        # Combine products from Woolworths, Coles, and IGA
+                        
+                        woolworths_price = w_product['Products'][0]['Price']
+                        coles_price = c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None
+                        iga_price = i_product['price']
+                        product_image = w_product['Products'][0]['LargeImageFile']
+                        size = w_product['Products'][0].get("PackageSize", "N/A")
+                        brand = w_product['Products'][0].get("Brand", "Woolworths")
+                        update_product_database(w_product,  c_product.get('name'),i_product['name'])
+                       
+                        combined_products.append(Product(
+                            name=product_name,
+                            woolworths_price=woolworths_price,
+                            coles_price=coles_price,
+                            chemist_price=None,
+                            aldi_price=None,
+                            iga_price=iga_price,
+                            image=product_image,
+                            source="Combined",
+                            description="Available across Woolies, Coles, and IGA",
+                            size=size,
+                            brand=brand
+                        ))
+
+                        # Add the product name to the set
+                        unique_product_names.add(product_name)
+                    coles.remove(c_product)
+                    break
+
+                    
+    
+    for w_product in woolworths:
+ 
+        for c_product in coles:
+           
+             
+        
+            if is_similarwc(w_product, c_product):
+                product_name = w_product['Name']
+
+                # Check if the product name is already in the set
+                if product_name not in unique_product_names:
+                    # Combine products from Woolworths and Coles
+                    woolworths_price = w_product['Products'][0]['Price']
+                    coles_price = c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None
+                    product_image = w_product['Products'][0]['LargeImageFile']
+                    size = w_product['Products'][0].get("PackageSize", "N/A")
+                    brand = w_product['Products'][0].get("Brand", "Woolworths")
+                    update_product_database(w_product,  c_product.get('name'))
+                    combined_products.append(Product(
+                        name=product_name,
+                        woolworths_price=woolworths_price,
+                        coles_price=coles_price,
+                        chemist_price=None,
+                        aldi_price=None,
+                        image=product_image,
+                        source="Combined",
+                        description="Available across Woolies and Coles",
+                        size=size,
+                        brand=brand
+                    ))
+
+                    # Add the product name to the set
+                    unique_product_names.add(product_name)
+                coles.remove(c_product)
                 break
 
-        if not w_matched:
-            size = w_product['Products'][0].get("PackageSize", "N/A")
-            brand = w_product['Products'][0].get("Brand", "Woolworths")
-            exclusive_woolworths.append(Product(
-                name=w_product['Name'],
-                woolworths_price=w_product['Products'][0]['Price'],
-                coles_price=None,
-                image=w_product['Products'][0]['LargeImageFile'],
-                source="Woolworths",
-                description=f"Available only at Woolworths.",
-                size=size,
-                brand=brand
-            ))
+
+    for w_product in woolworths:
+        for i_product in iga_products:
+            if is_similarwi(w_product, i_product):
+                product_name = w_product['Name']
+
+                # Check if the product name is already in the set
+                if product_name not in unique_product_names:
+                    # Combine products from Woolworths and IGA
+                    woolworths_price = w_product['Products'][0]['Price']
+                    iga_price = i_product['price']
+                    product_image = w_product['Products'][0]['LargeImageFile']
+                    size = w_product['Products'][0].get("PackageSize", "N/A")
+                    brand = w_product['Products'][0].get("Brand", "Woolworths")
+                    update_product_database(w_product,i_product['name'])
+                    combined_products.append(Product(
+                        name=product_name,
+                        woolworths_price=woolworths_price,
+                        coles_price=None,
+                        chemist_price=None,
+                        aldi_price=None,
+                        iga_price=iga_price,
+                        image=product_image,
+                        source="Combined",
+                        description="Available across Woolies and IGA",
+                        size=size,
+                        brand=brand
+                    ))
+
+                    # Add the product name to the set
+                    unique_product_names.add(product_name)
+               
+                break
+
+      
+
+    # Other combinations if needed
+    # ...
+
+    # Save the result to cache before returning
+    if query in CACHE:
+        CACHE[query]['count'] += 1
+    else:
+        CACHE[query] = {
+            'result': combined_products,
+            'timestamp': time.time(),
+            'count': 1  # initialize count
+        }
+
     
-    for c_product in coles:
-        
-        if not any(p.coles_price and p.name == c_product.get('name') for p in combined_products):
-            exclusive_coles.append(Product(
-                name=c_product.get('name'),
-                woolworths_price=None,
-                coles_price=c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None,
-                image=str("https://productimages.coles.com.au/productimages/")+c_product.get("imageUris")[0]["uri"] if 'imageUris' in c_product else None,
-                source="Coles",
-                description="Available only at Coles.",
-                size=c_product.get("size", "N/A"),
-                brand=c_product.get("brand", "Coles")
-            ))
-
-    for ch_product in chemist:
-        if not any(p.chemist_price and p.name == ch_product.get('name') for p in combined_products):
-            exclusive_chemist.append(Product(
-                name=ch_product.get('name'),
-                woolworths_price=None,
-                coles_price=None,
-                chemist_price=ch_product.get('price'),
-                image=ch_product.get('image'),
-                source="Chemist Warehouse",
-                description=f"Available only at Chemist Warehouse.",
-                size=None,
-                brand=ch_product.get('brand')
-            ))
-
-    while exclusive_woolworths or exclusive_coles or exclusive_chemist or exclusive_aldi or exclusive_iga:
-        if exclusive_woolworths:
-            combined_products.append(exclusive_woolworths.pop(0))
-        if exclusive_coles:
-            combined_products.append(exclusive_coles.pop(0))
-        if exclusive_chemist:
-            combined_products.append(exclusive_chemist.pop(0))
-        if exclusive_aldi:
-            combined_products.append(exclusive_aldi.pop(0))
-        if exclusive_iga:
-            combined_products.append(exclusive_iga.pop(0))
-        # Save the result to cache before returning
-          # After
-        if query in CACHE:
-            CACHE[query]['count'] += 1
-        else:
-            CACHE[query] = {
-                'result': combined_products,
-                'timestamp': time.time(),
-                'count': 1  # initialize count
-            }
     return combined_products
+
 @app.get("/half-price-deals_woolies", response_model=List[Product])
 async def half_price_deals():
     woolworths_headers = {
@@ -532,6 +773,9 @@ async def half_price_deals_iga():
 
     return combined_products
 
+
+
+
 @app.get("/search_suggestions")
 async def get_popular_searches(limit: int = 10):
     # Sort by count and take top 'limit' results
@@ -541,3 +785,4 @@ async def get_popular_searches(limit: int = 10):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+ 
