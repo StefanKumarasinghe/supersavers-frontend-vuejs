@@ -7,7 +7,6 @@ import Login from './Login.vue';
 import Explore from './Explore.vue';
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
-import './registerServiceWorker'
 
 Vue.config.productionTip = false;
 
@@ -38,7 +37,6 @@ const router = new VueRouter({
   mode: 'history',
   routes
 });
-
 
 new Vue({
   vuetify,

@@ -2,31 +2,30 @@
 <template>
   <v-app>
     <!-- Navigation Drawer for Grocery List -->
-
     
     <!-- Top App Bar -->
     <v-app-bar app clipped-left color="green darken-2" dark dense>
       <v-toolbar-title class="pa-3">Alpha</v-toolbar-title>
-
       <v-spacer></v-spacer>
       
-     <!-- Search Bar -->
-  <v-text-field 
-    class="mx-2" 
-    v-model="groceryItem" 
-    label="Search for an item" 
-    hide-details single-line outlined dense 
-    @input="onSearch"
-  ></v-text-field>
+      <!-- Search Bar -->
+      <v-text-field 
+        class="mx-2" 
+        v-model="groceryItem" 
+        label="Search for an item" 
+        hide-details single-line outlined dense 
+        @input="onSearch"
+      ></v-text-field>
 
-  <!-- Display Search Suggestions -->
-  <div v-if="searchResults.length">
-      <ul>
+      <!-- Display Search Suggestions -->
+      <div v-if="searchResults.length">
+        <ul>
           <li v-for="result in searchResults" :key="result.id" @click="fetchProductDetails(result.name)">
-              {{ result.name }}
+            {{ result.name }}
           </li>
-      </ul>
-  </div>
+        </ul>
+      </div>
+
       <!-- Notification Icon with Dropdown -->
       <v-menu offset-y dense>
         <template v-slot:activator="{ on, attrs }">
@@ -55,20 +54,14 @@
         </template>
         <v-list dense>
           <v-list-item @click="login()">
-            <v-list-item-content>
-              Login
-            </v-list-item-content>
+            <v-list-item-content>Login</v-list-item-content>
           </v-list-item>
           <v-list-item @click="register()">
-            <v-list-item-content>
-              Register
-            </v-list-item-content>
+            <v-list-item-content>Register</v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
-
-
 
     <!-- Main Content -->
     <v-main>
@@ -399,46 +392,46 @@ export default {
         this.groceryItem = "";
       }
     },
-        async fetchSearchSuggestions() {
-        if (!this.groceryItem) return;
+    async fetchSearchSuggestions() {
+    if (!this.groceryItem) return;
 
-        const url = `https://www.woolworths.com.au/apis/ui/product/detail/599999`;
-        const response = await fetch(url);
-        const data = await response.json();
-        this.searchResults = data;  // Adjust based on the structure of the API response
+    const url = `https://www.woolworths.com.au/apis/ui/product/detail/599999`;
+    const response = await fetch(url);
+    const data = await response.json();
+    this.searchResults = data;  // Adjust based on the structure of the API response
     },
 
     async fetchProductDetails(searchTerm) {
-        const payload = {
-            Filters: [],
-            IsSpecial: false,
-            EnableAdReRanking: false,
-            ExcludeSearchTypes: ["UntraceableVendors"],
-            GpBoost: 0,
-            GroupEdmVariants: true,
-            IsRegisteredRewardCardPromotion: null,
-            Location: `/shop/search/products?searchTerm=${encodeURIComponent(searchTerm)}`,
-            PageNumber: 1,
-            PageSize: 24,
-            SearchTerm: searchTerm,
-            SortType: "TraderRelevance"
-        };
+      const payload = {
+        Filters: [],
+        IsSpecial: false,
+        EnableAdReRanking: false,
+        ExcludeSearchTypes: ["UntraceableVendors"],
+        GpBoost: 0,
+        GroupEdmVariants: true,
+        IsRegisteredRewardCardPromotion: null,
+        Location: `/shop/search/products?searchTerm=${encodeURIComponent(searchTerm)}`,
+        PageNumber: 1,
+        PageSize: 24,
+        SearchTerm: searchTerm,
+        SortType: "TraderRelevance"
+      };
 
-        const response = await fetch('https://www.woolworths.com.au/apis/ui/Search/products', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        this.productDetails = data;  // Adjust based on the structure of the API response
+      const response = await fetch('https://www.woolworths.com.au/apis/ui/Search/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      this.productDetails = data;  // Adjust based on the structure of the API response
     },
 
     async onSearch() {
-        if (this.groceryItem.trim().length > 2) {
-            await this.fetchSearchSuggestions();
-        }
+      if (this.groceryItem.trim().length > 2) {
+        await this.fetchSearchSuggestions();
+      }
     }
   
   },
