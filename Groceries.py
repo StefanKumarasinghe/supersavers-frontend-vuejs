@@ -128,6 +128,8 @@ async def add_item(
         'coles_code': item.coles_code,
         'iga_code': item.iga_code
     })
+    return {'message': f'Item {item.item} removed added by user {current_user}.'}
+
 @app.post('/remove_item_notify')
 async def add_item(
     item: Item = Body(...),
@@ -139,6 +141,30 @@ async def add_item(
         'item': item.item
     })
     return {'message': f'Item {item.item} removed successfully by user {current_user}.'}
+
+@app.get("/run_notification")
+async def check_and_notify():
+    products=[]
+    products.append(await half_price_deals())
+    products.append(await half_price_deals_iga())
+  
+
+    for stored_item in codes_storage:
+        for product in products:
+            if (
+                stored_item['woolworths_code'] == product.stockcode_w
+                or stored_item['coles_code'] == product.stockcode_c
+                or stored_item['iga_code'] == product.stockcode_i
+            ):
+                # Send a notification (you need to implement this part)
+                send_notification(stored_item, product)
+
+              
+# Function to send a notification (you need to implement this part)
+def send_notification(stored_item, matching_product):
+    print(f"Notification: Item {stored_item['item']} matched with {matching_product.source} deal!")
+
+
 
 # Define the in-memory cache and the maximum cache duration
 CACHE = {}
@@ -156,10 +182,7 @@ def is_cache_valid(query: str) -> bool:
 WOOLWORTHS_COOKIES = None
 
 origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1",
+    "http://localhost:8081",
     # Add any other origins you want to allow here
 ]
 
@@ -183,6 +206,9 @@ IGA_URL = "https://www.igashop.com.au/api/storefront/stores/52511/search?misspel
 
 class Product(BaseModel):
     name: Optional[str] = "Default Name"
+    stockcode_w: Optional[float] = None
+    stockcode_i: Optional[float] = None
+    stockcode_c: Optional[float] = None
     image: Optional[str] = "Default Image URL"
     woolworths_price: Union[float, None]
     coles_price: Union[float, None]
@@ -701,6 +727,7 @@ async def half_price_deals():
     # Process the woolworths_products
     woolworths_products = [Product(
         name=product.get('Name', ''),
+        stockcode_w=product.get('Stockcode', ''),
         woolworths_price=product.get('Price', 0),
         coles_price=product.get('WasPrice', 0),  # Not applicable for this route
         chemist_price=None,  # Not applicable for this route
@@ -756,7 +783,9 @@ async def half_price_deals_iga():
     # Convert the IGA products to the Product format
     iga_formatted_products = [Product(
         name=product.get('name', ''),
+        stockcode_i=product.get('barcode', None),
         woolworths_price=None,  # Not applicable for this product
+        
         coles_price=product.get('wasPriceNumeric', 0),  # Using this as a placeholder, but might not be right for your needs
         chemist_price=None,  # Not applicable for this route
         aldi_price=None,  # Not applicable for this route
@@ -770,6 +799,50 @@ async def half_price_deals_iga():
 
     # Combine Woolworths and IGA products
     combined_products = iga_formatted_products
+
+    return combined_products
+
+
+
+@app.get("/half-price-deals_coles", response_model=List[Product])
+async def half_price_deals_coles():
+
+
+ 
+
+    async with httpx.AsyncClient(timeout=300, verify=False) as client:
+ 
+     coles_response = await client.get("https://www.coles.com.au/_next/data/20231115.01_v3.59.0/en/on-special.json")
+
+    if coles_response.status_code != 200:
+        raise HTTPException(status_code=coles_response.status_code, detail="Failed to fetch promotions from Coles shop")
+
+    coles_products = coles_response.json()["pageProps"]["searchResults"]["results"]
+ 
+
+    # Convert the IGA products to the Product format
+    
+    coles_formatted_products = [
+        Product(
+            name=product['name'],
+            stockcode_i=product.get('id', None),
+            woolworths_price=None,
+            coles_price=product.get('pricing', {}).get('was') if product.get('pricing') is not None else None,
+            chemist_price=None,
+            aldi_price=None,
+            iga_price=product.get('pricing', {}).get('now') if product.get('pricing') is not None else None,
+            image=f"https://productimages.coles.com.au/productimages{product.get('imageUris', [{}])[0].get('uri', 'default_image_url')}",
+            source="Coles",
+            description=product.get('description', ''),
+            size=str(product.get("size", "N/A")),
+            brand=product.get("brand", "Coles")
+        ) for product in coles_products if product.get('name') is not None
+    ]
+
+
+
+    # Combine Woolworths and IGA products
+    combined_products = coles_formatted_products
 
     return combined_products
 
