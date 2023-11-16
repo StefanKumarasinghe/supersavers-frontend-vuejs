@@ -1,9 +1,10 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
+  
   <v-navigation-drawer
     class="nav-drawer"
-    v-if="drawer"
+    v-show="drawer"
     app
     mini-variant
     mini-variant-width="80"
@@ -69,8 +70,8 @@ export default {
   }),
   props: ["drawer"],
   watch: {
-    drawer(value) {
-      return value;
+    drawer(newValue) {
+    this.selectedItem = newValue;
     },
   },
 };
