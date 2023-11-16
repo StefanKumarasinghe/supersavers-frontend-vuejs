@@ -183,6 +183,7 @@ WOOLWORTHS_COOKIES = None
 
 origins = [
     "http://localhost:8081",
+    "http://localhost:8080"
     # Add any other origins you want to allow here
 ]
 

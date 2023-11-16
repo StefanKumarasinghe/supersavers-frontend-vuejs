@@ -6,28 +6,18 @@
     color="orange"
     indeterminate
     ></v-progress-linear>
-    <!-- Sidebar -->
-  
 
-
-    <Sidebar :drawer="drawer"/>
     <!-- Home Page -->
-    <v-container @click="closeSidebar">
-
+    <v-container>
+      
       <!-- Search bar -->
-      <v-toolbar class="py-5">
-        <v-btn
-          icon
-          class="d-lg-none d-xl-flex"
-          @click.stop="drawer = !drawer">
-          <v-icon>mdi-menu</v-icon>
-        </v-btn>
+      <v-toolbar>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="searchTerm"
           @change="fetchProducts()"
           label="Search"
-          class="pt-5 d-none d-sm-flex"
+          class="d-none d-sm-flex"
           filled
           prepend-inner-icon="mdi-magnify"
           solo
@@ -352,11 +342,9 @@
 </template>
 
 <script>
-  import Sidebar from './components/Sidebar.vue';
   export default {
     data() {
       return {
-        drawer:true,
         loading: false,
         loading_start:true,
         storeFilters: {
@@ -489,14 +477,6 @@
       this.retrieveGroceryList();
     },
     methods: {
-      closeSidebar() {
-        if (this.drawer) {
-          this.drawer = !this.drawer;
-        }
-      },
-      toggleDrawer() {
-      this.drawer = !this.drawer;
-      },
       async OnCallSuggestion() {
         try {
           // Assuming you're making an API call to get suggestions
@@ -709,9 +689,7 @@
         }
       }
     },
-    components: {
-      Sidebar
-    }
+
   };
 </script>
 

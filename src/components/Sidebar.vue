@@ -6,6 +6,7 @@
     class="nav-drawer"
     v-show="drawer"
     app
+    touch
     mini-variant
     mini-variant-width="80"
     style="transform: translateX(0%);"
@@ -25,9 +26,13 @@
             :ripple="false"
           >
             <v-list-item-content>
-                <v-icon
-                    :color="active ? 'white' : 'grey lighten-1'"
-                >{{item.icon}}</v-icon>
+              <router-link :to="item.route">
+                <v-list-item-content>
+                  <v-icon :color="active ? 'white' : 'grey lighten-1'">
+                    {{ item.icon }}
+                  </v-icon>
+                </v-list-item-content>
+              </router-link>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -59,12 +64,11 @@
 export default {
   data: () => ({
     selectedItem: 0,
-
     items: [
-      { icon: "mdi-home-outline" },
-      { icon: "mdi-cart-outline" },
-      { icon: "mdi-bell-outline" },
-      { icon: "mdi-account-outline" }
+      { icon: "mdi-home-outline", route: "search" },
+      { icon: "mdi-cart-outline", route: "cart" },
+      { icon: "mdi-bell-outline", route: "login" },
+      { icon: "mdi-account-outline", route: "register" }
     ],
 
   }),
@@ -100,6 +104,20 @@ export default {
 }
 .v-navigation-drawer--close {
   visibility: visible;
+}
+.router-link {
+  text-decoration: none;
+}
+a:-webkit-any-link {
+  color: grey;
+  cursor: pointer;
+  text-decoration: none;
+}
+.v-list-item__content {
+  padding: 10px 0 !important;
+}
+.v-card {
+    margin-top: 22px;
 }
 
 </style>
