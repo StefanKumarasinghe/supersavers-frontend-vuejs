@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
+from fastapi import Query
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -669,7 +670,7 @@ def merge_results(woolworths: List[dict], coles: List[dict], chemist: List[dict]
     return combined_products
 
 @app.get("/half-price-deals_woolies", response_model=List[Product])
-async def half_price_deals():
+async def half_price_deals(page_number: int = Query(1, description="Page number for pagination")):
     woolworths_headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json",
@@ -697,8 +698,8 @@ async def half_price_deals():
         "isRegisteredRewardCardPromotion": False,
         "isSpecial": True,
         "location": "/shop/browse/specials/half-price",
-        "pageNumber": 1,
-        "pageSize": 24,
+        "pageNumber": page_number,
+        "pageSize": 8,
         "sortType": "TraderRelevance",
         "token": "",
         "url": "/shop/browse/specials/half-price"
@@ -740,13 +741,8 @@ async def half_price_deals():
         brand=product.get("Brand", "Woolworths")
     ) for product in woolworths_products]
     
- 
-
-
     # Combine Woolworths and IGA products
     combined_products = woolworths_products
- 
-
     return combined_products
 
 
@@ -754,13 +750,12 @@ async def half_price_deals():
 async def half_price_deals_iga():
 
     iga_headers = {
-    "Accept": "application/json, text/plain, */*",
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-    "Referer": "https://www.igashop.com.au/specials/13",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-origin",
- 
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
+        "Referer": "https://www.igashop.com.au/specials/13",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
     }
 
     iga_params = {
@@ -770,10 +765,8 @@ async def half_price_deals_iga():
      "take": 20
     }
  
-
     async with httpx.AsyncClient(timeout=300, verify=False) as client:
- 
-     iga_response = await client.get("https://www.igashop.com.au/api/storefront/stores/52511/promotions/products", headers=iga_headers, params=iga_params)
+        iga_response = await client.get("https://www.igashop.com.au/api/storefront/stores/52511/promotions/products", headers=iga_headers, params=iga_params)
 
     if iga_response.status_code != 200:
         raise HTTPException(status_code=iga_response.status_code, detail="Failed to fetch promotions from igashop")
@@ -807,9 +800,6 @@ async def half_price_deals_iga():
 @app.get("/half-price-deals_coles", response_model=List[Product])
 async def half_price_deals_coles():
 
-
- 
-
     async with httpx.AsyncClient(timeout=300, verify=False) as client:
  
      coles_response = await client.get("https://www.coles.com.au/_next/data/20231115.01_v3.59.0/en/on-special.json")
@@ -818,10 +808,8 @@ async def half_price_deals_coles():
         raise HTTPException(status_code=coles_response.status_code, detail="Failed to fetch promotions from Coles shop")
 
     coles_products = coles_response.json()["pageProps"]["searchResults"]["results"]
- 
 
     # Convert the IGA products to the Product format
-    
     coles_formatted_products = [
         Product(
             name=product['name'],
@@ -839,15 +827,9 @@ async def half_price_deals_coles():
         ) for product in coles_products if product.get('name') is not None
     ]
 
-
-
     # Combine Woolworths and IGA products
     combined_products = coles_formatted_products
-
     return combined_products
-
-
-
 
 @app.get("/search_suggestions")
 async def get_popular_searches(limit: int = 10):

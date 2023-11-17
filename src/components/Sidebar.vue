@@ -12,7 +12,7 @@
     style="transform: translateX(0%);"
   >
     <v-avatar class="d-block text-center mx-auto mt-4 mb-10" size="80">
-        <v-icon color="gray" x-large>mdi-basket</v-icon>
+      <v-icon color="gray" x-large>mdi-basket</v-icon>
     </v-avatar>
 
     <v-card flat class="rounded-xl mx-4 mx-auto text-center">
@@ -63,19 +63,27 @@
 <script>
 export default {
   data: () => ({
-    selectedItem: 0,
+    selectedRoute: "search", // Initialize with the default route
     items: [
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
       { icon: "mdi-bell-outline", route: "login" },
       { icon: "mdi-account-outline", route: "register" }
     ],
-
   }),
   props: ["drawer"],
   watch: {
     drawer(newValue) {
-    this.selectedItem = newValue;
+      // If the drawer is closing, don't change the selected route
+      if (!newValue) return;
+
+      // When the drawer is open, update the selected route based on the current route
+      const currentRoute = this.$route.name;
+      const selectedItem = this.items.find(item => item.route === currentRoute);
+
+      if (selectedItem) {
+        this.selectedRoute = selectedItem.route;
+      }
     },
   },
 };
@@ -109,7 +117,7 @@ export default {
   text-decoration: none;
 }
 a:-webkit-any-link {
-  color: grey;
+  color: white;
   cursor: pointer;
   text-decoration: none;
 }
