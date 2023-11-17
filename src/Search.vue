@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
-    <v-progress-linear v-if="loading"
-    :height="8"
+  <v-app >
+    <v-progress-linear class="my-2"  v-if="loading"
+    :height="4"
     color="orange"
     indeterminate
     ></v-progress-linear>
@@ -61,7 +61,7 @@
       <v-app-bar color="transparent" flat class="">
         <v-tabs v-model="tab" stacked active-class="active">
           <v-tabs-slider color="transparent"></v-tabs-slider>
-          <v-tab v-for="(tab, index) in tabs" :key="index" class="withoutupercase normalize font-weight-bold" :value="'tab-' + (index + 1)">
+          <v-tab @click="handleTabClick(tab.name)" v-for="(tab, index) in tabs" :key="index" class="withoutupercase normalize font-weight-bold" :value="'tab-' + (index + 1)">
             <v-icon>{{ tab.icon }}</v-icon>{{ tab.name }}
           </v-tab>                
         </v-tabs>
@@ -150,42 +150,33 @@
             <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
             <v-toolbar color="transparent" flat>
               <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text  font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-                  Save ${{ parseFloat(Math.max(product.coles_price,product.woolworths_price) - Math.min(product.coles_price,product.woolworths_price)).toFixed(2) }}
-                </span>
-                <span class="black--text  font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-                  Save ${{ parseFloat(Math.max(product.coles_price,product.woolworths_price,product.iga_price) - Math.min(product.coles_price,product.woolworths_price,product.iga_price)).toFixed(2) }}
-                </span>
-              </v-avatar>
+              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
+                {{ 
+                  (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
+                  ? 'Best Price'  
+                  : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
+                }}
+              </span>
+              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
+                Save ${{ 
+                  parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
+                }}
+              </span>
+            </v-avatar>
             </v-toolbar>
-            <v-card-text class="text-h5">
-              <v-span v-if="product.woolworths_price || product.coles_price">
-                <v-col
-                  v-if="product.woolworths_price < product.coles_price"
-                  class="green--text px-0 py-1" cols ="12"
-                >
-                  <v-card-text  class=" px-0 py-1 text-h6">   <strong>Best Price ${{ product.woolworths_price }} At <span class="text-underline">Woolies</span>  </strong></v-card-text>
-                </v-col>
-
-                <v-col
-                  v-if="product.woolworths_price > product.coles_price"
-                  class="green--text py-1 px-0 px-0" cols ="12 py-0"
-                >
-                  <v-card-text  class="text-h6   py-0">  <strong>Best Price ${{ product.coles_price }} At <span class="text-underline">Coles</span> </strong></v-card-text>  
-                </v-col>
-        
-            <v-col
-              v-if="product.woolworths_price > product.coles_price"
-              class="py-0 px-0" cols ="12">
-                <v-card-text> <strong>${{ product.woolworths_price }} At  <span class="green--text">Woolies</span> </strong></v-card-text>
-            </v-col>
-              <v-col
-              v-if="product.woolworths_price < product.coles_price"
-              class="py-0 px-0" cols ="12"
-            >
-                  <v-card-text>  <strong>${{ product.coles_price }} At  <span class="red--text">Coles</span>  </strong></v-card-text> 
-            </v-col>
-</v-span>
+            <v-card-text class="py-1">
+            <strong>
+                  <v-span v-if="product.woolworths_price">
+                  Woolies ${{ product.woolworths_price }}</v-span>
+            
+             
+                  <v-span v-if="product.coles_price">
+                  , Coles ${{ product.coles_price }}</v-span>
+          
+            
+                  <v-span v-if="product.iga_price">
+                  & ${{ product.iga_price }} at IGA</v-span>
+            </strong>
             </v-card-text>
             <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
               {{ product.name }} | {{product.size}}
@@ -204,6 +195,68 @@
       </v-row>
     </v-container>
 
+    <v-container v-if="categoryProduct.length" class="my-4">
+      <v-row>
+        <v-col cols="12">
+          <h2>Popular Items</h2>
+        </v-col>
+        <v-col
+          cols="12"
+          xs="12"
+          sm="6"
+          md="3"
+          lg="3"
+          v-for="product in categoryProduct" 
+          :key="product.name"
+        >
+          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+            <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+            <v-toolbar color="transparent" flat>
+              <v-avatar color="yellow" rounded width="100" height="35">
+              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
+                {{ 
+                  (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
+                  ? 'Best Price'  
+                  : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
+                }}
+              </span>
+              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
+                Save ${{ 
+                  parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
+                }}
+              </span>
+            </v-avatar>
+            </v-toolbar>
+            <v-card-text class="py-1">
+            <strong>
+                  <v-span v-if="product.woolworths_price">
+                  Woolies ${{ product.woolworths_price }}</v-span>
+            
+             
+                  <v-span v-if="product.coles_price">
+                  , Coles ${{ product.coles_price }}</v-span>
+          
+            
+                  <v-span v-if="product.iga_price">
+                  & ${{ product.iga_price }} at IGA</v-span>
+            </strong>
+            </v-card-text>
+            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+              {{ product.name }} | {{product.size}}
+            </v-card-title>
+            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+              <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+                Add To List
+              </v-btn>
+              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                Listen
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <!-- Crazy deals at Woolworths -->
     <v-container v-if="weeklyDeals_w.length && storeFilters['Deals at Woolies']" class="m-2">
@@ -359,6 +412,7 @@
         postalCode: null,
         searchSuggestions:[],
         products: [],
+        categoryProduct:[],
         completed:[],
         groceryList: [],
         savings: 0,
@@ -488,6 +542,61 @@
         } catch (error) {
           console.error("Error fetching suggestions:", error);
         }
+      },
+      async handleTabClick(category) {
+        this.loading=true;
+        switch (category) {
+          case 'All':
+          this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples','Biscuits','Kellogs']);
+            break;
+          case 'Fruits':
+            this.categoryProduct = await this.fetchProductsCat(['Apple', 'Banana', 'Orange', 'Strawberry', 'Grapes', 'Mandarin']);
+            break;
+          case 'Vegetables':
+            this.categoryProduct = await this.fetchProductsCat(['Carrot', 'Broccoli', 'Tomato', 'Spinach', 'Potato', 'Corn']);
+            break;
+          case 'Breakfast':
+            this.categoryProduct = await this.fetchProductsCat(['Kellogs', 'Uncle Toby', 'Milk', 'Frosty', 'Eggs', 'Granola']);
+            break;
+          case 'Frozen Foods':
+            this.categoryProduct = await this.fetchProductsCat(['Ice Cream', 'Frozen Pizza', 'Frozen Vegetables', 'Frozen Fish', 'Frozen Desserts']);
+            break;
+          case 'Dairy':
+            this.categoryProduct = await this.fetchProductsCat(['Milk', 'Cheese', 'Yogurt', 'Butter', 'Ice Cream']);
+            break;
+          case 'Egg':
+            this.categoryProduct = await this.fetchProductsCat(['Free ranged Eggs', 'Caged Eggs', 'Cage Free eggs']);
+            break;
+          case 'Meat':
+            this.categoryProduct = await this.fetchProductsCat(['Steak', 'Chicken Breast', 'Pork Chops', 'Lamb', 'Ground Beef']);
+            break;
+          case 'Seafood':
+            this.categoryProduct = await this.fetchProductsCat(['Salmon', 'Shrimp', 'Tuna', 'Lobster', 'Crab']);
+            break;
+          case 'Snacks':
+            this.categoryProduct = await this.fetchProductsCat(['Potato Chips', 'Popcorn', 'Pretzels', 'Chocolate', 'Nuts']);
+            break;
+          case 'Personal Care':
+            this.categoryProduct = await this.fetchProductsCat(['Toothpaste', 'Shampoo', 'Soap', 'Deodorant', 'Toothbrush']);
+            break;
+          // ... handle other categories
+          default:
+            this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples',]);
+            break;
+          
+          
+        }
+      },
+      async fetchProductsCat(productNames) {
+      const products = [];
+
+      for (const productName of productNames) {
+        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`);
+        products.push(...(await response.json()));
+      }
+        this.loading=false;
+        return products;
+
       },
       async fetchProducts() {
         this.loading = true;
