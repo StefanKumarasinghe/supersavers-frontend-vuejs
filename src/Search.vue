@@ -2,7 +2,7 @@
 <template>
   <v-app >
     <!-- Home Page -->
-    <v-container>
+    <v-container fluid class="mx-auto">
       <!-- Search bar -->
       <v-toolbar>
         <v-spacer></v-spacer>
@@ -80,7 +80,7 @@
       -->
 
       <!-- Lowest price product -->
-      <v-container v-if="lowestPricedProduct" class="my-4 text-center-sm text-left-md">
+      <div fluid v-if="lowestPricedProduct" class="my-4 text-center-sm text-left-md">
         <h2 class="my-2">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
             <v-col cols="12" md="4" class="text-center-sm text-left-md">
@@ -114,19 +114,19 @@
               </v-card-title>
             </v-col>
           </v-row>
-      </v-container>
+      </div>
 
       <!-- Skeleton loader -->
-      <v-container v-if="loading_start" class="mt-5 pt-5 text-center">
+      <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
           <v-col v-for="i in 4" :key="i" cols="12" md="3">
             <v-skeleton-loader type="card"></v-skeleton-loader>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
 
       <!-- Best deal at Woolworths and Coles -->
-      <v-container v-if="combinedProducts.length" class="my-4">
+      <div v-if="combinedProducts.length" class="my-4">
         <v-row>
           <v-col cols="12">
             <h2>Best Prices Across Stores</h2>
@@ -187,10 +187,10 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
 
       <!-- Popular items -->
-      <v-container v-if="categoryProduct.length" class="my-4">
+      <div v-if="categoryProduct.length" class="my-4">
         <v-row>
           <v-col cols="12">
             <h2>Popular Items</h2>
@@ -251,18 +251,19 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
 
       <!-- Crazy deals at Woolworths -->
-      <v-container v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies']" class="m-2">
+      <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies']" class="m-2 py-5">
         <v-row>
           <v-col cols="12" md="8">
-            <h2>Crazy Deals at <span class="green--text font-weight-bold">Woolworths</span></h2>
+            <h1>Deals at <span class="green--text font-weight-bold">Woolworths</span></h1>
           </v-col>
           <v-col cols="12" md="4" class="d-flex align-center justify-end">
-            <span class="mr-2 text-h6 font-weight-bold">See All</span>
-            <!-- Add a router-link or an action for "See All" as needed -->
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
           </v-col>
+        </v-row>
+        <v-row>
           <v-col
             cols="12"
             xs="12"
@@ -300,14 +301,19 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
       
       <!-- Crazy deals at Coles -->
-      <v-container v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles']" class="my-5">
+      <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles']" class="m-2 py-5 my-5">
         <v-row>
-          <v-col cols="12">
-            <h2>Crazy Deals at Coles</h2>
+          <v-col cols="12" md="8">
+            <h1>Deals at <span class="red--text font-weight-bold">Coles</span></h1>
           </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center justify-end">
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col
             cols="12"
             xs="12"
@@ -327,8 +333,8 @@
                 </v-avatar>
               </v-toolbar>
               <v-card-text class="text-h5">
-                <span class="green--text font-weight-bold mx-2">${{ deal.coles_price }}</span>
-                <span class="text-decoration-line-through gray--text">${{ deal.iga_price }}</span>
+                <span class="green--text font-weight-bold mx-2">${{ deal.iga_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
               </v-card-text>
               <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
                 {{ deal.name }} | {{deal.size}}
@@ -345,14 +351,19 @@
             </v-card>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
 
       <!-- Crazy deals at IGA -->
-      <v-container v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA']" class="m-2">
+      <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA']" class="py-5 my-5">
         <v-row>
-          <v-col cols="12">
-            <h2>Crazy Deals at IGA</h2>
+          <v-col cols="12" md="8">
+            <h1>Deals at <span class="white--text font-weight-bold iga_logo">  &nbsp; IGA  &nbsp;</span></h1>
           </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center justify-end">
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col
             cols="12"
             xs="12"
@@ -391,7 +402,7 @@
           </v-col>
         </v-row>
     
-      </v-container>
+      </div>
 
     </v-container>
   </v-app>
@@ -548,6 +559,8 @@
       },
       async handleTabClick(category) {
         this.loading=true;
+        this.combinedProducts=[]
+      
         switch (category) {
           case 'All':
           this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples','Biscuits','Kellogs']);
@@ -598,6 +611,7 @@
         products.push(...(await response.json()));
       }
         this.loading=false;
+        this.products=[]
         return products;
 
       },
@@ -723,8 +737,10 @@
           this.weeklyDeals_w = await responseWoolies.json();
           const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
           this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
           const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles');
           this.weeklyDeals_coles= await responseColes.json();
+          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
         } finally {
@@ -806,6 +822,22 @@
 </script>
 
 <style>
+
+  .container {
+    width: 100%;
+    padding-left: 100px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 100px;
+  }
+
+  @media (max-width: 1000px) {
+    .container {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+  }
+
   .truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -858,6 +890,10 @@
 
   .v-toolbar__content, .v-toolbar__extension {
     align-items: none;
+  }
+
+  .iga_logo {
+    background-color: red;
   }
 
 </style>

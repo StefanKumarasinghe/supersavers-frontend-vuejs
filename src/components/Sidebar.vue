@@ -117,7 +117,7 @@ export default {
   text-decoration: none;
 }
 a:-webkit-any-link {
-  color: grey;
+  color: white;
   cursor: pointer;
   text-decoration: none;
 }
