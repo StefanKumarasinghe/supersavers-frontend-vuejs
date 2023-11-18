@@ -17,6 +17,16 @@
                 parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
               }}
             </span>
+            <span class="black--text font-weight-bold p-0" v-if="!product.coles_price && product.woolworths_price && product.iga_price">
+              Save ${{ 
+                parseFloat(Math.max(product.woolworths_price, product.iga_price) - Math.min(product.woolworths_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
+              }}
+            </span>
+            <span class="black--text font-weight-bold p-0" v-if="product.coles_price && !product.woolworths_price && product.iga_price">
+              Save ${{ 
+                parseFloat(Math.max(product.coles_price, product.iga_price) - Math.min(product.coles_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
+              }}
+            </span>
           </v-avatar>
         </v-toolbar>
         <v-card-text class="py-1">
@@ -78,9 +88,7 @@
             const storePrices = {
               'Woolworths': product.woolworths_price,
               'Coles': product.coles_price,
-              'Aldi': product.aldi_price,
               'IGA': product.iga_price,
-              'Chemist Warehouse': product.chemist_price
             };
             let bestStore = '';
             let lowestPrice = Infinity;
