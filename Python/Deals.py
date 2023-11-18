@@ -5,18 +5,52 @@ import json
 import Data
 
 from fastapi import HTTPException
-WOOLWORTHS_COOKIES = None
+Woolies_Cookies = None  # Initialize as None at the module level
 
 async def half_price_deals_woolies():
-    woolworths_headers = Data.woolworths_headers 
-    woolworths_payload_half_price = Data.woolworths_payload_half_price
+    global Woolies_Cookies  # Declare Woolies_Cookies as global
+
+    woolworths_headers =  woolworths_headers = {
+    "Accept": "application/json, text/plain, */*",
+    "Content-Type": "application/json",
+    "Origin": "https://www.woolworths.com.au",
+    "Referer": "https://www.woolworths.com.au/shop/search/products?searchTerm={query}",
+    "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+    "Cookie": "",
+ }
+    
+    woolworths_payload_half_price = {
+    "categoryId": "specialsgroup.3676",
+    "categoryVersion": "v2",
+    "enableAdReRanking": False,
+    "filters": [],
+    "formatObject": '{"name":"Half Price"}',
+    "gpBoost": 0,
+    "groupEdmVariants": True,
+    "isBundle": False,
+    "isHideUnavailableProducts": False,
+    "isMobile": True,
+    "isRegisteredRewardCardPromotion": False,
+    "isSpecial": True,
+    "location": "/shop/browse/specials/half-price",
+    "pageNumber": 1,
+    "pageSize": 8,
+    "sortType": "TraderRelevance",
+    "token": "",
+    "url": "/shop/browse/specials/half-price",
+}
+
     async with httpx.AsyncClient(timeout=300, verify=False) as client:
-    # Access the global WOOLWORTHS_COOKIES
-     global WOOLWORTHS_COOKIES
-     if not WOOLWORTHS_COOKIES:
-        response_homepage = await client.get('https://www.woolworths.com.au/')
-        WOOLWORTHS_COOKIES = '; '.join([f"{name}={value}" for name, value in response_homepage.cookies.items()])
-     woolworths_headers["Cookie"] = WOOLWORTHS_COOKIES
+        # Access the global WOOLWORTHS_COOKIES
+     if not Woolies_Cookies:
+            response_homepage = await client.get('https://www.woolworths.com.au/')
+            Woolies_Cookies = '; '.join([f"{name}={value}" for name, value in response_homepage.cookies.items()])
+        
+     woolworths_headers["Cookie"] = Woolies_Cookies
+
      woolworths_response = await client.post("https://www.woolworths.com.au/apis/ui/browse/category", headers=woolworths_headers, json=woolworths_payload_half_price)
     if woolworths_response.status_code != 200:
         raise HTTPException(status_code=woolworths_response.status_code, detail="Failed to fetch half-price deals from Woolworths")
@@ -45,8 +79,18 @@ async def half_price_deals_woolies():
 
 async def half_price_deals_iga():
 
-    iga_headers = Data.iga_headers
-    iga_params = Data.iga_params
+    iga_headers = {
+    "Accept": "application/json, text/plain, */*",
+    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
+    "Referer": "https://www.igashop.com.au/specials/13",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+}
+    iga_params = {"misspelling": True,
+               "skip": 240, 
+               "sort": "", 
+               "take": 8}
 
     async with httpx.AsyncClient(timeout=300, verify=False) as client:
  

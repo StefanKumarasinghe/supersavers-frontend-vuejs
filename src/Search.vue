@@ -119,7 +119,12 @@
       <!-- Skeleton loader -->
       <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
-          <v-col v-for="i in 4" :key="i" cols="12" md="3">
+          <v-col v-for="i in 4" :key="i" 
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3">
             <v-skeleton-loader type="card"></v-skeleton-loader>
           </v-col>
         </v-row>
@@ -140,51 +145,7 @@
             v-for="product in combinedProducts" 
             :key="product.name"
           >
-            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-              <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-              <v-toolbar color="transparent" flat>
-                <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-                  {{ 
-                    (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
-                    ? 'Best Price'  
-                    : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
-                  }}
-                </span>
-                <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-                  Save ${{ 
-                    parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
-                  }}
-                </span>
-              </v-avatar>
-              </v-toolbar>
-              <v-card-text class="py-1">
-              <strong>
-                    <v-span v-if="product.woolworths_price">
-                    Woolies ${{ product.woolworths_price }}</v-span>
-              
-              
-                    <v-span v-if="product.coles_price">
-                    , Coles ${{ product.coles_price }}</v-span>
-            
-              
-                    <v-span v-if="product.iga_price">
-                    & ${{ product.iga_price }} at IGA</v-span>
-              </strong>
-              </v-card-text>
-              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-                {{ product.name }} | {{product.size}}
-              </v-card-title>
-              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-                <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
-                  Add To List
-                </v-btn>
-                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                  Listen
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+            <Cards :product="product"/>
           </v-col>
         </v-row>
       </div>
@@ -204,65 +165,18 @@
             v-for="product in categoryProduct" 
             :key="product.name"
           >
-            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-              <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-              <v-toolbar color="transparent" flat>
-                <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-                  {{ 
-                    (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
-                    ? 'Best Price'  
-                    : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
-                  }}
-                </span>
-                <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-                  Save ${{ 
-                    parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
-                  }}
-                </span>
-              </v-avatar>
-              </v-toolbar>
-              <v-card-text class="py-1">
-              <strong>
-                    <v-span v-if="product.woolworths_price">
-                    Woolies ${{ product.woolworths_price }}</v-span>
-              
-              
-                    <v-span v-if="product.coles_price">
-                    , Coles ${{ product.coles_price }}</v-span>
-            
-              
-                    <v-span v-if="product.iga_price">
-                    & ${{ product.iga_price }} at IGA</v-span>
-              </strong>
-              </v-card-text>
-              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-                {{ product.name }} | {{product.size}}
-              </v-card-title>
-              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-                <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
-                  Add To List
-                </v-btn>
-                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                  Listen
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+            <Cards :product="product"/>
           </v-col>
         </v-row>
       </div>
 
       <!-- Crazy deals at Woolworths -->
-      <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies']" class="m-2 py-5">
-        <v-row>
-          <v-col cols="12" md="8">
-            <h1>Deals at <span class="green--text font-weight-bold">Woolworths</span></h1>
-          </v-col>
-          <v-col cols="12" md="4" class="d-flex align-center justify-end">
-            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
-          </v-col>
-        </v-row>
+      <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies'] && !categoryProduct.length" class="my-5 py-5">
+        <v-toolbar>
+          <h2>Deals at <span class="green--text font-weight-bold text-h5">Woolworths</span></h2>
+          <v-spacer></v-spacer>
+          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+        </v-toolbar>
         <v-row>
           <v-col
             cols="12"
@@ -304,15 +218,12 @@
       </div>
       
       <!-- Crazy deals at Coles -->
-      <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles']" class="m-2 py-5 my-5">
-        <v-row>
-          <v-col cols="12" md="8">
-            <h1>Deals at <span class="red--text font-weight-bold">Coles</span></h1>
-          </v-col>
-          <v-col cols="12" md="4" class="d-flex align-center justify-end">
-            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
-          </v-col>
-        </v-row>
+      <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles'] && !categoryProduct.length" class="my-5 py-5">
+        <v-toolbar>
+          <h2>Deals at <span class="red--text font-weight-bold text-h5">Coles</span></h2>
+          <v-spacer></v-spacer>
+          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+        </v-toolbar>
         <v-row>
           <v-col
             cols="12"
@@ -354,15 +265,12 @@
       </div>
 
       <!-- Crazy deals at IGA -->
-      <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA']" class="py-5 my-5">
-        <v-row>
-          <v-col cols="12" md="8">
-            <h1>Deals at <span class="white--text font-weight-bold iga_logo">  &nbsp; IGA  &nbsp;</span></h1>
-          </v-col>
-          <v-col cols="12" md="4" class="d-flex align-center justify-end">
-            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
-          </v-col>
-        </v-row>
+      <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA'] && !categoryProduct.length" class="py-5 my-5">
+        <v-toolbar>
+          <h2>Deals at <span class="white--text font-weight-bold iga_logo text-h5">  &nbsp; IGA  &nbsp;</span></h2>
+          <v-spacer></v-spacer>
+          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+        </v-toolbar>
         <v-row>
           <v-col
             cols="12"
@@ -409,6 +317,7 @@
 </template>
 
 <script>
+  import Cards from './components/Cards.vue';
   export default {
     data() {
       return {
@@ -735,6 +644,7 @@
           this.loading_start = true;
           const responseWoolies = await fetch('http://127.0.0.1:8000/half-price-deals_woolies?page_number=1');
           this.weeklyDeals_w = await responseWoolies.json();
+          this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 8);
           const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
           this.weeklyDeals_iga = await responseIga.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
@@ -817,7 +727,9 @@
         }
       }
     },
-
+    components: {
+      Cards
+    }
   };
 </script>
 
