@@ -6,40 +6,40 @@
       <v-container fluid>
         <v-row align="center" justify="center" class="">
           <v-col cols="12" md="6" lg="6">
-            <v-card class="shadow-none pa-4" flat>
-              <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Login</v-card-title>
-              <v-card-text class="text-lg-h6 font-weight-light">Login to view the best deals and save on groceries.</v-card-text>
-              <v-card-text class="my-4">
-                <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
-                  <v-text-field 
-                    class="text-lg-h6 mb-2" 
-                    v-model="email" 
-                    :rules="emailRules" 
-                    label="Email"
-                    required
-                    prepend-inner-icon="mdi-email"
-                    solo
-                    flat
-                    rounded
-                    outlined
-                  ></v-text-field>
-                  <v-text-field 
-                    class="text-lg-h6" 
-                    v-model="password" 
-                    label="Password" 
-                    :rules="passwordRules" 
-                    required
-                    type="password" 
-                    prepend-inner-icon="mdi-lock"
-                    solo
-                    flat
-                    rounded
-                    outlined
-                  ></v-text-field>
-                  <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="validateForm">Login</v-btn>
-                </v-form>
-              </v-card-text>
-            </v-card>
+            <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Login</v-card-title>
+            <v-card-text class="text-lg-h6 font-weight-light">Login to view the best deals and save on groceries.</v-card-text>
+            <v-card-text class="my-4">
+              <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
+                <v-text-field 
+                  class="text-lg-h6 mb-2" 
+                  v-model="email" 
+                  :rules="emailRules" 
+                  label="Email"
+                  required
+                  prepend-inner-icon="mdi-email"
+                  solo
+                  flat
+                  rounded
+                  outlined
+                ></v-text-field>
+                <v-text-field 
+                  class="text-lg-h6" 
+                  v-model="password" 
+                  label="Password" 
+                  :rules="passwordRules" 
+                  required
+                  type="password" 
+                  prepend-inner-icon="mdi-lock"
+                  solo
+                  flat
+                  rounded
+                  outlined
+                ></v-text-field>
+                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="validateForm">Login</v-btn>
+                <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold orange--text text-decoration-underline">Register</router-link></p>
+                <p class="text-center">Forgot password? <router-link to="login" class="font-weight-bold orange--text text-decoration-underline">Reset</router-link></p>
+              </v-form>
+            </v-card-text>
           </v-col>
 
           <!-- The image will be hidden on small screens (md and below) -->
