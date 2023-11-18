@@ -732,6 +732,22 @@
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
+        } 
+        try {
+       
+          const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles');
+          this.weeklyDeals_coles= await responseColes.json();
+          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
+         
+        } catch (error) {
+          console.error("Failed to fetch weekly deals:", error);
+        }
+        try {
+          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
+          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
+        } catch (error) {
+          console.error("Failed to fetch weekly deals:", error);
         } finally {
           this.loading_start= false;
         }
