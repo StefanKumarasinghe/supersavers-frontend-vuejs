@@ -44,7 +44,15 @@
 
           <!-- The image will be hidden on small screens (md and below) -->
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="6" lg="6">
-            <v-img :src="require('@/assets/login.jpg')" alt="Login Image"></v-img>
+            <v-img
+              :src="require('@/assets/login.jpg')"
+              alt="Login Image"
+              width="100%"
+              height="100%"
+            ></v-img>
+            <p style="font-size: 10px; margin-top: 5px;" class="text-center">
+              Image by <a href="https://www.freepik.com/free-vector/people-keeping-healthy-diet_8610283.htm#query=grocery&position=14&from_view=search&track=sph&uuid=eac254f5-c45a-4e03-9939-58c50c521fae" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
+            </p>          
           </v-col>
         </v-row>
       </v-container>
