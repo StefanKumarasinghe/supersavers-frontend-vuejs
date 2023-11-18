@@ -183,9 +183,7 @@ WOOLWORTHS_COOKIES = None
 
 origins = [
     "http://localhost:8081",
-    "http://localhost:8080",
-    "http://localhost:8000",
-
+    "http://localhost:8080"
     # Add any other origins you want to allow here
 ]
 
@@ -390,8 +388,8 @@ async def search_products(query: str,code:str):
     }
 
     iga_headers = {
-        "Accept": "application/json",
-        "User-Agent": "Mozilla/5.0 ..."
+    "Accept": "application/json",
+    "User-Agent": "Mozilla/5.0 ..."
     }
     woolworths_response = None
     coles_response = None
@@ -672,7 +670,7 @@ def merge_results(woolworths: List[dict], coles: List[dict], chemist: List[dict]
     return combined_products
 
 @app.get("/half-price-deals_woolies", response_model=List[Product])
-async def half_price_deals():
+async def half_price_deals(page_number: int = Query(1, description="Page number for pagination")):
     woolworths_headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json",
@@ -695,13 +693,13 @@ async def half_price_deals():
         "gpBoost": 0,
         "groupEdmVariants": True,
         "isBundle": False,
-        "isHideUnavailableProducts": True,
+        "isHideUnavailableProducts": False,
         "isMobile": True,
         "isRegisteredRewardCardPromotion": False,
         "isSpecial": True,
         "location": "/shop/browse/specials/half-price",
-        "pageNumber": 1,
-        "pageSize": 20,
+        "pageNumber": page_number,
+        "pageSize": 8,
         "sortType": "TraderRelevance",
         "token": "",
         "url": "/shop/browse/specials/half-price"
@@ -728,7 +726,6 @@ async def half_price_deals():
         woolworths_products = []
 
     # Process the woolworths_products
-    
     woolworths_products = [Product(
         name=product.get('Name', ''),
         stockcode_w=product.get('Stockcode', ''),
