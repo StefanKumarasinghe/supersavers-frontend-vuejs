@@ -1,32 +1,50 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app>
-    <!-- Top App Bar -->
-    <v-app-bar app clipped-left color="green darken-2" dark dense>
-      <v-toolbar-title class="pa-3">Alpha</v-toolbar-title>
-    </v-app-bar>
-
-    <!-- Main Content -->
     <v-main>
       <!-- Login Form -->
       <v-container fluid>
-        <v-row align="center" justify="center" class="mb-5 mt-5">
-          <v-col cols="6" md="6" lg="6">
-            <v-img src="https://source.unsplash.com/random?cartoon," height="500px" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"></v-img>
-          </v-col>
-          <v-col cols="6" md="6" lg="6">
-            <v-card class="shadow-none mb-5 pa-4">
-              <v-card-title class="font-weight-bold green--text text--darken-2">Login</v-card-title>
-              <v-card-text>Login to view the best deals and save on groceries.</v-card-text>
-              <v-card-text>
+        <v-row align="center" justify="center" class="">
+          <v-col cols="12" md="6" lg="6">
+            <v-card class="shadow-none pa-4" flat>
+              <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Login</v-card-title>
+              <v-card-text class="text-lg-h6 font-weight-light">Login to view the best deals and save on groceries.</v-card-text>
+              <v-card-text class="my-4">
                 <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
-                  <v-text-field v-model="usernameOrEmail" label="Username or Email" required></v-text-field>
-                  <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-                  
-                  <v-btn color="green" class="text-white mt-4" type="submit">Login</v-btn>
+                  <v-text-field 
+                    class="text-lg-h6 mb-2" 
+                    v-model="email" 
+                    :rules="emailRules" 
+                    label="Email"
+                    required
+                    prepend-inner-icon="mdi-email"
+                    solo
+                    flat
+                    rounded
+                    outlined
+                  ></v-text-field>
+                  <v-text-field 
+                    class="text-lg-h6" 
+                    v-model="password" 
+                    label="Password" 
+                    :rules="passwordRules" 
+                    required
+                    type="password" 
+                    prepend-inner-icon="mdi-lock"
+                    solo
+                    flat
+                    rounded
+                    outlined
+                  ></v-text-field>
+                  <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="validateForm">Login</v-btn>
                 </v-form>
               </v-card-text>
             </v-card>
+          </v-col>
+
+          <!-- The image will be hidden on small screens (md and below) -->
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="6" lg="6">
+            <v-img :src="require('@/assets/login.jpg')" alt="Login Image"></v-img>
           </v-col>
         </v-row>
       </v-container>
@@ -38,23 +56,38 @@
 export default {
   data() {
     return {
-      usernameOrEmail: '',
+      email: '',
+      emailRules: [
+        value => {
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          return 'Must be a valid e-mail.'
+        },
+      ],
       password: '',
+      passwordRules: [
+        value => { 
+          if (value?.length > 8) return true
+          return 'Password needs to be at least 8 characters.'
+        }
+      ]
     };
   },
   methods: {
     submitLogin() {
-      // Handle the login logic (e.g., send data to the server, etc.)
-      console.log('Login data:', {
-        usernameOrEmail: this.usernameOrEmail,
-        password: this.password,
+      // Validate the form before handling the login logic
+      this.$refs.loginForm.validate().then(valid => {
+        if (valid) {
+          // Form is valid, proceed with login logic
+          console.log('Login data:', {
+            email: this.email,
+            password: this.password,
+          });
+        }
       });
-      this.resetLoginForm();
     },
-
-    resetLoginForm() {
-      this.usernameOrEmail = '';
-      this.password = '';
+    validateForm() {
+      // Trigger form validation without submitting
+      this.$refs.loginForm.validate();
     }
   }
 };

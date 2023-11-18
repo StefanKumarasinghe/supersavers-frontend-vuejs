@@ -10,7 +10,7 @@
           v-model="searchTerm"
           @change="fetchProducts()"
           label="Search"
-          class="d-none d-sm-flex"
+          class=""
           filled
           prepend-inner-icon="mdi-magnify"
           solo
