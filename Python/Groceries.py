@@ -43,7 +43,6 @@ async def coles():
  return await Deals.half_price_deals_coles()
 @app.get("/search_suggestions")
 async def get_popular_searches(limit: int = 10):
- # Sort by count and take top 'limit' results
  popular = sorted(Cache.CACHE.items(), key=lambda x: x[1]['count'], reverse=True)[:limit]
  return [{"query": item[0], "count": item[1]['count']} for item in popular]
 if __name__ == "__main__":
