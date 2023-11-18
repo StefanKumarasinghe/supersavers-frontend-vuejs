@@ -1,15 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app >
-    <v-progress-linear   v-if="loading"
-    :height="4"
-    color="orange"
-    indeterminate
-    ></v-progress-linear>
-
     <!-- Home Page -->
-    <v-container>
-      
+    <v-container fluid class="mx-auto mb-5">
       <!-- Search bar -->
       <v-toolbar>
         <v-spacer></v-spacer>
@@ -66,9 +59,16 @@
           </v-tab>                
         </v-tabs>
       </v-app-bar>
-      <v-divider class="my-5" color="grey"></v-divider>
+      <v-divider class="my-5" color="grey" v-if="!loading"></v-divider>
 
-      <!-- Pagination -->
+      <!-- Progress linear -->
+      <v-progress-linear class="my-2"  v-if="loading"
+        :height="4"
+        color="orange"
+        indeterminate
+      ></v-progress-linear>
+
+      <!-- Pagination 
       <v-toolbar class="mx-auto">
         <v-btn class="mr-2" outlined>
           <v-icon left>mdi-chevron-left</v-icon>
@@ -77,9 +77,10 @@
           <v-icon right>mdi-chevron-right</v-icon>
         </v-btn>
       </v-toolbar>
+      -->
 
-      <!-- Lowest price product -->
-      <v-container v-if="lowestPricedProduct" class="my-4 text-center-sm text-left-md">
+      <!-- Lowest price product 
+      <div fluid v-if="lowestPricedProduct" class="my-4 text-center-sm text-left-md">
         <h2 class="my-2">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
             <v-col cols="12" md="4" class="text-center-sm text-left-md">
@@ -113,283 +114,270 @@
               </v-card-title>
             </v-col>
           </v-row>
-      </v-container>
+      </div> -->
 
       <!-- Skeleton loader -->
-      <v-container v-if="loading_start" class="mt-5 pt-5 text-center">
+      <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
           <v-col v-for="i in 4" :key="i" cols="12" md="3">
             <v-skeleton-loader type="card"></v-skeleton-loader>
           </v-col>
         </v-row>
-      </v-container>
+      </div>
 
-
-    <!-- Loading icon -->
-
-
-
-    </v-container>
-
-    <!-- Best deal at Woolworths and Coles -->
-    <v-container v-if="combinedProducts.length" class="my-4">
-      <v-row>
-        <v-col cols="12">
-          <h2>Best Prices Across Stores</h2>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          lg="3"
-          v-for="product in combinedProducts" 
-          :key="product.name"
-        >
-          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-            <v-toolbar color="transparent" flat>
-              <v-avatar color="yellow" rounded width="100" height="35">
-              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-                {{ 
-                  (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
-                  ? 'Best Price'  
-                  : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
-                }}
-              </span>
-              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-                Save ${{ 
-                  parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
-                }}
-              </span>
-            </v-avatar>
-            </v-toolbar>
-            <v-card-text class="py-1">
-            <strong>
-                  <v-span v-if="product.woolworths_price">
-                  Woolies ${{ product.woolworths_price }}</v-span>
-            
-             
-                  <v-span v-if="product.coles_price">
-                  , Coles ${{ product.coles_price }}</v-span>
-          
-            
-                  <v-span v-if="product.iga_price">
-                  & ${{ product.iga_price }} at IGA</v-span>
-            </strong>
-            </v-card-text>
-            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-              {{ product.name }} | {{product.size}}
-            </v-card-title>
-            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-              <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
-                Add To List
-              </v-btn>
-              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container v-if="categoryProduct.length" class="my-4">
-      <v-row>
-        <v-col cols="12">
-          <h2>Popular Items</h2>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          lg="3"
-          v-for="product in categoryProduct" 
-          :key="product.name"
-        >
-          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-            <v-toolbar color="transparent" flat>
-              <v-avatar color="yellow" rounded width="100" height="35">
-              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-                {{ 
-                  (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
-                  ? 'Best Price'  
-                  : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2))
-                }}
-              </span>
-              <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-                Save ${{ 
-                  parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) 
-                }}
-              </span>
-            </v-avatar>
-            </v-toolbar>
-            <v-card-text class="py-1">
-            <strong>
-                  <v-span v-if="product.woolworths_price">
-                  Woolies ${{ product.woolworths_price }}</v-span>
-            
-             
-                  <v-span v-if="product.coles_price">
-                  , Coles ${{ product.coles_price }}</v-span>
-          
-            
-                  <v-span v-if="product.iga_price">
-                  & ${{ product.iga_price }} at IGA</v-span>
-            </strong>
-            </v-card-text>
-            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-              {{ product.name }} | {{product.size}}
-            </v-card-title>
-            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-              <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
-                Add To List
-              </v-btn>
-              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <!-- Crazy deals at Woolworths -->
-    <v-container v-if="weeklyDeals_w.length && storeFilters['Deals at Woolies']" class="m-2">
-      <v-row>
-        <v-col cols="12">
-          <h2>Crazy Deals at Woolworths</h2>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          lg="3"
-          v-for="deal in weeklyDeals_w" 
-          :key="deal.name"
-        >
-          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-            <v-toolbar color="transparent" flat>
-              <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text  font-weight-bold p-0">
-                  Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+      <!-- Best deal at Woolworths and Coles -->
+      <div v-if="combinedProducts.length" class="my-4">
+        <v-row>
+          <v-col cols="12">
+            <h1>Best Prices Across Stores</h1>
+          </v-col>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3"
+            v-for="product in combinedProducts" 
+            :key="product.name"
+          >
+            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" v-bind="props">
+              <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+              <v-card-text class="text-h5">
+                <span class="green--text font-weight-bold mx-2">${{ getLowestPriceStoreAndPrice(product).price }}</span>
+              </v-card-text>
+              <v-card-text class="text-subtitle1" color="transparent">
+                <span class="black--text font-weight-bold p-1" >
+                   Best deal at 
+                  <span class="green--text font-weight-bold" v-show="getLowestPriceStoreAndPrice(product).store == 'Woolworths'">Woolworths</span>
+                  <span class="red--text font-weight-bold" v-show="getLowestPriceStoreAndPrice(product).store == 'Coles'">Coles</span>
+                  <span class="white--text font-weight-bold iga_logo" v-show="getLowestPriceStoreAndPrice(product).store == 'IGA'">IGA</span>
                 </span>
-              </v-avatar>
-            </v-toolbar>
-            <v-card-text class="text-h5">
-              <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
-              <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
-            </v-card-text>
-            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-              {{ deal.name }} | {{deal.size}}
-            </v-card-title>
-            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-              <v-btn class="text-none text-subtitle-1 mb-3 white--text" @click="AddToNotify(product)" color="green" size="small" variant="flat">
-                Add To List
-              </v-btn>
-              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <!-- Crazy deals at Coles -->
-    <v-container v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles']" class="m-2">
-      <v-row>
-        <v-col cols="12">
-          <h2>Crazy Deals at Coles</h2>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          lg="3"
-          v-for="deal in weeklyDeals_coles" 
-          :key="deal.name"
-        >
-          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-            <v-toolbar color="transparent" flat>
-              <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text  font-weight-bold p-0">
-                  Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+                <br>
+                <span class="black--text p-1  font-weight-bold" >
+                  <v-span v-if="product.woolworths_price" >${{product.woolworths_price}} at <span class="green--text font-weight-bold">Woolworths</span></v-span>
+                  <v-span v-if="product.coles_price" >,  ${{product.coles_price}} at <span class="red--text font-weight-bold">Coles</span> </v-span>
+                  <v-span v-if="product.iga_price" >& ${{product.iga_price}} at <span class="white--text font-weight-bold iga_logo">  &nbsp; IGA  &nbsp;</span></v-span>
                 </span>
-              </v-avatar>
-            </v-toolbar>
-            <v-card-text class="text-h5">
-              <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
-              <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
-            </v-card-text>
-            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-              {{ deal.name }} | {{deal.size}}
-            </v-card-title>
-            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-              <v-btn class="text-none text-subtitle-1 mb-3 white--text" @click="AddToNotify(product)" color="green" size="small" variant="flat">
-                Add To List
-              </v-btn>
-              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <!-- Crazy deals at IGA -->
-    <v-container v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA']" class="m-2">
-      <v-row>
-        <v-col cols="12">
-          <h2>Crazy Deals at IGA</h2>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          lg="3"
-          v-for="deal in weeklyDeals_iga" 
-          :key="deal.name"
-        >
-          <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-            <v-toolbar color="transparent" flat>
-              <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text font-weight-bold p-0">
-                  Save ${{ parseFloat(deal.coles_price - deal.iga_price).toFixed(2) }}
+              </v-card-text>
+              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+                {{ product.name }} | {{product.size}}
+              </v-card-title>
+              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+                <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+                  Add To List
+                </v-btn>
+                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                  Listen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+
+  <!-- Best deal at Category -->
+  <div v-if="categoryProduct.length" class="my-4">
+        <v-row>
+          <v-col cols="12">
+            <h1>Popular Items</h1>
+          </v-col>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3"
+            v-for="product in categoryProduct" 
+            :key="product.name"
+          >
+            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" v-bind="props">
+              <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+              <v-card-text class="text-h5">
+                <span class="green--text font-weight-bold mx-2">${{ getLowestPriceStoreAndPrice(product).price }}</span>
+              </v-card-text>
+              <v-card-text class="text-subtitle1" color="transparent">
+                <span class="black--text font-weight-bold p-1" >
+                   Best deal at 
+                  <span class="green--text font-weight-bold" v-show="getLowestPriceStoreAndPrice(product).store == 'Woolworths'">Woolworths</span>
+                  <span class="red--text font-weight-bold" v-show="getLowestPriceStoreAndPrice(product).store == 'Coles'">Coles</span>
+                  <span class="white--text font-weight-bold iga_logo" v-show="getLowestPriceStoreAndPrice(product).store == 'IGA'"> IGA </span>
                 </span>
-              </v-avatar>
-            </v-toolbar>
-            <v-card-text class="text-h5">
-              <span class="green--text font-weight-bold mx-2">${{ deal.iga_price }}</span>
-              <span class="text-decoration-line-through gray--text">${{ deal.iga_price }}</span>
-            </v-card-text>
-            <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-              {{ deal.name }} | {{deal.size}}
-            </v-card-title>
-            <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
-            <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-              <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
-                Add To List
-              </v-btn>
-              <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-   
+                <br>
+                <span class="black--text p-1  font-weight-bold" >
+                  <v-span v-if="product.woolworths_price" >${{product.woolworths_price}} at <span class="green--text font-weight-bold">Woolworths</span></v-span>
+                  <v-span v-if="product.coles_price" >,  ${{product.coles_price}} at <span class="red--text font-weight-bold">Coles </span> </v-span>
+                  <v-span v-if="product.iga_price" > & ${{product.iga_price}} at <span class="white--text font-weight-bold iga_logo">  &nbsp; IGA  &nbsp;</span></v-span>
+                </span>
+              </v-card-text>
+              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+                {{ product.name }} | {{product.size}}
+              </v-card-title>
+              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+                <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+                  Add To List
+                </v-btn>
+                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                  Listen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+
+      <!-- Crazy deals at Woolworths -->
+      <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies'] && !searchTerm" class="m-2 py-5">
+        <v-row>
+          <v-col cols="12" md="8">
+            <h1>Deals at <span class="green--text font-weight-bold">Woolworths</span></h1>
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center justify-end">
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3"
+            v-for="deal in weeklyDeals_w" 
+            :key="deal.name"
+          >
+            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+              <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+              <v-toolbar color="transparent" flat>
+                <v-avatar color="yellow" rounded width="100" height="35">
+                  <span class="black--text  font-weight-bold p-0">
+                    Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+                  </span>
+                </v-avatar>
+              </v-toolbar>
+              <v-card-text class="text-h5">
+                <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
+              </v-card-text>
+              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+                {{ deal.name }} | {{deal.size}}
+              </v-card-title>
+              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+                <v-btn class="text-none text-subtitle-1 mb-3 white--text" @click="AddToNotify(product)" color="green" size="small" variant="flat">
+                  Add To List
+                </v-btn>
+                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                  Listen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+      
+      <!-- Crazy deals at Coles -->
+      <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles'] && !searchTerm" class="m-2 py-5 my-5">
+        <v-row>
+          <v-col cols="12" md="8">
+            <h1>Deals at <span class="red--text font-weight-bold">Coles</span></h1>
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center justify-end">
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3"
+            v-for="deal in weeklyDeals_coles" 
+            :key="deal.name"
+          >
+            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+              <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+              <v-toolbar color="transparent" flat>
+                <v-avatar color="yellow" rounded width="100" height="35">
+                  <span class="black--text  font-weight-bold p-0">
+                    Save ${{ parseFloat(deal.coles_price - deal.iga_price).toFixed(2) }}
+                  </span>
+                </v-avatar>
+              </v-toolbar>
+              <v-card-text class="text-h5">
+                <span class="green--text font-weight-bold mx-2">${{ deal.iga_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
+              </v-card-text>
+              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+                {{ deal.name }} | {{deal.size}}
+              </v-card-title>
+              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+                <v-btn class="text-none text-subtitle-1 mb-3 white--text" @click="AddToNotify(product)" color="green" size="small" variant="flat">
+                  Add To List
+                </v-btn>
+                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                  Listen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+
+      <!-- Crazy deals at IGA -->
+      <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA'] && !searchTerm" class="py-5 my-5">
+        <v-row>
+          <v-col cols="12" md="8">
+            <h1>Deals at <span class="white--text font-weight-bold iga_logo">  &nbsp; IGA  &nbsp;</span></h1>
+          </v-col>
+          <v-col cols="12" md="4" class="d-flex align-center justify-end">
+            <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="6"
+            md="3"
+            lg="3"
+            v-for="deal in weeklyDeals_iga" 
+            :key="deal.name"
+          >
+            <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+              <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
+              <v-toolbar color="transparent" flat>
+                <v-avatar color="yellow" rounded width="100" height="35">
+                  <span class="black--text font-weight-bold p-0">
+                    Save ${{ parseFloat(deal.coles_price - deal.iga_price).toFixed(2) }}
+                  </span>
+                </v-avatar>
+              </v-toolbar>
+              <v-card-text class="text-h5">
+                <span class="green--text font-weight-bold mx-2">${{ deal.iga_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
+              </v-card-text>
+              <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
+                {{ deal.name }} | {{deal.size}}
+              </v-card-title>
+              <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+              <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
+                <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+                  Add To List
+                </v-btn>
+                <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+                  Listen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+    
+      </div>
+
     </v-container>
   </v-app>
 </template>
@@ -545,9 +533,13 @@
       },
       async handleTabClick(category) {
         this.loading=true;
+        this.combinedProducts=[]
+      
         switch (category) {
+          case 'Deals':
+            break;
           case 'All':
-          this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples','Biscuits','Kellogs']);
+            this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples','Biscuits','Kellogs']);
             break;
           case 'Fruits':
             this.categoryProduct = await this.fetchProductsCat(['Apple', 'Banana', 'Orange', 'Strawberry', 'Grapes', 'Mandarin']);
@@ -595,6 +587,7 @@
         products.push(...(await response.json()));
       }
         this.loading=false;
+        this.products=[]
         return products;
 
       },
@@ -718,10 +711,13 @@
           this.loading_start = true;
           const responseWoolies = await fetch('http://127.0.0.1:8000/half-price-deals_woolies');
           this.weeklyDeals_w = await responseWoolies.json();
-          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
-          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 8);
           const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles');
           this.weeklyDeals_coles= await responseColes.json();
+          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
+          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
+          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
         } finally {
@@ -796,6 +792,26 @@
         } catch (error) {
           console.error('Error fetching data:', error);
         }
+      },
+      getLowestPriceStoreAndPrice(product) {
+        const prices = [
+          { store: 'Woolworths', price: parseFloat(product.woolworths_price) || null },
+          { store: 'Coles', price: parseFloat(product.coles_price) || null },
+          { store: 'IGA', price: parseFloat(product.iga_price) || null }
+        ];
+
+        const filteredPrices = prices.filter(entry => entry.price !== null);
+
+        if (filteredPrices.length === 0) {
+          // No valid prices available
+          return { store: null, price: null };
+        }
+
+        const lowestPriceEntry = filteredPrices.reduce((minEntry, currentEntry) => {
+          return currentEntry.price < minEntry.price ? currentEntry : minEntry;
+        }, filteredPrices[0]);
+
+        return { store: lowestPriceEntry.store, price: lowestPriceEntry.price };
       }
     },
 
@@ -803,6 +819,22 @@
 </script>
 
 <style>
+
+  .container {
+    width: 100%;
+    padding-left: 100px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 100px;
+  }
+
+  @media (max-width: 1000px) {
+    .container {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+  }
+
   .truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -846,6 +878,19 @@
 
   .v-application .text-subtitle-1 {
     line-height: 1.3rem;
-}
+  }
+
+  .v-text-field.v-text-field--enclosed .v-text-field__details {
+    padding-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  .v-toolbar__content, .v-toolbar__extension {
+    align-items: none;
+  }
+
+  .iga_logo {
+    background-color: red;
+  }
 
 </style>
