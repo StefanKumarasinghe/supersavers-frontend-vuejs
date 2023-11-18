@@ -80,7 +80,7 @@
       -->
 
       <!-- Lowest price product -->
-      <div fluid v-if="lowestPricedProduct" class="my-4 text-center-sm text-left-md">
+      <div fluid v-if="lowestPricedProduct" class="my-5 py-3 text-center-sm text-left-md">
         <h2 class="my-2">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
             <v-col cols="12" md="4" class="text-center-sm text-left-md">
@@ -173,7 +173,7 @@
       <!-- Crazy deals at Woolworths -->
       <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
-          <h2>Deals at <span class="green--text font-weight-bold text-h5">Woolworths</span></h2>
+          <h2>Deals at <span class="green--text font-weight-bold">Woolworths</span></h2>
           <v-spacer></v-spacer>
           <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
@@ -195,7 +195,7 @@
       <!-- Crazy deals at Coles -->
       <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
-          <h2>Deals at <span class="red--text font-weight-bold text-h5">Coles</span></h2>
+          <h2>Deals at <span class="red--text font-weight-bold ">Coles</span></h2>
           <v-spacer></v-spacer>
           <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
@@ -217,7 +217,7 @@
       <!-- Crazy deals at IGA -->
       <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA'] && !categoryProduct.length && !combinedProducts.length" class="py-5 my-5">
         <v-toolbar>
-          <h2>Deals at <span class="white--text font-weight-bold iga_logo text-h5">  &nbsp; IGA  &nbsp;</span></h2>
+          <h2>Deals at <span class="white--text font-weight-bold iga_logo ">  &nbsp; IGA  &nbsp;</span></h2>
           <v-spacer></v-spacer>
           <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
@@ -274,6 +274,7 @@
         selection:1,
         tab: null,
         tabs: [
+          { name: 'Deals', icon: 'mdi-currency-usd' },
           { name: 'All', icon: 'mdi-all-inclusive' },
           { name: 'Fruits', icon: 'mdi-fruit-watermelon' },
           { name: 'Vegetables', icon: 'mdi-carrot' },

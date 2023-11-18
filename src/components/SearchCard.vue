@@ -2,63 +2,65 @@
 <template>
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-        <v-img :src="product.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
-        <v-toolbar color="transparent" flat v-if="product.coles_price !== product.woolworths_price && product.coles_price !== product.iga_price && product.woolworths_price !== product.iga_price">
-          <v-avatar color="yellow" rounded width="100%" height="35" >
-            <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
-              {{ 
-                (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) == 0 
-                ? ''  
-                : 'Save $' + (parseFloat(Math.max(product.coles_price, product.woolworths_price) - Math.min(product.coles_price, product.woolworths_price)).toFixed(2)) + ' at ' + bestStoreForProduct(product)
+        <h3 align="right"  class="px-2 py-1  "><span v-if="bestStoreForProduct(product)=='Coles'" class="red--text font-weight-bold">{{bestStoreForProduct(product)}}</span><span v-if="bestStoreForProduct(product)=='Woolworths'" class="green--text font-weight-bold">{{bestStoreForProduct(product)}}</span><span v-if="bestStoreForProduct(product)=='IGA'" class="white--text font-weight-bold iga_logo font-weight-bold p-2">  <v-span class="white--text font-weight-bold iga_logo">&nbsp;IGA&nbsp;</v-span></span></h3>
+        <v-img :src="product.image" width="90%" contain class="text-center mx-auto"></v-img>
+      <v-card-title>
+        <h3 class="green--text font-weight-bold" >
+            <span class=" p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
+              ${{ 
+                parseFloat(Math.min(product.coles_price, product.woolworths_price)) 
               }}
             </span>
-            <span class="black--text font-weight-bold p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
-              Save ${{ 
-                parseFloat(Math.max(product.coles_price, product.woolworths_price, product.iga_price) - Math.min(product.coles_price, product.woolworths_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
+            <span class=" p-0" v-if="product.coles_price && product.woolworths_price && product.iga_price">
+              ${{ 
+                parseFloat(Math.min(product.coles_price, product.woolworths_price, product.iga_price))
               }}
             </span>
-            <span class="black--text font-weight-bold p-0" v-if="!product.coles_price && product.woolworths_price && product.iga_price">
-              Save ${{ 
-                parseFloat(Math.max(product.woolworths_price, product.iga_price) - Math.min(product.woolworths_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
+            <span class=" p-0" v-if="!product.coles_price && product.woolworths_price && product.iga_price">
+              ${{ 
+                parseFloat(Math.min(product.woolworths_price, product.iga_price))
+              }} 
+            
+            </span>
+            <span class=" p-0" v-if="product.coles_price && !product.woolworths_price && product.iga_price">
+              ${{ 
+                parseFloat(Math.min(product.coles_price, product.iga_price))
               }}
             </span>
-            <span class="black--text font-weight-bold p-0" v-if="product.coles_price && !product.woolworths_price && product.iga_price">
-              Save ${{ 
-                parseFloat(Math.max(product.coles_price, product.iga_price) - Math.min(product.coles_price, product.iga_price)).toFixed(2) + ' at ' + bestStoreForProduct(product)
-              }}
-            </span>
-          </v-avatar>
-        </v-toolbar>
-        <v-card-text class="py-1">
-          <strong>
-            <div class="text-h6" v-if="product.woolworths_price">
-              <span class="black--text font-weight-bold">
+          </h3>
+          </v-card-title>
+          <v-card-title class="py-0">
+        <h5 class="py-0">
+  
+            <v-span class="" v-if="product.woolworths_price">
+              <span class="">
                 ${{ product.woolworths_price }} at
               </span>
               <v-span class="green--text font-weight-bold">
                 Woolworths
               </v-span>
-            </div>
+            </v-span>
 
-            <div class="text-h6" v-if="product.coles_price">
-              <span class="black--text font-weight-bold">
-                ${{ product.coles_price }} at
+            <v-span  v-if="product.coles_price">
+              <span class="">
+                , ${{ product.coles_price }} at
               </span>
               <v-span class="red--text font-weight-bold">
                 Coles
               </v-span>
-            </div>
+            </v-span>
 
-            <div class="text-h6" v-if="product.iga_price">
-              <span class="black--text font-weight-bold">
-                ${{ product.iga_price }} at
+            <v-span v-if="product.iga_price">
+              <span class="">
+               & ${{ product.iga_price }} at
               </span>
               <v-span class="white--text font-weight-bold iga_logo">
                 &nbsp;IGA&nbsp;
               </v-span>
-            </div>
-          </strong>
-        </v-card-text>
+            </v-span>
+        
+        </h5>
+        </v-card-title>
         <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
           {{ product.name }} | {{product.size}}
         </v-card-title>
