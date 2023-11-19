@@ -25,7 +25,7 @@
             v-slot="{ active }"
             :ripple="false"
           >
-            <v-list-item-content>
+            <v-list-item-content >
               <router-link :to="item.route">
                 <v-list-item-content>
                   <v-icon :color="active ? 'white' : 'grey lighten-1'">
@@ -52,6 +52,7 @@
     >
       <v-avatar >
         <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout" ></v-icon>
+        <v-icon v-if="!(this.AuthToken)" @click="login()" class="mdi mdi-login" ></v-icon>
       </v-avatar>
     </div>
   </v-navigation-drawer>
@@ -59,32 +60,32 @@
 
 <script>
 export default {
-  mounted() {
-  this.AuthToken = this.getToken()
-  
-    
+  async beforeMount() {
+    await this.TokenPromise();
   },
-  methods : {
+  methods: {
     async logout() {
-     await this.$store.commit('clearToken')
-     this.$router.push('/login');
+      await this.$store.commit('clearToken');
+      location.href="/login"
+    },
+    async login() {
+      location.href="/login"
+    },
+    async TokenPromise() {
+      this.AuthToken = await this.getToken();
     },
     getToken() {
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
-    const tokenSimple = this.$store.getters.getTokenSimple;
+      return new Promise(async (resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
 
-    if (tokenSimple) {
-      resolve(tokenSimple);
-    } else {
-      // If tokenSimple is not available, wait for the asynchronous action
-      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
-      const token = this.$store.getters.getToken;
-      resolve(token);
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
     }
-  });
-}
-,
   },
   data: () => ({
     AuthToken:null,
@@ -93,7 +94,7 @@ export default {
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
       { icon: "mdi-bell-outline", route: "login" },
-      { icon: "mdi-account-outline", route: "register" }
+      { icon: "mdi-account-outline", route: "login" }
     ],
   }),
   props: ["drawer"],

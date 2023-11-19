@@ -90,9 +90,8 @@
 
 
 export default {
-  mounted() {
-  this.AuthToken = this.getToken();
-  this.verifyAuthProcess();
+  async beforeMount() {
+    await this.TokenPromise();
   },
   data() {
     return {
@@ -129,22 +128,22 @@ export default {
     };
   },
   methods: {
+    async TokenPromise() {
+      this.AuthToken = await this.getToken();
+      this.verifyAuthProcess();
+    },
     getToken() {
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
-    const tokenSimple = this.$store.getters.getTokenSimple;
+      return new Promise(async (resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
 
-    if (tokenSimple) {
-      resolve(tokenSimple);
-    } else {
-      // If tokenSimple is not available, wait for the asynchronous action
-      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
-      const token = this.$store.getters.getToken;
-      resolve(token);
-    }
-  });
-}
-,
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
+    },
       async verifyAuthProcess() {
         if (this.AuthToken!=null) {
         try {

@@ -61,54 +61,53 @@
 </template>
 <script>
 export default {
-  mounted() {
-  this.AuthToken = this.getToken();
-  this.verifyAuthProcess();
+  async beforeMount() {
+    await this.TokenPromise();
   },
   data() {
     return {
-
-      AuthToken:null,
+      AuthToken: null,
       username: '',
       emailRules: [
-        value => {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
-          return 'Must be a valid username.'
+        (value) => {
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
+          return 'Must be a valid username.';
         },
       ],
       password: '',
       passwordRules: [
-        value => { 
-          if (value?.length >= 8) return true
-          return 'Password needs to be at least 8 characters.'
-        }
-      ]
+        (value) => {
+          if (value?.length >= 8) return true;
+          return 'Password needs to be at least 8 characters.';
+        },
+      ],
     };
   },
   methods: {
-
+    async TokenPromise() {
+      this.AuthToken = await this.getToken();
+      this.verifyAuthProcess();
+    },
     getToken() {
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
-    const tokenSimple = this.$store.getters.getTokenSimple;
+      return new Promise(async (resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
 
-    if (tokenSimple) {
-      resolve(tokenSimple);
-    } else {
-      // If tokenSimple is not available, wait for the asynchronous action
-      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
-      const token = this.$store.getters.getToken;
-      resolve(token);
-    }
-  });
-},
-      async verifyAuthProcess() {
-        if (this.AuthToken!=null) {
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+        
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
+    },
+    async verifyAuthProcess() {
+      if (this.AuthToken !== null) {
         try {
           const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
+              Authorization: `Bearer ${this.AuthToken}`,
             },
           });
 
@@ -123,49 +122,47 @@ export default {
         } catch (error) {
           console.error('Error:', error);
         }
-      
-    }},
+      }
+    },
     async submitLogin() {
       if (this.$refs.loginForm.validate()) {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            username: this.username,
-            password: this.password,
-          }),
-        });
+        try {
+          const response = await fetch('http://127.0.0.1:8000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              username: this.username,
+              password: this.password,
+            }),
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          const token = data.access_token;
+          if (response.ok) {
+            const data = await response.json();
+            const token = data.access_token;
 
-          // Store the token globally
-          await this.$store.dispatch('setToken', token);
+            // Store the token globally
+            await this.$store.dispatch('setToken', token);
 
-          // Redirect to /search
-          this.$router.push('/search');
-        } else {
-          // Handle non-successful response
-          console.error('Login failed:', response.statusText);
-          alert('Login failed. Please check your credentials.');
+            // Redirect to /search
+            this.$router.push('/search');
+          } else {
+            // Handle non-successful response
+            console.error('Login failed:', response.statusText);
+            alert('Login failed. Please check your credentials.');
+          }
+        } catch (error) {
+          console.error('Login failed:', error);
+          // Handle error
+          alert('Login failed. Please try again.');
         }
-      } catch (error) {
-        console.error('Login failed:', error);
-        // Handle error
-        alert('Login failed. Please try again.');
       }
-    } 
-  }
-  }
-
+    },
+  },
 };
-
-
 </script>
+
 
 <style>
 .v-application .v-application--wrap {

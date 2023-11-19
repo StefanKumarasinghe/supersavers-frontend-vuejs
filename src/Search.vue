@@ -4,46 +4,50 @@
     <!-- Home Page -->
     <v-container fluid class="mx-auto my-5">
       <!-- Search bar -->
-      <v-toolbar>
-        <v-spacer></v-spacer>
-        <v-text-field
-    v-model="searchTerm"
-    @change="fetchProducts()"
-    label="Search"
-    class="xs12 sm12 md4 lg3"
-    filled
-    prepend-inner-icon="mdi-magnify"
-    solo
-    flat
-    rounded
-    outlined
-  ></v-text-field>
-        <v-spacer></v-spacer>
+      <v-row justify="center" align="center" >
+       
+      <v-col cols="12" md="7">
+     
+      <v-text-field
+        v-model="searchTerm"
+        @change="fetchProducts()"
+        label="Search"
+        class="xs12 sm12 md4 lg3"
+        filled
+        prepend-inner-icon="mdi-magnify"
+        solo
+        flat
+        rounded
+        outlined
+      ></v-text-field>
+    </v-col>
 
-        <!-- Filter button -->
-        <v-menu transition="slide-y-transition">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn class="text-center" v-on="on" v-bind="attrs">
-              <v-icon left>mdi-filter</v-icon>
-              <b>Stores</b>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item v-for="(value, key) in storeFilters" :key="key">
-              <v-list-item-action>
-                <strong>
+    <!-- Filter button -->
+    <v-col cols="12" md="5">
+
+      <v-menu transition="slide-y-transition">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn class="text-center" v-on="on" v-bind="attrs">
+            <v-icon left>mdi-filter</v-icon>
+            <b>Stores</b>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-for="(value, key) in storeFilters" :key="key">
+            <v-list-item-action>
+              <strong>
                 <v-checkbox
                   v-model="storeFilters[key]"
                   small
                   :label="key.charAt(0).toUpperCase() + key.slice(1)"
                 ></v-checkbox>
               </strong>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-toolbar>
-
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-col>
+  </v-row>
       <!-- Results display -->
       <div class="py-3 mt-5">
         <h1>COMPARE PRICES</h1>
@@ -365,7 +369,7 @@
     },
     created() {
       this.getUserLocation();
-      this.fetchWeeklyDeals();
+   
     },
     watch: {
       products: function(newProducts) {
@@ -378,18 +382,14 @@
         });
       }
     },
+    async beforeMount() {
+    await this.TokenPromise();
+    },
     mounted() {
       // Retrieve the groceryList from local storage when the component is mounted
-      this.AuthToken = this.getToken();
-      console.log(this.AuthToken)
-      this.verifyAuthProcess();
       this.retrieveGroceryList();
     },
     methods: {
-      async redirect() {
-        if (!(this.AuthToken)) {
-          this.$router.push('/login')
-        }},
       async OnCallSuggestion() {
         try {
           const response = await fetch(`http://127.0.0.1:8000/search_suggestions`);
@@ -399,14 +399,22 @@
           console.error("Error fetching suggestions:", error);
         }
       },
-      getToken() {
-        const token = this.$store.getters.getTokenSimple
-        if (token) {
-          return token
+      async TokenPromise() {
+      this.AuthToken = await this.getToken();
+      this.verifyAuthProcess();
+    },
+    getToken() {
+      return new Promise(async (resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+        if (tokenSimple) {
+          resolve(tokenSimple);
         } else {
-          return this.$store.getters.getToken
+          await this.$store.dispatch('fetchToken');
+          const token = this.$store.getters.getToken;
+          resolve(token);
         }
-      },
+      });
+    },
       async verifyAuthProcess() {
     
         try {
@@ -420,11 +428,13 @@
           if (response.ok) {
             const data = await response.json();
             if (data.user == null) {
-              this.$router.push('/register');
+              this.$router.push('/login');
+            }else{
+              this.fetchWeeklyDeals();
             }
           } else {
             console.error('Error:', response.statusText);
-            this.$router.push('/register');
+            this.$router.push('/login');
           }
         } catch (error) {
           console.error('Error:', error);
@@ -481,8 +491,14 @@
       const products = [];
 
       for (const productName of productNames) {
-        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`);
-        products.push(...(await response.json()));
+        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
+          method: 'GET', // or 'POST' or other HTTP methods
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+            'Content-Type': 'application/json', // Adjust the content type if needed
+            // Add other headers as needed
+          },
+        });    products.push(...(await response.json()));
       }
         this.loading=false;
         this.products=[]
@@ -490,11 +506,31 @@
 
       },
       async fetchProducts() {
-        this.loading = true;
-        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`);
-        this.products = await response.json();
-        this.loading = false;
-      },
+      this.loading = true;
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.products = data;
+        } else {
+          console.error('Error:', response.statusText);
+          // Handle error response
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle fetch error
+      }
+
+      this.loading = false;
+    },
+
       removeItemFromCart(index) {
         this.groceryList.splice(index, 1);
         this.saveGroceryList()
@@ -605,23 +641,36 @@
         // This can be based on the minimum price amongst all stores or some other logic.
       },  
       async fetchWeeklyDeals() {
+        this.loading_start = true;
         try {
-          this.loading_start = true;
-          const responseWoolies = await fetch('http://127.0.0.1:8000/half-price-deals_woolies?page_number=1');
+         
+          
+          const responseWoolies = await fetch(`http://127.0.0.1:8000/half-price-deals_woolies`, {
+            method: 'GET', // or 'POST' or other HTTP methods
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+              'Content-Type': 'application/json', // Adjust the content type if needed
+              // Add other headers as needed
+            },
+          }); 
+          
           this.weeklyDeals_w = await responseWoolies.json();
           this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 8);
-          const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles');
-          this.weeklyDeals_coles= await responseColes.json();
-          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
-          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
-          this.weeklyDeals_iga = await responseIga.json();
-          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
+          
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
         } 
         try {
        
-          const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles');
+          const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles', {
+            method: 'GET', // or 'POST' or other HTTP methods
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+              'Content-Type': 'application/json', // Adjust the content type if needed
+              // Add other headers as needed
+            },
+          }); 
+          
           this.weeklyDeals_coles= await responseColes.json();
           this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
          
@@ -629,7 +678,15 @@
           console.error("Failed to fetch weekly deals:", error);
         }
         try {
-          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga');
+          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga', {
+            method: 'GET', // or 'POST' or other HTTP methods
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+              'Content-Type': 'application/json', // Adjust the content type if needed
+              // Add other headers as needed
+            },
+          }); 
+          
           this.weeklyDeals_iga = await responseIga.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
@@ -700,7 +757,17 @@
       },
       async fetchDataForCategory(category) {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/search/${category}/${encodeURIComponent(this.postalCode)}`);
+          const response = await fetch(`http://127.0.0.1:8000/search/${category}/${encodeURIComponent(this.postalCode)}`, {
+            method: 'GET', // or 'POST' or other HTTP methods
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+              'Content-Type': 'application/json', // Adjust the content type if needed
+              // Add other headers as needed
+            },
+          }); 
+          
+          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
           this.products = await response.json();
           // Process and use the data as needed
         } catch (error) {

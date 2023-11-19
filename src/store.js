@@ -16,11 +16,12 @@ export default new Vuex.Store({
       localStorage.setItem('token', JSON.stringify({ value: token, expires: expirationTime }));
     },
     clearToken(state) {
-      state.active = false
       state.token = null;
-      
       localStorage.removeItem('token');
     },
+    clearTokenSimple(state) {
+        state.token = null;
+      },
   },
   actions: {
     // Example action to set the token
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     clearToken({ commit }) {
       commit('clearToken');
     },
+    clearTokenSimple({ commit }) {
+        commit('clearTokenSimple');
+    }
   },
   getters: {
     // Example getter to retrieve the token
