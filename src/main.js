@@ -8,7 +8,10 @@ import Explore from './Explore.vue';
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
 import Cart from './Cart.vue';
-import store from './store'
+import ForgotPassword from './ForgotPassword.vue';
+import ResetPassword from './ResetPassword.vue';
+import store from './store';
+
 
 Vue.config.productionTip = false;
 
@@ -34,7 +37,9 @@ const routes = [
   { path: '/search', component: Search },
   { path: '/product', component: Products},
   { path: '/login', component: Login },
-  { path: '/cart', component: Cart }
+  { path: '/cart', component: Cart },
+  { path: '/forgotpassword', component: ForgotPassword},
+  { path: '/resetpassword', component: ResetPassword}
 ];
 
 // Create the router instance

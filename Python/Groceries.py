@@ -14,7 +14,7 @@ Connect.middleware(app)
 async def register(user: AuthGrocery.User):
  user_manager = AuthGrocery.UserManager()
  await user_manager.register_user(user)
-@app.post("/token")
+@app.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     AuthGrocery.login_for_access_token(form_data)
 @app.get("/protected")

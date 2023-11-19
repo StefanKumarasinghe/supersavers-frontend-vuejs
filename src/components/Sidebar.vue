@@ -70,6 +70,7 @@ export default {
      this.$router.push('/login');
     },
     getToken() {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     const tokenSimple = this.$store.getters.getTokenSimple;
 

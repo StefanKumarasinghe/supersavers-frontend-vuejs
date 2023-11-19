@@ -37,7 +37,7 @@
                 ></v-text-field>
                 <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitLogin()">Login</v-btn>
                 <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold orange--text text-decoration-underline">Register</router-link></p>
-                <p class="text-center">Forgot password? <router-link to="login" class="font-weight-bold orange--text text-decoration-underline">Reset</router-link></p>
+                <p class="text-center">Forgot password? <router-link to="forgotpassword" class="font-weight-bold orange--text text-decoration-underline">Reset</router-link></p>
               </v-form>
             </v-card-text>
           </v-col>
@@ -88,6 +88,7 @@ export default {
   methods: {
 
     getToken() {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     const tokenSimple = this.$store.getters.getTokenSimple;
 
