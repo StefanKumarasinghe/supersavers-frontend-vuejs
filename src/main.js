@@ -8,11 +8,14 @@ import Explore from './Explore.vue';
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
 import Cart from './Cart.vue';
+import store from './store'
 
 Vue.config.productionTip = false;
 
 // Use the router
 Vue.use(VueRouter);
+
+
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
@@ -42,6 +45,7 @@ const router = new VueRouter({
 
 new Vue({
   vuetify,
-  router, // Use the router
+  store,
+  router,
   render: h => h(App)
 }).$mount('#app');

@@ -258,6 +258,7 @@
           "Deals At Coles": true,
           "Deals At IGA": true,
         },
+        AuthToken:null,
         searchTerm: '',
         postalCode: null,
         searchSuggestions:[],
@@ -363,6 +364,8 @@
       },
     },
     created() {
+      this.AuthToken = this.getToken()
+      this.verifyAuthProcess()
       this.getUserLocation();
       this.fetchWeeklyDeals();
     },
@@ -379,6 +382,7 @@
     },
     mounted() {
       // Retrieve the groceryList from local storage when the component is mounted
+    
       this.retrieveGroceryList();
     },
     methods: {
@@ -394,6 +398,37 @@
           console.error("Error fetching suggestions:", error);
         }
       },
+      getToken() {
+        return this.$store.getters.getToken
+      },
+      async verifyAuthProcess() {
+        if (this.AuthToken!=null) {
+          
+        try {
+          const response = await fetch('http://127.0.0.1:8000/protected', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.user == null) {
+              this.$router.push('/register');
+            }
+          } else {
+            console.error('Error:', response.statusText);
+            this.$router.push('/register');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+    else{
+      this.$router.push('/register');
+      }
+    },
       async handleTabClick(category) {
         this.loading=true;
         this.combinedProducts=[]
@@ -441,6 +476,7 @@
         }
       },
       async fetchProductsCat(productNames) {
+      
       const products = [];
 
       for (const productName of productNames) {

@@ -50,11 +50,8 @@
         text-align: center;
       "
     >
-      <v-avatar size="40">
-        <v-img
-          src="https://cdn.vuetifyjs.com/images/lists/1.jpg"
-          class="image"
-        ></v-img>
+      <v-avatar >
+        <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout" ></v-icon>
       </v-avatar>
     </div>
   </v-navigation-drawer>
@@ -62,7 +59,23 @@
 
 <script>
 export default {
+  created() {
+  this.AuthToken = this.getToken()
+    
+  },
+  methods : {
+    async logout() {
+     this.AuthToken = null
+     await this.$store.commit('clearToken')
+     Promise(resolve => setTimeout(resolve, 1000));
+     this.$router.push('/login');
+    },
+    getToken() {
+        return this.$store.getters.getToken
+      },
+  },
   data: () => ({
+    AuthToken:null,
     selectedRoute: "search", // Initialize with the default route
     items: [
       { icon: "mdi-home-outline", route: "search" },
