@@ -1,18 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app>
-    <!-- Navigation Drawer for Grocery List -->
-
-    
-    <!-- Top App Bar -->
     <v-app-bar app clipped-left color="green darken-2" dark dense>
       <v-toolbar-title class="pa-3">Alpha</v-toolbar-title>
-
       <v-spacer></v-spacer>
-      
       <!-- Search Bar -->
       <v-text-field class="mx-2" v-model="groceryItem" label="Search for an item" hide-details single-line outlined dense></v-text-field>
-      
       <!-- Notification Icon with Dropdown -->
       <v-menu offset-y dense>
         <template v-slot:activator="{ on, attrs }">
@@ -31,7 +24,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      
       <!-- Login Account Icon with Dropdown -->
       <v-menu offset-y dense>
         <template v-slot:activator="{ on, attrs }">
@@ -53,9 +45,6 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-
-
-
 <v-main>
         <v-container fluid>
             <!-- Product Details -->
