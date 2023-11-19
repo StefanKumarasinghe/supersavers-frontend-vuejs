@@ -4,17 +4,24 @@
             <v-img :src="deal.image" width="80%" contain class="text-center mx-auto py-5"></v-img>
             <v-toolbar color="transparent" flat>
             <v-avatar color="yellow" rounded width="100" height="35">
-                <span class="black--text  font-weight-bold p-0">
-                Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+                <span class="black--text font-weight-bold p-0" v-show="deal.coles_price != null && deal.woolworths_price != null"> 
+                    Save ${{ parseFloat(deal.coles_price - deal.woolworths_price).toFixed(2) }}
+                </span>
+                <span class="black--text font-weight-bold p-0" v-show="deal.coles_price && deal.iga_price"> 
+                    Save ${{ parseFloat(deal.coles_price - deal.iga_price).toFixed(2) }}
                 </span>
             </v-avatar>
             </v-toolbar>
-            <v-card-text class="text-h5">
-            <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
-            <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
+            <v-card-text class="text-h5" v-show="deal.coles_price && deal.woolworths_price">
+                <span class="green--text font-weight-bold mx-2">${{ deal.woolworths_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
+            </v-card-text>
+            <v-card-text class="text-h5" v-show="deal.coles_price && deal.iga_price">
+                <span class="green--text font-weight-bold mx-2">${{ deal.iga_price }}</span>
+                <span class="text-decoration-line-through gray--text">${{ deal.coles_price }}</span>
             </v-card-text>
             <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
-            {{ deal.name }} | {{deal.size}}
+                {{ deal.name }} | {{deal.size}}
             </v-card-title>
             <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
             <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->

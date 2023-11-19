@@ -7,17 +7,17 @@
       <v-toolbar>
         <v-spacer></v-spacer>
         <v-text-field
-          v-model="searchTerm"
-          @change="fetchProducts()"
-          label="Search"
-          class="d-none d-sm-flex"
-          filled
-          prepend-inner-icon="mdi-magnify"
-          solo
-          flat
-          rounded
-          outlined
-        ></v-text-field>
+    v-model="searchTerm"
+    @change="fetchProducts()"
+    label="Search"
+    class="xs12 sm12 md4 lg3"
+    filled
+    prepend-inner-icon="mdi-magnify"
+    solo
+    flat
+    rounded
+    outlined
+  ></v-text-field>
         <v-spacer></v-spacer>
 
         <!-- Filter button -->

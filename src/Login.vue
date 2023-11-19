@@ -12,9 +12,9 @@
               <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
                 <v-text-field 
                   class="text-lg-h6 mb-2" 
-                  v-model="email" 
-                  :rules="emailRules" 
-                  label="Email"
+                  v-model="username" 
+                  :rules="usernameRules" 
+                  label="Username"
                   required
                   prepend-inner-icon="mdi-email"
                   solo
@@ -35,7 +35,7 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="validateForm">Login</v-btn>
+                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitLogin()">Login</v-btn>
                 <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold orange--text text-decoration-underline">Register</router-link></p>
                 <p class="text-center">Forgot password? <router-link to="login" class="font-weight-bold orange--text text-decoration-underline">Reset</router-link></p>
               </v-form>
@@ -67,12 +67,26 @@ export default {
   },
   data() {
     return {
+
       AuthToken:null,
       username: '',
+      emailRules: [
+        value => {
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          return 'Must be a valid username.'
+        },
+      ],
       password: '',
+      passwordRules: [
+        value => { 
+          if (value?.length >= 8) return true
+          return 'Password needs to be at least 8 characters.'
+        }
+      ]
     };
   },
   methods: {
+
     getToken() {
         return this.$store.getters.getToken
       },
@@ -100,6 +114,7 @@ export default {
       
     }},
     async submitLogin() {
+      if (this.$refs.loginForm.validate()) {
       try {
         const response = await fetch('http://127.0.0.1:8000/login', {
           method: 'POST',
@@ -108,7 +123,6 @@ export default {
           },
           body: new URLSearchParams({
             username: this.username,
-            hashed_password: this.password,
             password: this.password,
           }),
         });
@@ -132,12 +146,18 @@ export default {
         // Handle error
         alert('Login failed. Please try again.');
       }
-    },
-
-    resetLoginForm() {
-      this.usernameOrEmail = '';
-      this.password = '';
-    }
+    } 
   }
+  }
+
 };
+
+
 </script>
+
+<style>
+.v-application .v-application--wrap {
+    min-height: 0vh;
+}
+</style>
+

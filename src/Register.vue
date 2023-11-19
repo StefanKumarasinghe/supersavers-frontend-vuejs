@@ -96,11 +96,37 @@ export default {
   },
   data() {
     return {
+
       AuthToken: null,
       username: '',
+      username:'',
+      nameRules: [
+        value => {
+          if (value.length > 3) return true
+          return 'Username needs to be at least 3 characters'
+        }
+      ],
       email: '',
+      emailRules: [
+        value => {
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          return 'Must be a valid e-mail.'
+        },
+      ],
       password: '',
+      passwordRules: [
+        value => { 
+          if (value?.length > 8) return true
+          return 'Password needs to be at least 8 characters.'
+        }
+      ],
       confirmPassword: '',
+      confirmPasswordRules: [
+        value => {
+          if (this.password == value) return true
+          return 'Passwords needs to match.'
+        }
+      ]
     };
   },
   methods: {
@@ -188,4 +214,12 @@ export default {
 };
 </script>
 
+
+
+
+<style>
+.v-application .v-application--wrap {
+    min-height: 0vh;
+}
+</style>
 
