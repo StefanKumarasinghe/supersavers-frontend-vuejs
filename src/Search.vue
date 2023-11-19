@@ -364,8 +364,6 @@
       },
     },
     created() {
-      this.AuthToken = this.getToken()
-      this.verifyAuthProcess()
       this.getUserLocation();
       this.fetchWeeklyDeals();
     },
@@ -382,16 +380,19 @@
     },
     mounted() {
       // Retrieve the groceryList from local storage when the component is mounted
-    
+      this.AuthToken = this.getToken();
+      console.log(this.AuthToken)
+      this.verifyAuthProcess();
       this.retrieveGroceryList();
     },
     methods: {
+      async redirect() {
+        if (!(this.AuthToken)) {
+          this.$router.push('/login')
+        }},
       async OnCallSuggestion() {
         try {
-          // Assuming you're making an API call to get suggestions
-          // Here's an example using Axios:
           const response = await fetch(`http://127.0.0.1:8000/search_suggestions`);
-
           // Assuming the API returns a list of suggestions
           this.searchSuggestions = response.data.suggestions;
         } catch (error) {
@@ -399,11 +400,15 @@
         }
       },
       getToken() {
-        return this.$store.getters.getToken
+        const token = this.$store.getters.getTokenSimple
+        if (token) {
+          return token
+        } else {
+          return this.$store.getters.getToken
+        }
       },
       async verifyAuthProcess() {
-        if (this.AuthToken!=null) {
-          
+    
         try {
           const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
@@ -424,10 +429,6 @@
         } catch (error) {
           console.error('Error:', error);
         }
-      }
-    else{
-      this.$router.push('/register');
-      }
     },
       async handleTabClick(category) {
         this.loading=true;

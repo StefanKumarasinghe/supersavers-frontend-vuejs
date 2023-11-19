@@ -34,6 +34,9 @@ export default new Vuex.Store({
   },
   getters: {
     // Example getter to retrieve the token
+    getTokenSimple: (state) => {
+        return state.token;
+    },
     getToken: () => {
       // Retrieve token from localStorage and check expiration
       const storedToken = localStorage.getItem('token');

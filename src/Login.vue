@@ -61,7 +61,7 @@
 </template>
 <script>
 export default {
-  created() {
+  mounted() {
   this.AuthToken = this.getToken();
   this.verifyAuthProcess();
   },
@@ -88,8 +88,19 @@ export default {
   methods: {
 
     getToken() {
-        return this.$store.getters.getToken
-      },
+  return new Promise(async (resolve) => {
+    const tokenSimple = this.$store.getters.getTokenSimple;
+
+    if (tokenSimple) {
+      resolve(tokenSimple);
+    } else {
+      // If tokenSimple is not available, wait for the asynchronous action
+      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
+      const token = this.$store.getters.getToken;
+      resolve(token);
+    }
+  });
+},
       async verifyAuthProcess() {
         if (this.AuthToken!=null) {
         try {

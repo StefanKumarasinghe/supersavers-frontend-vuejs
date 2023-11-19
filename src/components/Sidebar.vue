@@ -59,20 +59,31 @@
 
 <script>
 export default {
-  created() {
+  mounted() {
   this.AuthToken = this.getToken()
+  
     
   },
   methods : {
     async logout() {
-     this.AuthToken = null
      await this.$store.commit('clearToken')
-     Promise(resolve => setTimeout(resolve, 1000));
      this.$router.push('/login');
     },
     getToken() {
-        return this.$store.getters.getToken
-      },
+  return new Promise(async (resolve) => {
+    const tokenSimple = this.$store.getters.getTokenSimple;
+
+    if (tokenSimple) {
+      resolve(tokenSimple);
+    } else {
+      // If tokenSimple is not available, wait for the asynchronous action
+      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
+      const token = this.$store.getters.getToken;
+      resolve(token);
+    }
+  });
+}
+,
   },
   data: () => ({
     AuthToken:null,

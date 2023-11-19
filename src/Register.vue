@@ -61,7 +61,7 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="validateForm">register</v-btn>
+                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitRegistration">register</v-btn>
                 <p class="text-center mt-4">Has an account? <router-link to="login" class="font-weight-bold orange--text text-decoration-underline">Login</router-link></p>
               </v-form>
             </v-card-text>
@@ -90,7 +90,7 @@
 
 
 export default {
-  created() {
+  mounted() {
   this.AuthToken = this.getToken();
   this.verifyAuthProcess();
   },
@@ -99,7 +99,6 @@ export default {
 
       AuthToken: null,
       username: '',
-      username:'',
       nameRules: [
         value => {
           if (value.length > 3) return true
@@ -116,7 +115,7 @@ export default {
       password: '',
       passwordRules: [
         value => { 
-          if (value?.length > 8) return true
+          if (value?.length >= 8) return true
           return 'Password needs to be at least 8 characters.'
         }
       ],
@@ -131,8 +130,20 @@ export default {
   },
   methods: {
     getToken() {
-        return this.$store.getters.getToken
-      },
+  return new Promise(async (resolve) => {
+    const tokenSimple = this.$store.getters.getTokenSimple;
+
+    if (tokenSimple) {
+      resolve(tokenSimple);
+    } else {
+      // If tokenSimple is not available, wait for the asynchronous action
+      await this.$store.dispatch('fetchToken'); // replace 'fetchToken' with your actual action
+      const token = this.$store.getters.getToken;
+      resolve(token);
+    }
+  });
+}
+,
       async verifyAuthProcess() {
         if (this.AuthToken!=null) {
         try {
