@@ -87,14 +87,11 @@ async def half_price_deals_iga():
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "same-origin",
 }
-    iga_params = {"misspelling": True,
-               "skip": 240, 
-               "sort": "", 
-               "take": 8}
+
 
     async with httpx.AsyncClient(timeout=300, verify=False) as client:
  
-     iga_response = await client.get("https://www.igashop.com.au/api/storefront/stores/52511/promotions/products", headers=iga_headers, params=iga_params)
+     iga_response = await client.get("https://www.igashop.com.au/api/storefront/stores/52511/promotions/products?misspelling=true&skip=240&sort=&take=20", headers=iga_headers)
 
     if iga_response.status_code != 200:
         raise HTTPException(status_code=iga_response.status_code, detail="Failed to fetch promotions from igashop")
