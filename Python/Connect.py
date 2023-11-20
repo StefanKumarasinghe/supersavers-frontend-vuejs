@@ -19,4 +19,3 @@ async def Initialise():
         response_homepage = await client.get('https://www.woolworths.com.au/')
         WOOLWORTHS_COOKIES = '; '.join([f"{name}={value}" for name, value in response_homepage.cookies.items()])
     woolworths_headers["Cookie"] = WOOLWORTHS_COOKIES
-     

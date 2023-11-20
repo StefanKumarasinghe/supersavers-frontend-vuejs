@@ -8,15 +8,15 @@ import PAI
 from fastapi import FastAPI, Depends, Body
 from fastapi.security import OAuth2PasswordRequestForm
 app = FastAPI()
-
 Connect.middleware(app)
 @app.post("/register")
 async def register(user: AuthGrocery.User):
  user_manager = AuthGrocery.UserManager()
- await user_manager.register_user(user)
+ return await user_manager.register_user(user)
 @app.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    AuthGrocery.login_for_access_token(form_data)
+    user_manager = AuthGrocery.UserManager()
+    return await user_manager.login_for_access_token(form_data)
 @app.get("/protected")
 async def protected(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
  return {"message": "This is a protected route", "user": current_user}
@@ -30,16 +30,16 @@ async def remove_item( item: Notification.Item = Body(...),current_user: str = D
 async def check_and_notify():
  Notification.check_and_notify()
 @app.get("/search/{query}/{code}", response_model=List[PAI.Product])
-async def search(query: str,code:str):
+async def search(query: str,code:str,current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
  return await PAI.search_products(query,code)
 @app.get("/half-price-deals_woolies", response_model=List[PAI.Product])
-async def woolies():
+async def woolies(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
  return await Deals.half_price_deals_woolies()
 @app.get("/half-price-deals_iga", response_model=List[PAI.Product])
-async def iga():
+async def iga(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
  return await Deals.half_price_deals_iga()
 @app.get("/half-price-deals_coles", response_model=List[PAI.Product])
-async def coles():
+async def coles(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
  return await Deals.half_price_deals_coles()
 @app.get("/search_suggestions")
 async def get_popular_searches(limit: int = 10):
