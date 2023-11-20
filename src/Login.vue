@@ -4,7 +4,7 @@
     <v-main>
       <!-- Login Form -->
       <v-container fluid>
-        <v-row align="center" justify="center" class="">
+        <v-row align="center" justify="center" class="mt-5 py-5">
           <v-col cols="12" md="6" lg="6">
             <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Login</v-card-title>
             <v-card-text class="text-lg-h6 font-weight-light">Login to view the best deals and save on groceries.</v-card-text>
@@ -89,7 +89,7 @@ export default {
       this.verifyAuthProcess();
     },
     getToken() {
-      return new Promise(async (resolve) => {
+      return new Promise( (resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
 
         if (tokenSimple) {

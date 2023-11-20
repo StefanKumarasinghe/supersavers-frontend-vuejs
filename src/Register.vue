@@ -133,7 +133,7 @@ export default {
       this.verifyAuthProcess();
     },
     getToken() {
-      return new Promise(async (resolve) => {
+      return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
 
         if (tokenSimple) {

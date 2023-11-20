@@ -404,12 +404,12 @@
       this.verifyAuthProcess();
     },
     getToken() {
-      return new Promise(async (resolve) => {
+      return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
-          await this.$store.dispatch('fetchToken');
+ 
           const token = this.$store.getters.getToken;
           resolve(token);
         }
@@ -661,7 +661,6 @@
           console.error("Failed to fetch weekly deals:", error);
         } 
         try {
-       
           const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles', {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
@@ -687,7 +686,7 @@
             },
           }); 
           
-          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga =  await responseIga.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
@@ -766,7 +765,7 @@
             },
           }); 
           
-          this.weeklyDeals_iga = await responseIga.json();
+          this.weeklyDeals_iga = await response.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
           this.products = await response.json();
           // Process and use the data as needed

@@ -75,7 +75,7 @@ export default {
       this.AuthToken = await this.getToken();
     },
     getToken() {
-      return new Promise(async (resolve) => {
+      return new Promise( (resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
 
         if (tokenSimple) {
