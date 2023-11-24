@@ -88,7 +88,7 @@ export default {
       error: null,
       usernameRules: [
         (value) => {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
+          if (/^[0-9a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
           return 'Must be a valid username.';
         },
       ],

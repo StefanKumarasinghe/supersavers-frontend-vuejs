@@ -119,8 +119,8 @@ export default {
       email: '',
       emailRules: [
         value => {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
-          return 'Must be a valid e-mail.';
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          return 'Must be a valid e-mail.'
         },
       ],
       password: '',
