@@ -16,21 +16,19 @@ WOOLWORTHS_COOKIES = None
 nlp = spacy.load("en_core_web_md")
 
 Woolworths_URL = "https://www.woolworths.com.au/apis/ui/Search/products"
-Coles_URL = "https://www.coles.com.au/_next/data/20231115.01_v3.59.0/en/search.json?q={query}"
+Coles_URL = "https://www.coles.com.au/_next/data/20231117.02_v3.60.0/en/search.json?q={query}"
 IGA_URL = "https://www.igashop.com.au/api/storefront/stores/52511/search?misspelling=true&q={query}&take=5"
 
 
 class Product(BaseModel):
-    name: Optional[str] = "Default Name"
-    stockcode_w: Optional[float] = None
-    stockcode_i: Optional[float] = None
-    stockcode_c: Optional[float] = None
+    name: Optional[str] = "Could'nt fetch name..."
+    stockcode_w: Optional[int] = None
+    stockcode_i: Optional[int] = None
+    stockcode_c: Optional[int] = None
     image: Optional[str] = "Default Image URL"
     woolworths_price: Union[float, None]
     coles_price: Union[float, None]
-    aldi_price: Union[float, None] = None
-    chemist_price: Union[float, None] = None  # Add this line
-    iga_price: Union[float, None] = None  # Add this line
+    iga_price: Union[float, None] = None
     source: str
     description: str
     size: Union[str, None]
@@ -289,61 +287,6 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
     combined_products = []
     # Define a set to keep track of unique product names
     unique_product_names = set()
-
-
-   
-    for w_product in woolworths:
-        barcode = w_product['Products'][0]["Stockcode"]
-        # Check if the product is in the in-memory database
-        if barcode in product_database:
-            
-            product_info = product_database[barcode]
-            if (product_info['visibility']):
-                continue
-            
-                
-            # Check if the product name is already in the set
-            if product_info['name'] not in unique_product_names:
-                # Find the corresponding product in Coles using the stored code
-                coles_price = None
-        
-                if product_info['coles_code']:
-                
-                    for c_product in coles:
-                        
-                       
-                        if c_product.get('name') == product_info['coles_code']:
-                            
-                            coles_price = c_product.get('pricing', {}).get('now') if c_product.get('pricing') else None
-                            break
-
-                # Find the corresponding product in IGA using the stored code
-                iga_price = None
-                if product_info['iga_code']:
-                    for i_product in iga_products:
-                        if i_product['name'] == product_info['iga_code']:
-                            iga_price = i_product['price']
-                            break
-              
-                combined_products.append(Product(
-                    name=product_info['name'],
-                    woolworths_price=w_product['Products'][0]['Price'],
-                    coles_price=coles_price,
-                    chemist_price=None,
-                    aldi_price=None,
-                    iga_price=iga_price,
-                    image=w_product['Products'][0]['LargeImageFile'],
-                    source="Combined",
-                    description=f"Available at Woolworths, Coles, and IGA",
-                    size=product_info['size'],
-                    brand=product_info['brand']
-                ))
-                
-                # Add the product name to the set
-    if  len(combined_products) > 3: 
-     print('Fetched from ASX')    
-     return combined_products
-
    
     for w_product in woolworths:
         for c_product in coles:
@@ -364,15 +307,16 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
                         update_product_database(w_product,  c_product.get('name'),i_product['name'])
                        
                         combined_products.append(Product(
+                            stockcode_w=w_product['Products'][0]["Stockcode"],
+                            stockcode_i=i_product['id'],
+                            stockcode_c=c_product.get('id'),
                             name=product_name,
                             woolworths_price=woolworths_price,
                             coles_price=coles_price,
-                            chemist_price=None,
-                            aldi_price=None,
                             iga_price=iga_price,
                             image=product_image,
                             source="Combined",
-                            description="Available across Woolies, Coles, and IGA",
+                            description=w_product['Products'][0]["Description"],
                             size=size,
                             brand=brand
                         ))
@@ -403,14 +347,14 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
                     brand = w_product['Products'][0].get("Brand", "Woolworths")
                     update_product_database(w_product,  c_product.get('name'))
                     combined_products.append(Product(
+                        stockcode_w=w_product['Products'][0]["Stockcode"],
+                        stockcode_c=c_product.get('id'),
                         name=product_name,
                         woolworths_price=woolworths_price,
                         coles_price=coles_price,
-                        chemist_price=None,
-                        aldi_price=None,
                         image=product_image,
                         source="Combined",
-                        description="Available across Woolies and Coles",
+                        description=w_product['Products'][0]["Description"],
                         size=size,
                         brand=brand
                     ))
@@ -425,7 +369,6 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
         for i_product in iga_products:
             if is_similarwi(w_product, i_product):
                 product_name = w_product['Name']
-
                 # Check if the product name is already in the set
                 if product_name not in unique_product_names:
                     # Combine products from Woolworths and IGA
@@ -436,6 +379,8 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
                     brand = w_product['Products'][0].get("Brand", "Woolworths")
                     update_product_database(w_product,i_product['name'])
                     combined_products.append(Product(
+                        stockcode_w=w_product['Products'][0]["Stockcode"],
+                        stockcode_i=i_product['id'],
                         name=product_name,
                         woolworths_price=woolworths_price,
                         coles_price=None,
@@ -444,11 +389,10 @@ def merge_results(woolworths: List[dict], coles: List[dict], iga_products: List[
                         iga_price=iga_price,
                         image=product_image,
                         source="Combined",
-                        description="Available across Woolies and IGA",
+                        description=w_product['Products'][0]["Description"],
                         size=size,
                         brand=brand
                     ))
-
                     # Add the product name to the set
                     unique_product_names.add(product_name)
                

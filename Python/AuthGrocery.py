@@ -5,6 +5,18 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+import secrets
+from typing import Dict
+from email.mime.text import MIMEText
+import base64
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+import os
+import re
+from validate_email_address import validate_email
 
 class User(BaseModel):
     username: str
@@ -13,6 +25,19 @@ class User(BaseModel):
 
 
 users_db = []
+
+from passlib.hash import argon2
+
+class PasswordHashing:
+    pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return PasswordHashing.pwd_context.hash(password)
+
+    @staticmethod
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        return PasswordHashing.pwd_context.verify(plain_password, hashed_password)
 
 class SecurityConfig:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -41,24 +66,24 @@ class TokenGenerator:
         encoded_jwt = jwt.encode(to_encode, SecurityConfig.SECRET_KEY, algorithm=SecurityConfig.ALGORITHM)
         return encoded_jwt
 class UserManager:
-    
-    def is_valid_email(email: str) -> bool:
-     
-     email_pattern = re.compile(r"[^@]+@[^@]+\.[^@]+")
-     return bool(re.match(email_pattern, email))
+
     @staticmethod
     async def register_user(user: User) -> dict:
-    # Check if username only includes characters with no spacing
+        # Check if username only includes characters with no spacing
         if not user.username.isalnum():
             raise HTTPException(status_code=400, detail="Username should only include alphanumeric characters.")
 
         # Check if the username is not existing
         if any(existing_user["username"] == user.username for existing_user in users_db):
             raise HTTPException(status_code=400, detail="Username already exists.")
-        import re
+
         # Check if email is valid
         if not bool(re.match(re.compile(r"[^@]+@[^@]+\.[^@]+"), user.email)):
             raise HTTPException(status_code=400, detail="Invalid email format.")
+
+        # Check if the email is unique
+        if any(existing_user["email"] == user.email for existing_user in users_db):
+            raise HTTPException(status_code=400, detail="Email already registered.")
 
         # Check if the password is at least 8 characters
         if len(user.hashed_password) < 8:
@@ -71,7 +96,41 @@ class UserManager:
         access_token_expires = timedelta(minutes=SecurityConfig.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = TokenGenerator.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
 
+        verification_token = secrets.token_urlsafe(32)
+        user_data["verification_token"] = verification_token
+
+        # Send verification email (implement this function)
+        await UserManager.send_verification_email(user.email, verification_token)
+
         return {"message": "User registered successfully", "access_token": access_token, "token_type": "bearer"}
+
+    
+    @staticmethod
+    async def send_verification_email(email: str, verification_token: str):
+    
+        verification_link = f"http://localhost:8081/verify?token={verification_token}"
+        email_subject = "Verify Your Email"
+        email_body = f"Click the following link to verify your email: {verification_link}"
+
+        # Use your email sending logic here
+        # For example, you can use the Gmail API or an SMTP server
+
+        # Set up the Gmail service
+        service = PasswordRecoveryManager.get_gmail_service()
+
+        # Create the email message
+        message = MIMEText(email_body)
+        message["to"] = email
+        message["subject"] = email_subject
+
+        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+        # Send the email
+        try:
+            message = service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
+            print("Verification email sent successfully:", message)
+        except Exception as error:
+            print("An error occurred while sending verification email:", error)
 
     @staticmethod
     async def get_current_user(token: str = Depends( SecurityConfig.oauth2_scheme)):
@@ -88,11 +147,130 @@ class UserManager:
      except JWTError:
         raise credentials_exception
      return username
+    
     @staticmethod
     async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> dict:
-        user = next((x for x in users_db if x["username"] == form_data.username), None)
+        # Check if the provided username is a valid email
+        is_email = validate_email(form_data.username)
+        if is_email:
+            # If it's an email, try to find the user by email
+            user = next((x for x in users_db if x["email"] == form_data.username), None)
+        else:
+            # If it's not an email, find the user by username
+            user = next((x for x in users_db if x["username"] == form_data.username), None)
         if user is None or not PasswordHashing.verify_password(form_data.password, user["hashed_password"]):
             raise HTTPException(status_code=400, detail="Incorrect username or password")
         access_token_expires = timedelta(minutes=SecurityConfig.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = TokenGenerator.create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
         return {"access_token": access_token, "token_type": "bearer"}
+    
+class PasswordRecoveryManager:
+    recovery_tokens: Dict[str, str] = {}  # Store recovery tokens and associated usernames
+    @staticmethod
+    def is_email_verified(username: str = Depends(UserManager.get_current_user)):
+     # Check if the user with the given username has a verified email
+      user = next((x for x in users_db if x["username"] == username), None)
+      if user is None or not user.get("is_verified", False):
+        raise HTTPException(status_code=403, detail="Email not verified")
+      return user
+    @staticmethod
+    async def request_password_reset(email: str):
+        # Check if the email exists in the database
+        user = next((x for x in users_db if x["email"] == email), None)
+        if user is None:
+            raise HTTPException(status_code=404, detail="Email not found.")
+
+        # Generate a random token for password recovery
+        recovery_token = secrets.token_urlsafe(32)
+        PasswordRecoveryManager.recovery_tokens[recovery_token] = user["username"]
+
+        # Send the recovery_token to the user's email
+        email_subject = "Password Reset Request"
+        email_body = f"Dear {user['username']},\n\nPlease use the following link to reset your password:\n\n" \
+                      f"Reset Link: https://your-website.com/reset-password?token={recovery_token}\n\n" \
+                      "If you didn't request this, please ignore this email.\n\nBest regards,\nYour Website Team"
+
+        try:
+            await PasswordRecoveryManager.send_email(email, email_subject, email_body)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
+        return {"message": "Password reset requested. Check your email for instructions."}
+
+    # Define your credentials file path
+    @staticmethod
+    async def verify_email(verification_token: str):
+    # Find the user by verification token
+        user = next((x for x in users_db if x.get("verification_token") == verification_token), None)
+        if user:
+            # Mark the user's email as verified
+            user["is_verified"] = True
+            user.pop("verification_token")  # Remove the verification token after verification
+
+            # Additional logic if needed, such as updating a database
+
+            return {"message": "Email verification successful."}
+        else:
+            raise HTTPException(status_code=400, detail="Invalid verification token.")
+    
+    @staticmethod
+    def get_gmail_service():
+        CREDENTIALS_FILE = 'credentials.json'
+        # Set up the Gmail API
+        SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+        creds = None
+
+        if os.path.exists('token.json'):
+            creds = Credentials.from_authorized_user_file('token.json')
+        
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    CREDENTIALS_FILE, SCOPES)
+                creds = flow.run_local_server(port=0)
+            
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+        
+        service = build('gmail', 'v1', credentials=creds)
+        return service
+    @staticmethod
+    async def send_email(to_email: str, subject: str, body: str):
+        # Set up the Gmail service
+        service = PasswordRecoveryManager.get_gmail_service()
+
+        # Create the email message
+        message = MIMEText(body)
+        message["to"] = to_email
+        message["subject"] = subject
+
+        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+        # Send the email
+        try:
+            message = service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
+            print("Message sent successfully:", message)
+        except Exception as error:
+            print("An error occurred:", error)
+
+    @staticmethod
+    async def reset_password(recovery_token: str, new_password: str):
+        # Check if the recovery_token is valid
+        username = PasswordRecoveryManager.recovery_tokens.get(recovery_token)
+        if username is None:
+            raise HTTPException(status_code=400, detail="Invalid recovery token.")
+
+        # Find the user by username
+        user = next((x for x in users_db if x["username"] == username), None)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Update the user's password
+        user["hashed_password"] = PasswordHashing.hash_password(new_password)
+
+        # Remove the used recovery token
+        del PasswordRecoveryManager.recovery_tokens[recovery_token]
+
+        return {"message": "Password reset successfully."}
