@@ -2,17 +2,15 @@
 <template>
   <v-app >
     <!-- Home Page -->
-    <v-container fluid class="mx-auto my-5">
-      <!-- Search bar -->
-      <v-row justify="center" align="center" >
-       
-      <v-col cols="12" md="7">
+    <v-container fluid class="mx-auto">
+   
      
       <v-text-field
         v-model="searchTerm"
         @change="fetchProducts()"
         label="Search"
         class="xs12 sm12 md4 lg3"
+        md="5"
         filled
         prepend-inner-icon="mdi-magnify"
         solo
@@ -20,10 +18,6 @@
         rounded
         outlined
       ></v-text-field>
-    </v-col>
-
-    <!-- Filter button -->
-    <v-col cols="12" md="5">
 
       <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ on, attrs }">
@@ -46,8 +40,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </v-col>
-  </v-row>
+  
       <!-- Results display -->
       <div class="py-3 mt-5">
         <h1>COMPARE PRICES</h1>
@@ -68,7 +61,7 @@
       <!-- Progress linear -->
       <v-progress-linear class="my-2"  v-if="loading"
         :height="4"
-        color="orange"
+        color="green"
         indeterminate
       ></v-progress-linear>
 
@@ -102,14 +95,14 @@
                 ${{ smallestPrice(lowestPricedProduct) }} /
                 {{ lowestPricedProduct.size }}
               </v-card-title>
-              <v-container>
+              
                 <v-btn
                   @click="addProductToGrocery(lowestPricedProduct)"
                   color="success"
                 >
                   Add to Grocery
                 </v-btn>
-              </v-container>
+              
               <v-card-title>
                 <strong
                   >Deal Available At
@@ -149,7 +142,7 @@
             v-for="product in combinedProducts" 
             :key="product.name"
           >
-            <SearchCard :product="product"/>
+            <SearchCard :product="product" />
           </v-col>
         </v-row>
       </div>
@@ -179,7 +172,6 @@
         <v-toolbar>
           <h2>Deals at <span class="green--text font-weight-bold">Woolworths</span></h2>
           <v-spacer></v-spacer>
-          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
         <v-row>
           <v-col
@@ -201,7 +193,6 @@
         <v-toolbar>
           <h2>Deals at <span class="red--text font-weight-bold ">Coles</span></h2>
           <v-spacer></v-spacer>
-          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
         <v-row>
           <v-col
@@ -223,7 +214,6 @@
         <v-toolbar>
           <h2>Deals at <span class="white--text font-weight-bold iga_logo ">  &nbsp; IGA  &nbsp;</span></h2>
           <v-spacer></v-spacer>
-          <router-link to="login" class="mr-2 text-h6 font-weight-bold black--text text-decoration-underline">See All</router-link>
         </v-toolbar>
         <v-row>
           <v-col
@@ -367,9 +357,10 @@
         return lowest;
       },
     },
-    created() {
+    async created() {
       this.getUserLocation();
-   
+      await this.TokenPromise();
+
     },
     watch: {
       products: function(newProducts) {
@@ -381,9 +372,6 @@
           };
         });
       }
-    },
-    async beforeMount() {
-    await this.TokenPromise();
     },
     mounted() {
       // Retrieve the groceryList from local storage when the component is mounted
@@ -415,6 +403,23 @@
         }
       });
     },
+    async VerifyAuth() {
+      const response = await fetch('http://127.0.0.1:8000/verified', {
+             method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.user == null) {
+              
+            }
+          } else {
+            console.error('Error:', response.statusText);
+            this.$router.push('/verify');
+          }
+    },
       async verifyAuthProcess() {
     
         try {
@@ -431,6 +436,7 @@
               this.$router.push('/login');
             }else{
               this.fetchWeeklyDeals();
+              await this.VerifyAuth();
             }
           } else {
             console.error('Error:', response.statusText);
@@ -438,13 +444,23 @@
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$router.push('/login');
         }
     },
       async handleTabClick(category) {
         this.loading=true;
         this.combinedProducts=[]
+        
       
         switch (category) {
+          
+          case 'Deals':
+          this.storeFilters['Deals At Woolies']=true;
+          this.storeFilters['Deals At Coles']=true;
+          this.storeFilters['Deals At IGA']=true;
+          this.categoryProduct =[]
+          this.loading=false
+          break;
           case 'All':
           this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples','Biscuits','Kellogs']);
             break;
@@ -490,6 +506,8 @@
       
       const products = [];
 
+      try {
+
       for (const productName of productNames) {
         const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
           method: 'GET', // or 'POST' or other HTTP methods
@@ -500,10 +518,15 @@
           },
         });    products.push(...(await response.json()));
       }
-        this.loading=false;
-        this.products=[]
-        return products;
-
+      this.products=[]
+      this.storeFilters['Deals At Woolies']=false;
+      this.storeFilters['Deals At Coles']=false;
+      this.storeFilters['Deals At IGA']=false;
+      }catch {
+        console.log("Something went wrong")
+      }
+      this.loading=false;
+      return products;
       },
       async fetchProducts() {
       this.loading = true;
@@ -530,6 +553,7 @@
 
       this.loading = false;
     },
+
 
       removeItemFromCart(index) {
         this.groceryList.splice(index, 1);
@@ -820,12 +844,14 @@
     flex: 0 1 15px;
     justify-content: center;
     min-width: 15px;
+    
   }
 
   .active {
     color: white !important;
-    background-color: orange !important;
+    background-color: green !important;
     border-radius: 5px;
+    padding:5px;
   }
 
   .v-card__title {

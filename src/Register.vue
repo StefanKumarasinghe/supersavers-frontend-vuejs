@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app>
     <v-main>
@@ -80,49 +78,63 @@
             </p>        
           </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar" color="white" dark>
+  <v-row align="center" justify="center" class="ma-0">
+    <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+      {{ this.error }}
+  
+    </v-col>
+    <v-btn
+        color="pink"
+        variant="text"
+        @click="snackbar = false"
+      >
+        Got it
+    </v-btn>
+  </v-row>
+</v-snackbar>
+
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-
-
-
 export default {
   async beforeMount() {
     await this.TokenPromise();
   },
   data() {
     return {
-
       AuthToken: null,
       username: '',
+      snackbar: false,
+      error: null,
       nameRules: [
         value => {
-          if (value.length > 3) return true
-          return 'Username needs to be at least 3 characters'
+          if (value.length > 3) return true;
+          return 'Username needs to be at least 3 characters';
         }
       ],
       email: '',
       emailRules: [
         value => {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
-          return 'Must be a valid e-mail.'
+          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
+          return 'Must be a valid e-mail.';
         },
       ],
       password: '',
       passwordRules: [
         value => { 
-          if (value?.length >= 8) return true
-          return 'Password needs to be at least 8 characters.'
+          if (value?.length >= 8) return true;
+          return 'Password needs to be at least 8 characters.';
         }
       ],
       confirmPassword: '',
       confirmPasswordRules: [
         value => {
-          if (this.password == value) return true
-          return 'Passwords needs to match.'
+          if (this.password == value) return true;
+          return 'Passwords need to match.';
         }
       ]
     };
@@ -144,8 +156,8 @@ export default {
         }
       });
     },
-      async verifyAuthProcess() {
-        if (this.AuthToken!=null) {
+    async verifyAuthProcess() {
+      if (this.AuthToken != null) {
         try {
           const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
@@ -161,76 +173,55 @@ export default {
             }
           } else {
             console.error('Error:', response.statusText);
+            this.error = response.statusText;
+            this.snackbar = true;
           }
         } catch (error) {
           console.error('Error:', error);
+          this.error = error.statusText;
+          this.snackbar = true;
         }
       }
-     }
-      ,
+    },
     async submitRegistration() {
       if (this.password !== this.confirmPassword) {
-        alert("Passwords don't match!");
+        this.$toast.error("Passwords don't match!");
         return;
-      }
-
+    }
       try {
-        // Make a request to your server for authentication using fetch
         const response = await fetch('http://127.0.0.1:8000/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: this.username,
-            email: this.email,
+            username: this.username.toLowerCase(),
+            email: this.email.toLowerCase(),
             hashed_password: this.password,
           }),
         });
-
-        // Check if the request was successful (status code 2xx)
         if (response.ok) {
-          // Assuming your server responds with a token
           const data = await response.json();
           const token = data.access_token;
-
           await this.$store.dispatch('setToken', token);
-          
-          // Store the token globally (you might want to use a state management library)
-          
-          // Redirect to the search route
           this.$router.push('/search');
         } else {
-          // Handle non-successful response (e.g., show a notification to the user)
-          console.error('Registration failed:', response.statusText);
-          alert('Registration failed. Please try again.');
+    
+          this.error = response.statusText;
+          this.snackbar = true;
         }
       } catch (error) {
         console.error('Registration failed:', error);
-        // Handle error (e.g., show a notification to the user)
-        alert('Registration failed. Please try again.');
+        this.error = response.statusText;
+        this.snackbar = true;
       }
-
-      // Reset the form after successful registration
-      this.resetForm();
-    },
-
-    resetForm() {
-      this.username = '';
-      this.email = '';
-      this.password = '';
-      this.confirmPassword = '';
     },
   },
 };
 </script>
 
-
-
-
 <style>
 .v-application .v-application--wrap {
-    min-height: 0vh;
+  min-height: 0vh;
 }
 </style>
-

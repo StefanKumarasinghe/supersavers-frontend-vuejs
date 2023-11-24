@@ -66,10 +66,10 @@
         </v-card-title>
         <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
         <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-          <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
+          <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" @click="addItemToCart(product)" size="small" variant="flat">
               Add To List
           </v-btn>
-          <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
+          <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat" @click="Notify(product)">
               Listen
           </v-btn>
         </v-card-actions>
@@ -79,13 +79,70 @@
 
 <script>
     export default {
-        props: {
-            product: {
-              type: Object,
-              required: true,
-            }
-        },
+      props: {
+  product: {
+    type: Object,
+    required: true,
+  },
+  data:{
+    AuthToken:null,
+
+  }
+},
+
+async beforeMount() {
+    await this.TokenPromise();
+  },
+
         methods: {
+          async TokenPromise() {
+      this.AuthToken = await this.getToken();
+    },
+    getToken() {
+      return new Promise((resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
+    },
+    async Notify(product) {
+  try {
+    console.log(this.AuthToken);
+
+    const response = await fetch('http://127.0.0.1:8000/add_item_notify', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.AuthToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+      name: String(product.name),
+    woolworths_code: String(product.stockcode_w),
+    coles_code: String(product.stockcode_c),
+    iga_code: String(product.stockcode_i),
+    image: String(product.image),
+    description: String(product.description),
+  
+}),
+
+    });
+
+    const data = await response.json();
+    console.log(data.status);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+},
+addItemToCart(product) {
+     this.$store.dispatch('addItem', product);
+     alert('Item added')
+    },
+
           bestStoreForProduct(product) {
             const storePrices = {
               'Woolworths': product.woolworths_price,

@@ -9,8 +9,12 @@ import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
 import Cart from './Cart.vue';
 import ForgotPassword from './ForgotPassword.vue';
+import Verification from './Verification.vue';
+import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
 import store from './store';
+
+
 
 
 Vue.config.productionTip = false;
@@ -34,6 +38,8 @@ if ('serviceWorker' in navigator) {
 const routes = [
   { path: '/', component: Explore },
   { path: '/register', component: Register },
+  { path: '/verify', component: Verification },
+  { path: '/notification', component: Notification},
   { path: '/search', component: Search },
   { path: '/product', component: Products},
   { path: '/login', component: Login },

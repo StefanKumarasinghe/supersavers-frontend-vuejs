@@ -1,8 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  
+  <v-app>
   <v-navigation-drawer
+    
     class="nav-drawer"
     v-show="drawer"
     app
@@ -12,13 +13,14 @@
     style="transform: translateX(0%);"
   >
     <v-avatar class="d-block text-center mx-auto mt-4 mb-10" size="80">
-      <v-icon color="gray" x-large>mdi-basket</v-icon>
+      <v-icon color="green" x-large>mdi-basket</v-icon>
     </v-avatar>
 
-    <v-card flat class="rounded-xl mx-4 mx-auto text-center">
+    <v-card v-show="AuthToken" flat class="rounded-xl mx-4 mx-auto text-center">
       <v-list flat class="">
         <v-list-item-group v-model="selectedItem">
           <v-list-item
+           
             v-for="(item, i) in items"
             :key="i"
             active-class="border"
@@ -28,7 +30,7 @@
             <v-list-item-content >
               <router-link :to="item.route">
                 <v-list-item-content>
-                  <v-icon :color="active ? 'white' : 'grey lighten-1'">
+                  <v-icon :color="active ? 'white' : 'black'">
                     {{ item.icon }}
                   </v-icon>
                 </v-list-item-content>
@@ -52,10 +54,10 @@
     >
       <v-avatar >
         <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout" ></v-icon>
-        <v-icon v-if="!(this.AuthToken)" @click="login()" class="mdi mdi-login" ></v-icon>
       </v-avatar>
     </div>
   </v-navigation-drawer>
+</v-app>
 </template>
 
 <script>
@@ -93,8 +95,7 @@ export default {
     items: [
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
-      { icon: "mdi-bell-outline", route: "login" },
-      { icon: "mdi-account-outline", route: "login" }
+      { icon: "mdi-bell-outline", route: "notification" },
     ],
   }),
   props: ["drawer"],
@@ -121,7 +122,7 @@ export default {
 }
 .border {
   margin: 0px 8px;
-  background: orange;
+  background: green;
   border-radius: 15px;
   text-decoration: none;
   width: 60px;

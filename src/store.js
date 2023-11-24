@@ -6,22 +6,36 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     token: null,
-    active:null,
+    active: null,
+    cart: [],
   },
   mutations: {
     setToken(state, token) {
-      state.active = true
-      state.token = token;
+      Vue.set(state, 'active', true);
+      Vue.set(state, 'token', token);
+
       const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 1 day in milliseconds
       localStorage.setItem('token', JSON.stringify({ value: token, expires: expirationTime }));
     },
     clearToken(state) {
-      state.token = null;
+      Vue.set(state, 'token', null);
       localStorage.removeItem('token');
     },
     clearTokenSimple(state) {
-        state.token = null;
-      },
+      Vue.set(state, 'token', null);
+    },
+    addItem(state, item) {
+      state.cart.push(item);
+      console.warn(state.cart)
+      localStorage.setItem('cart', JSON.stringify(state.cart));
+    },
+    removeItem(state, item) {
+      const index = state.cart.indexOf(item);
+      if (index !== -1) {
+        state.cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(state.cart));
+      }
+    },
   },
   actions: {
     // Example action to set the token
@@ -33,13 +47,26 @@ export default new Vuex.Store({
       commit('clearToken');
     },
     clearTokenSimple({ commit }) {
-        commit('clearTokenSimple');
-    }
+      commit('clearTokenSimple');
+    },
+    addItem({ commit }, item) {
+      commit('addItem', item);
+    },
+    removeItem({ commit }, item) {
+      commit('removeItem', item);
+    },
   },
   getters: {
     // Example getter to retrieve the token
     getTokenSimple: (state) => {
-        return state.token;
+      return state.token;
+    },
+    // Getter to retrieve the cart list
+    getList: (state) => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      Vue.set(state, 'cart', cart);
+      
+      return cart;
     },
     getToken: () => {
       // Retrieve token from localStorage and check expiration

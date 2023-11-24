@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app>
     <v-main>
@@ -35,7 +34,7 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitLogin()">Login</v-btn>
+                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitLogin">Login</v-btn>
                 <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold orange--text text-decoration-underline">Register</router-link></p>
                 <p class="text-center">Forgot password? <router-link to="forgotpassword" class="font-weight-bold orange--text text-decoration-underline">Reset</router-link></p>
               </v-form>
@@ -55,10 +54,27 @@
             </p>          
           </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar" color="white " dark>
+          <v-row align="center" justify="center" class="ma-0">
+            <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+              {{ this.error }}
+              
+            </v-col>
+            <v-btn
+                color="pink"
+                variant="text"
+                class="text-h6"
+                @click="snackbar = false"
+              >
+                Got it
+          </v-btn>
+          </v-row>
+        </v-snackbar>
       </v-container>
     </v-main>
   </v-app>
 </template>
+
 <script>
 export default {
   async beforeMount() {
@@ -68,7 +84,9 @@ export default {
     return {
       AuthToken: null,
       username: '',
-      emailRules: [
+      snackbar: false,
+      error: null,
+      usernameRules: [
         (value) => {
           if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
           return 'Must be a valid username.';
@@ -89,13 +107,12 @@ export default {
       this.verifyAuthProcess();
     },
     getToken() {
-      return new Promise( (resolve) => {
+      return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
 
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
-        
           const token = this.$store.getters.getToken;
           resolve(token);
         }
@@ -133,7 +150,7 @@ export default {
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-              username: this.username,
+              username: this.username.toLowerCase(), // Convert username to lowercase
               password: this.password,
             }),
           });
@@ -149,13 +166,15 @@ export default {
             this.$router.push('/search');
           } else {
             // Handle non-successful response
-            console.error('Login failed:', response.statusText);
-            alert('Login failed. Please check your credentials.');
+  
+            this.error = data.statusText;
+            this.snackbar = true;
           }
         } catch (error) {
-          console.error('Login failed:', error);
+   
           // Handle error
-          alert('Login failed. Please try again.');
+          this.error = data.statusText;
+          this.snackbar = true;
         }
       }
     },
@@ -163,10 +182,8 @@ export default {
 };
 </script>
 
-
 <style>
 .v-application .v-application--wrap {
     min-height: 0vh;
 }
 </style>
-
