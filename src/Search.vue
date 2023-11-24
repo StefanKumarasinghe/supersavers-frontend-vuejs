@@ -1,46 +1,47 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app >
-    <!-- Home Page -->
-    <v-container fluid class="mx-auto">
-   
-     
-      <v-text-field
-        v-model="searchTerm"
-        @change="fetchProducts()"
-        label="Search"
-        class="xs12 sm12 md4 lg3"
-        md="5"
-        filled
-        prepend-inner-icon="mdi-magnify"
-        solo
-        flat
-        rounded
-        outlined
-      ></v-text-field>
+  <v-app>
+    <v-container fluid>
+      <v-row align="center">
+        <v-col cols="12" md="9" lg="8">
+          <v-text-field
+            v-model="searchTerm"
+            @change="fetchProducts()"
+            label="Search"
+            class="xs12 sm12 md4 lg3"
+            md="5"
+            filled
+            prepend-inner-icon="mdi-magnify"
+            solo
+            flat
+            rounded
+            outlined
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="2" lg="4">
+          <v-menu transition="slide-y-transition">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="transparent" class="text-center" v-on="on" v-bind="attrs">
+                <v-icon left>mdi-filter</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item v-for="(value, key) in storeFilters" :key="key">
+                <v-list-item-action>
+                  <strong>
+                    <v-checkbox
+                      v-model="storeFilters[key]"
+                      small
+                      :label="key.charAt(0).toUpperCase() + key.slice(1)"
+                    ></v-checkbox>
+                  </strong>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
+      </v-row>
 
-      <v-menu transition="slide-y-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn class="text-center" v-on="on" v-bind="attrs">
-            <v-icon left>mdi-filter</v-icon>
-            <b>Stores</b>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item v-for="(value, key) in storeFilters" :key="key">
-            <v-list-item-action>
-              <strong>
-                <v-checkbox
-                  v-model="storeFilters[key]"
-                  small
-                  :label="key.charAt(0).toUpperCase() + key.slice(1)"
-                ></v-checkbox>
-              </strong>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-  
       <!-- Results display -->
       <div class="py-3 mt-5">
         <h1>COMPARE PRICES</h1>
@@ -51,7 +52,7 @@
       <v-app-bar color="transparent" flat class="">
         <v-tabs v-model="tab" stacked active-class="active">
           <v-tabs-slider color="transparent"></v-tabs-slider>
-          <v-tab @click="handleTabClick(tab.name)" v-for="(tab, index) in tabs" :key="index" class="withoutupercase normalize font-weight-bold" :value="'tab-' + (index + 1)">
+          <v-tab style="height:auto" @click="handleTabClick(tab.name)" v-for="(tab, index) in tabs" :key="index" class="withoutupercase normalize font-weight-bold" :value="'tab-' + (index + 1)">
             <v-icon>{{ tab.icon }}</v-icon>{{ tab.name }}
           </v-tab>                
         </v-tabs>
@@ -230,7 +231,20 @@
         </v-row>
     
       </div>
-
+      <v-snackbar v-model="snackbar" color="white" dark>
+          <v-row align="center" justify="center" class="ma-0">
+            <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+              {{ this.error }}
+            </v-col>
+            <v-btn
+                color="pink"
+                variant="text"
+                @click="snackbar = false"
+              >
+                Got it
+            </v-btn>
+          </v-row>
+        </v-snackbar>
     </v-container>
   </v-app>
 </template>
@@ -265,6 +279,8 @@
         weeklyDeals_w: [],
         weeklyDeals_iga: [],
         weeklyDeals_coles: [],
+        snackbar: false,
+        error: null,
         // searchClosed: true, -> search field open and close
         selection:1,
         tab: null,
@@ -397,7 +413,6 @@
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
- 
           const token = this.$store.getters.getToken;
           resolve(token);
         }
@@ -410,12 +425,7 @@
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
-          if (response.ok) {
-            const data = await response.json();
-            if (data.user == null) {
-              
-            }
-          } else {
+          if (!(response.ok)) {
             console.error('Error:', response.statusText);
             this.$router.push('/verify');
           }
@@ -523,7 +533,8 @@
       this.storeFilters['Deals At Coles']=false;
       this.storeFilters['Deals At IGA']=false;
       }catch {
-        console.log("Something went wrong")
+        this.error = "Couldn't retrieve the items from the specific category";
+            this.snackbar = true;
       }
       this.loading=false;
       return products;
@@ -544,11 +555,13 @@
           this.products = data;
         } else {
           console.error('Error:', response.statusText);
-          // Handle error response
+          this.error = response.statusText;
+          this.snackbar = true;
         }
       } catch (error) {
         console.error('Error:', error);
-        // Handle fetch error
+        this.error = response.statusText;
+        this.snackbar = true;
       }
 
       this.loading = false;
@@ -586,77 +599,7 @@
         }
         return bestStore;
       },
-      saveGroceryList() {
-        console.log("stored")
-        localStorage.setItem('groceryList', JSON.stringify(this.groceryList));
-      },
-      addProductToGrocery(product) {
-        let existingProduct = this.groceryList.find(item => item.name === product.name);
-        if (existingProduct) {
-          existingProduct.counter += 1;
-        } else {
-          let bestPriceStore = this.bestStoreForProduct(product);
-          let individualSavings = this.productSavings(product);
-          this.groceryList.push({ ...product, counter: 1, bestStore: bestPriceStore, savings: individualSavings });
-        }
-        // Update overall savings
-        this.updateTotalSavings();
-        this.saveGroceryList();
-      },
-      updateTotalSavings() {
-        // Total savings is the sum of all individual savings.
-        this.savings = this.groceryList.reduce((acc, item) => {
-          return acc + (item.savings * item.counter);
-        }, 0);
-      },
-      productSavings(product) {
-        const wooliesPrice = parseFloat(product.woolworths_price) || 0;
-        const colesPrice = parseFloat(product.coles_price) || 0;
-        const aldiPrice = parseFloat(product.aldi_price) || 0;
-        const chemistPrice = parseFloat(product.chemist_price) || 0;
-        const igaPrice = parseFloat(product.iga_price) || 0;
-
-        // Calculate the average price
-        const averagePrice = this.smallestPrice(this.lowestPricedProduct);
-        // Determine which store's price to compare with
-        let storeToCompare = '';
-
-        if (wooliesPrice > 0 && colesPrice > 0) {
-          // Both Woolworths and Coles prices are available
-          storeToCompare = 'Coles';
-        } else if (aldiPrice > 0) {
-          // Aldi price is available
-          storeToCompare = 'Aldi';
-        } else if (chemistPrice > 0) {
-          // Chemist Warehouse price is available
-          storeToCompare = 'Chemist Warehouse';
-        } else if (igaPrice > 0) {
-          // IGA price is available
-          storeToCompare = 'IGA';
-        }
-
-        // Calculate the price difference based on the available prices
-        let diff = 0;
-        switch (storeToCompare) {
-          case 'Coles':
-            diff = Math.abs(wooliesPrice - colesPrice);
-            break;
-          case 'Woolworths':
-            diff = -wooliesPrice + averagePrice;
-            break;
-          case 'Aldi':
-            diff = -aldiPrice +averagePrice;
-            break;
-          case 'Chemist Warehouse':
-            diff = -chemistPrice + averagePrice;
-            break;
-          case 'IGA':
-            diff = -igaPrice + averagePrice;
-            break;
-        }
-        // Return the difference rounded to 2 decimal places or null
-        return diff.toFixed(2);
-      },
+ 
       updateSavingsAndBestStore(product) {
         // Update overall savings
         this.savings += this.productSavings(product);
@@ -683,6 +626,8 @@
           
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
+          this.error = response.statusText;
+          this.snackbar = true;
         } 
         try {
           const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles', {
@@ -732,14 +677,16 @@
 
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
+          }else {
+            this.error = "Item Successfully added to the Notification List";
+            this.snackbar = true;
           }
-
           const result = await response.json();
           console.log(result.message);  // Log the response from the backend
         } catch (error) {
           console.error('Failed to add Item', error);
-        } finally {
-          console.log('Added item');
+          this.error = response.statusText;
+          this.snackbar = true;
         }
       },
       getLowestPrice() {

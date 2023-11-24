@@ -81,7 +81,7 @@
         <v-snackbar v-model="snackbar" color="white" dark>
           <v-row align="center" justify="center" class="ma-0">
             <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-              sdf{{ this.error }}
+              {{ this.error }}
             </v-col>
             <v-btn
                 color="pink"

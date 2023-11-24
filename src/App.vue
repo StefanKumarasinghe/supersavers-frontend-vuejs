@@ -4,33 +4,57 @@
     <Sidebar :drawer="drawer" ref="sidebar" />
     
     <!-- Toolbar with Menu Icon -->
-    <v-toolbar v-if="showMenuButton()">
-      <v-btn
-        icon
-        class=""
-        @click.stop="toggleSidebar"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-toolbar>
+   
     
     <router-view></router-view>
+
+    <v-bottom-navigation v-if="isMobile" fixed>
+      <v-btn value="recent">
+        <v-icon>mdi-history</v-icon>
+        <span>Recent</span>
+      </v-btn>
+
+      <v-btn value="favorites">
+        <v-icon>mdi-heart</v-icon>
+        <span>Favorites</span>
+      </v-btn>
+
+      <v-btn value="nearby">
+        <v-icon>mdi-map-marker</v-icon>
+        <span>Nearby</span>
+      </v-btn>
+    </v-bottom-navigation>
+
+    <BottomNav :drawer="drawer" />
+    
   </div>
+  
 </template>
+
 
 <script>
 import Sidebar from './components/Sidebar.vue';
+import Bottom from './components/BottomNav.vue';
+import BottomNav from './components/BottomNav.vue';
 
 export default {
   components: {
     Sidebar,
-  },
+    Bottom,
+    BottomNav
+},
   data() {
     return {
       drawer: window.innerWidth >= 1280,
+
     };
   },
   mounted() {
+        // Check if the screen width is less than 600 pixels (adjust as needed)
+     
+
+// Update isMobile when the window is resized
+
     if (this.$route.path === '/' || this.$route.path === '/login') {
       this.drawer = false;
     }
@@ -56,17 +80,7 @@ export default {
         }
       }
     },
-    showMenuButton() {
-      // TODO: Change to -> If auth is not verified, set the drawer to false.
-      if (this.$route.path === '/login' || this.$route.path === '/' || 
-      this.$route.path === '/register' || this.$route.path === '/forgotpassword' ||
-      this.$route.path === '/resetpassword') {
-        this.drawer = false;
-        return false;
-      } else {
-        return true;
-      }
-    },
+   
   },
 };
 </script>

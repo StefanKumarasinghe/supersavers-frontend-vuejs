@@ -39,11 +39,11 @@ const routes = [
   { path: '/', component: Explore },
   { path: '/register', component: Register },
   { path: '/verify', component: Verification },
-  { path: '/notification', component: Notification},
-  { path: '/search', component: Search },
+  { path: '/notification',name: 'notification', component: Notification},
+  { path: '/search',name: 'search', component: Search },
   { path: '/product', component: Products},
-  { path: '/login', component: Login },
-  { path: '/cart', component: Cart },
+  { path: '/login', name: 'login', component: Login },
+  { path: '/cart',name: 'cart', component: Cart },
   { path: '/forgotpassword', component: ForgotPassword},
   { path: '/resetpassword', component: ResetPassword}
 ];

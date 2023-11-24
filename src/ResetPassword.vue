@@ -97,7 +97,6 @@ async submitRegistration() {
         alert('Token not found in the URL');
         return;
       }
-
       const response = await this.resetPassword(token, this.password);
       // Handle the response as needed
       console.log(response);

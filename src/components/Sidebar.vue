@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <v-app>
-  <v-navigation-drawer
+  <v-navigation-drawer  v-if="isDesktop"
     
     class="nav-drawer"
     v-show="drawer"
@@ -15,6 +15,8 @@
     <v-avatar class="d-block text-center mx-auto mt-4 mb-10" size="80">
       <v-icon color="green" x-large>mdi-basket</v-icon>
     </v-avatar>
+
+
 
     <v-card v-show="AuthToken" flat class="rounded-xl mx-4 mx-auto text-center">
       <v-list flat class="">
@@ -64,8 +66,16 @@
 export default {
   async beforeMount() {
     await this.TokenPromise();
+    this.checkIsMobile()
   },
   methods: {
+    checkIsMobile() {
+        this.isDesktop = window.innerWidth > 700;
+  
+        window.addEventListener('resize', () => {
+          this.isDesktop = window.innerWidth > 700;
+        });
+      },
     async logout() {
       await this.$store.commit('clearToken');
       location.href="/login"
@@ -91,7 +101,8 @@ export default {
   },
   data: () => ({
     AuthToken:null,
-    selectedRoute: "search", // Initialize with the default route
+    selectedRoute: "search",
+    isDesktop:false, // Initialize with the default route
     items: [
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
@@ -117,42 +128,96 @@ export default {
 </script>
 
 <style>
-.v-navigation-drawer.nav-drawer{
-  transform: translateX(0%);
+/* Common styles for both mobile and desktop */
+.v-navigation-drawer.nav-drawer {
+  transition: transform 0.3s ease-in-out;
 }
-.border {
-  margin: 0px 8px;
-  background: green;
-  border-radius: 15px;
-  text-decoration: none;
-  width: 60px;
-  height: 60px;
+
+/* Mobile styles */
+@media (max-width: 700px) {
+  .v-navigation-drawer.nav-drawer {
+    transform: translateX(0%);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    height: 60px; /* Adjust the height as needed */
+  }
+
+  /* Additional mobile styles if needed */
+  .border {
+    margin: 0px 8px;
+    background: green;
+    border-radius: 15px;
+    text-decoration: none;
+    width: 60px;
+    height: 60px;
+  }
+
+  .v-list-item-group .v-list-item--active {
+    color: white !important;
+  }
+
+  .v-list-item__content {
+    padding: 10px 0 !important;
+  }
+
+  .v-card {
+    margin-top: 22px;
+  }
 }
-.v-list-item-group .v-list-item--active {
-  color: white !important;
+
+/* Desktop styles */
+@media (min-width: 701px) {
+  .v-navigation-drawer.nav-drawer {
+    transform: translateX(0%);
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 80px; /* Adjust the width as needed */
+  }
+
+  /* Additional desktop styles if needed */
+  .border {
+    margin: 0px 8px;
+    background: green;
+    border-radius: 15px;
+    text-decoration: none;
+    width: 60px;
+    height: 60px;
+  }
+
+  .v-list-item-group .v-list-item--active {
+    color: white !important;
+  }
+
+  .v-list-item__content {
+    padding: 20px 0 !important;
+  }
+
+  .v-card {
+    margin-top: 22px;
+  }
 }
-.v-list-item__content {
-  padding: 20px 0 !important;
-}
+
+/* Add your existing styles here */
+
 .image {
   border: 1px solid white;
 }
+
 .v-navigation-drawer--close {
   visibility: visible;
 }
+
 .router-link {
   text-decoration: none;
 }
+
 a:-webkit-any-link {
   color: white;
   cursor: pointer;
   text-decoration: none;
 }
-.v-list-item__content {
-  padding: 10px 0 !important;
-}
-.v-card {
-    margin-top: 22px;
-}
-
 </style>

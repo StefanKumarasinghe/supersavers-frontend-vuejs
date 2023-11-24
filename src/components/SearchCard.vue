@@ -140,7 +140,8 @@ async beforeMount() {
 },
 addItemToCart(product) {
      this.$store.dispatch('addItem', product);
-     alert('Item added')
+     this.error = response.statusText;
+     this.snackbar = true;
     },
 
           bestStoreForProduct(product) {
