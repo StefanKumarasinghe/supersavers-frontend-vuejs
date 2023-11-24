@@ -3,20 +3,18 @@
       <v-main>
         <!-- Reset Password Form -->
         <v-container fluid>
-          <v-row align="center" justify="center" class="">
+          <v-row align="center" justify="center" class="mt-5 py-5">
             <v-col cols="12" md="6" lg="6">
               <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Reset Password</v-card-title>
               <v-card-text class="text-lg-h6 font-weight-light">Enter your email to reset the password.</v-card-text>
               <v-card-text class="my-4">
                 <v-form ref="loginForm" @submit.prevent="submitRegistration">
                   <v-text-field
-                    class="text-lg-h6 mb-2"
                     v-model="email"
                     :rules="emailRules"
                     label="Email"
                     required
                     prepend-inner-icon="mdi-email"
-                    solo
                     flat
                     rounded
                     outlined

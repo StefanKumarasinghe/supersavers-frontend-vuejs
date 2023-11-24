@@ -3,34 +3,35 @@
       <v-main>
         <!-- Reset Password Form -->
         <v-container fluid>
-          <v-row align="center" justify="center" class="">
+          <v-row align="center" justify="center" class="mt-5 py-5">
             <v-col cols="12" md="6" lg="6">
               <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Reset Password</v-card-title>
               <v-card-text class="text-lg-h6 font-weight-light">Enter new password and confirm password.</v-card-text>
               <v-card-text class="my-4">
                 <v-form ref="loginForm" v-on:submit.prevent="submitRegistration">
                   <v-text-field
-                    class="text-lg-h6"
+                    class="mb-3"
                     v-model="password"
                     label="Password"
                     :rules="passwordRules"
                     required
-                    type="password"
                     prepend-inner-icon="mdi-lock"
-                    solo
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="showPassword ? 'text' : 'password'"
+                    @click:append="showPassword = !showPassword"
                     flat
                     rounded
                     outlined
                   ></v-text-field>
                   <v-text-field
-                    class="text-lg-h6"
                     v-model="confirmPassword"
                     label="Confirm Password"
                     :rules="confirmPasswordRules"
                     required
-                    type="password"
                     prepend-inner-icon="mdi-lock"
-                    solo
+                    :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    @click:append="showConfirmPassword = !showConfirmPassword"
                     flat
                     rounded
                     outlined
@@ -63,6 +64,7 @@
     data() {
       return {
         password: '',
+        showPassword: false,
         passwordRules: [
           (value) => {
             if (value?.length >= 8) return true;
@@ -70,6 +72,7 @@
           },
         ],
         confirmPassword: '',
+        showConfirmPassword: false,
         confirmPasswordRules: [
           (value) => {
             if (this.password == value) return true;

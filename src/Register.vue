@@ -1,60 +1,60 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app>
     <v-main>
       <!-- Register Form -->
       <v-container fluid>
-        <v-row align="center" justify="center" class="">
+        <v-row align="center" justify="center" class="mt-5 py-5">
           <v-col cols="12" md="6" lg="6">
             <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Register</v-card-title>
             <v-card-text class="text-lg-h6 font-weight-light">Register to view the best deals and save on groceries.</v-card-text>
             <v-card-text class="my-4">
               <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
                 <v-text-field 
-                  class="text-lg-h6 mb-2" 
+                  class="mb-3" 
                   v-model="username" 
                   :rules="nameRules" 
                   label="Name"
                   required
                   prepend-inner-icon="mdi-account"
-                  solo
                   flat
                   rounded
                   outlined
                 ></v-text-field>
                 <v-text-field 
-                  class="text-lg-h6 mb-2" 
+                  class="mb-3" 
                   v-model="email" 
                   :rules="emailRules" 
                   label="Email"
                   required
                   prepend-inner-icon="mdi-email"
-                  solo
                   flat
                   rounded
                   outlined
                 ></v-text-field>
                 <v-text-field 
-                  class="text-lg-h6" 
+                  class="mb-3" 
                   v-model="password" 
                   label="Password" 
                   :rules="passwordRules" 
                   required
-                  type="password" 
                   prepend-inner-icon="mdi-lock"
-                  solo
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append="showPassword = !showPassword"
                   flat
                   rounded
                   outlined
                 ></v-text-field>
                 <v-text-field 
-                  class="text-lg-h6" 
                   v-model="confirmPassword" 
                   label="Confirm Password" 
                   :rules="confirmPasswordRules" 
                   required
-                  type="password" 
                   prepend-inner-icon="mdi-lock"
-                  solo
+                  :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  @click:append="showConfirmPassword = !showConfirmPassword"
                   flat
                   rounded
                   outlined
@@ -79,21 +79,19 @@
           </v-col>
         </v-row>
         <v-snackbar v-model="snackbar" color="white" dark>
-  <v-row align="center" justify="center" class="ma-0">
-    <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-      {{ this.error }}
-  
-    </v-col>
-    <v-btn
-        color="pink"
-        variant="text"
-        @click="snackbar = false"
-      >
-        Got it
-    </v-btn>
-  </v-row>
-</v-snackbar>
-
+          <v-row align="center" justify="center" class="ma-0">
+            <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+              sdf{{ this.error }}
+            </v-col>
+            <v-btn
+                color="pink"
+                variant="text"
+                @click="snackbar = false"
+              >
+                Got it
+            </v-btn>
+          </v-row>
+        </v-snackbar>
       </v-container>
     </v-main>
   </v-app>
@@ -119,11 +117,12 @@ export default {
       email: '',
       emailRules: [
         value => {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          if (/^[0-9a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
           return 'Must be a valid e-mail.'
         },
       ],
       password: '',
+      showPassword: false,
       passwordRules: [
         value => { 
           if (value?.length >= 8) return true;
@@ -131,6 +130,7 @@ export default {
         }
       ],
       confirmPassword: '',
+      showConfirmPassword: false,
       confirmPasswordRules: [
         value => {
           if (this.password == value) return true;
@@ -212,7 +212,7 @@ export default {
         }
       } catch (error) {
         console.error('Registration failed:', error);
-        this.error = response.statusText;
+        //this.error = response.statusText;
         this.snackbar = true;
       }
     },
