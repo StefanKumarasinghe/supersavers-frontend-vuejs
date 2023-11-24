@@ -14,7 +14,7 @@
                   class="mb-3" 
                   v-model="username" 
                   :rules="nameRules" 
-                  label="Name"
+                  label="Username"
                   required
                   prepend-inner-icon="mdi-account"
                   flat
@@ -110,7 +110,7 @@ export default {
       error: null,
       nameRules: [
         value => {
-          if (value.length > 3) return true;
+          if (value.length > 2) return true;
           return 'Username needs to be at least 3 characters';
         }
       ],

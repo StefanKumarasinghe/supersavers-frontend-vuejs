@@ -13,7 +13,7 @@
                 <v-text-field 
                   v-model="username" 
                   :rules="usernameRules" 
-                  label="Username"
+                  label="Username or Email"
                   required
                   prepend-inner-icon="mdi-email"
                   flat
@@ -87,8 +87,8 @@ export default {
       error: null,
       usernameRules: [
         (value) => {
-          if (/^[0-9a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
-          return 'Must be a valid username.';
+          if (value?.length > 2) return true;
+          return 'Must be a valid username/email.';
         },
       ],
       password: '',
