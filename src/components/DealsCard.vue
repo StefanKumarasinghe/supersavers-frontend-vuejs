@@ -22,9 +22,6 @@
             <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" size="small" variant="flat">
                 Add To List
             </v-btn>
-            <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat">
-                Listen
-            </v-btn>
             </v-card-actions>
         </v-card>
     </span>

@@ -450,11 +450,11 @@
             }
           } else {
             console.error('Error:', response.statusText);
-            this.$router.push('/login');
+       
           }
         } catch (error) {
           console.error('Error:', error);
-          this.$router.push('/login');
+       
         }
     },
       async handleTabClick(category) {

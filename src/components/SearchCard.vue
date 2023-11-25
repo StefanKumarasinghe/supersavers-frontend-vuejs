@@ -78,26 +78,56 @@
 </template>
 
 <script>
-    export default {
-      props: {
-  product: {
-    type: Object,
-    required: true,
+import { getMessaging, getToken } from 'firebase/messaging';
+import firebase from 'firebase/app';
+
+export default {
+  props: {
+    product: {
+      type: Object,
+      required: true,
+    },
+    data: {
+      AuthToken: null,
+      registrationToken: null,
+    },
   },
-  data:{
-    AuthToken:null,
 
-  }
-},
-
-async beforeMount() {
+  async beforeMount() {
     await this.TokenPromise();
+    await this.getAndSendNotificationToken();
   },
 
-        methods: {
-          async TokenPromise() {
+  methods: {
+    async getAndSendNotificationToken() {
+      try {
+        // Request permission to show notifications
+        const permission = await Notification.requestPermission();
+
+        if (permission === 'granted') {
+          // Get the messaging instance
+          const messaging = getMessaging(firebase);
+          
+          // Get the current registration token
+          const currentToken = await getToken(messaging);
+          console.log(currentToken);
+
+          // Assign the registration token to the component data
+          this.registrationToken = currentToken;
+
+          // Send the registration token to your server
+          // You may want to call your server-side function here to handle the token
+          // e.g., this.sendTokenToServer(currentToken);
+        }
+      } catch (error) {
+        console.error('Error getting notification token:', error);
+      }
+    },
+
+    async TokenPromise() {
       this.AuthToken = await this.getToken();
     },
+
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
@@ -110,59 +140,64 @@ async beforeMount() {
         }
       });
     },
+
     async Notify(product) {
-  try {
-    console.log(this.AuthToken);
+      try {
+        // Use the messaging instance from Firebase
+        const messaging = getMessaging(firebase);
 
-    const response = await fetch('http://127.0.0.1:8000/add_item_notify', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.AuthToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-      name: String(product.name),
-    woolworths_code: String(product.stockcode_w),
-    coles_code: String(product.stockcode_c),
-    iga_code: String(product.stockcode_i),
-    image: String(product.image),
-    description: String(product.description),
-  
-}),
+        // Get the current registration token
+        const currentToken = await getToken(messaging);
 
-    });
-
-    const data = await response.json();
-    console.log(data.status);
-  } catch (error) {
-    console.error('Error fetching products:', error);
-  }
-},
-addItemToCart(product) {
-     this.$store.dispatch('addItem', product);
-     this.error = "Item was successfully added to the list"
-     this.snackbar = true;
+        await fetch('http://127.0.0.1:8000/add_item_notify', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: String(product.name),
+            registration_token: String(currentToken),
+            woolworths_code: String(product.stockcode_w),
+            coles_code: String(product.stockcode_c),
+            iga_code: String(product.stockcode_i),
+            image: String(product.image),
+            description: String(product.description),
+          }),
+        });
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
     },
 
-          bestStoreForProduct(product) {
-            const storePrices = {
-              'Woolworths': product.woolworths_price,
-              'Coles': product.coles_price,
-              'IGA': product.iga_price,
-            };
-            let bestStore = '';
-            let lowestPrice = Infinity;
-            for (const [store, price] of Object.entries(storePrices)) {
-              if (price && parseFloat(price) < lowestPrice) {
-                bestStore = store;
-                lowestPrice = parseFloat(price);
-              }
-            }
-            return bestStore;
-          }
+    addItemToCart(product) {
+      this.$store.dispatch('addItem', product);
+      this.error = 'Item was successfully added to the list';
+      this.snackbar = true;
+    },
+
+    bestStoreForProduct(product) {
+      const storePrices = {
+        'Woolworths': product.woolworths_price,
+        'Coles': product.coles_price,
+        'IGA': product.iga_price,
+      };
+      let bestStore = '';
+      let lowestPrice = Infinity;
+      for (const [store, price] of Object.entries(storePrices)) {
+        if (price && parseFloat(price) < lowestPrice) {
+          bestStore = store;
+          lowestPrice = parseFloat(price);
         }
-    }
+      }
+      return bestStore;
+    },
+  },
+};
 </script>
+
+
+
 
 <style lang="scss" scoped>
 
