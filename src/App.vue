@@ -8,22 +8,7 @@
     
     <router-view></router-view>
 
-    <v-bottom-navigation v-if="isMobile" fixed>
-      <v-btn value="recent">
-        <v-icon>mdi-history</v-icon>
-        <span>Recent</span>
-      </v-btn>
 
-      <v-btn value="favorites">
-        <v-icon>mdi-heart</v-icon>
-        <span>Favorites</span>
-      </v-btn>
-
-      <v-btn value="nearby">
-        <v-icon>mdi-map-marker</v-icon>
-        <span>Nearby</span>
-      </v-btn>
-    </v-bottom-navigation>
 
     <BottomNav :drawer="drawer" />
     
@@ -34,13 +19,11 @@
 
 <script>
 import Sidebar from './components/Sidebar.vue';
-import Bottom from './components/BottomNav.vue';
 import BottomNav from './components/BottomNav.vue';
 
 export default {
   components: {
     Sidebar,
-    Bottom,
     BottomNav
 },
   data() {
@@ -57,6 +40,7 @@ export default {
 
     if (this.$route.path === '/' || this.$route.path === '/login') {
       this.drawer = false;
+      this.isMobile = false;
     }
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('click', this.handleDocumentClick);

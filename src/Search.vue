@@ -560,7 +560,7 @@
         }
       } catch (error) {
         console.error('Error:', error);
-        this.error = response.statusText;
+        this.error = "Error in retrieving data..."
         this.snackbar = true;
       }
 
@@ -626,7 +626,7 @@
           
         } catch (error) {
           console.error("Failed to fetch weekly deals:", error);
-          this.error = response.statusText;
+          this.error = "Failed to get deals from Woolies"
           this.snackbar = true;
         } 
         try {
@@ -685,7 +685,7 @@
           console.log(result.message);  // Log the response from the backend
         } catch (error) {
           console.error('Failed to add Item', error);
-          this.error = response.statusText;
+          this.error = "Failed to add item";
           this.snackbar = true;
         }
       },

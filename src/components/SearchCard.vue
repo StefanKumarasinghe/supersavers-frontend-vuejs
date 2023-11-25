@@ -140,7 +140,7 @@ async beforeMount() {
 },
 addItemToCart(product) {
      this.$store.dispatch('addItem', product);
-     this.error = response.statusText;
+     this.error = "Item was successfully added to the list"
      this.snackbar = true;
     },
 
