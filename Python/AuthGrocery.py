@@ -92,7 +92,7 @@ class UserManager:
 
     @staticmethod
     async def send_verification_email(email: str, verification_token: str):
-        verification_link = f"http://localhost:8080/verify-email?token={verification_token}"
+        verification_link = f"http://localhost:8080/verify?token={verification_token}"
         email_subject = "Verify Your Email"
         email_body = f"Click the following link to verify your email: {verification_link}"
 

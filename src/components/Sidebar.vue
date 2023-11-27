@@ -2,10 +2,8 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <v-app>
-  <v-navigation-drawer  v-if="isDesktop"
-    
+  <v-navigation-drawer
     class="nav-drawer"
-    v-show="drawer"
     app
     touch
     mini-variant
@@ -16,20 +14,18 @@
       <v-icon color="green" x-large>mdi-basket</v-icon>
     </v-avatar>
 
-
-
-    <v-card v-show="AuthToken" flat class="rounded-xl mx-4 mx-auto text-center">
-      <v-list flat class="">
+    <v-card flat class="rounded-xl mx-4 mx-auto text-center">
+      <v-list flat>
         <v-list-item-group v-model="selectedItem">
-          <v-list-item
-           
+          <v-list-item    
             v-for="(item, i) in items"
             :key="i"
             active-class="border"
             v-slot="{ active }"
             :ripple="false"
+            :value="item.route"
           >
-            <v-list-item-content >
+            <v-list-item-content>
               <router-link :to="item.route">
                 <v-list-item-content>
                   <v-icon :color="active ? 'white' : 'black'">
@@ -53,9 +49,9 @@
         right: 0;
         text-align: center;
       "
-    >
+      >
       <v-avatar >
-        <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout" ></v-icon>
+        <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout black--text"></v-icon>
       </v-avatar>
     </div>
   </v-navigation-drawer>
@@ -66,16 +62,10 @@
 export default {
   async beforeMount() {
     await this.TokenPromise();
-    this.checkIsMobile()
+    this.selectedItem = this.$route.name;
   },
+
   methods: {
-    checkIsMobile() {
-        this.isDesktop = window.innerWidth > 700;
-  
-        window.addEventListener('resize', () => {
-          this.isDesktop = window.innerWidth > 700;
-        });
-      },
     async logout() {
       await this.$store.commit('clearToken');
       location.href="/login"
@@ -89,7 +79,6 @@ export default {
     getToken() {
       return new Promise( (resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
-
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
@@ -101,29 +90,14 @@ export default {
   },
   data: () => ({
     AuthToken:null,
-    selectedRoute: "search",
-    isDesktop:false, // Initialize with the default route
+    selectedItem: "search",
     items: [
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
       { icon: "mdi-bell-outline", route: "notification" },
+      { icon: "mdi-account-outline", route: "login" }
     ],
-  }),
-  props: ["drawer"],
-  watch: {
-    drawer(newValue) {
-      // If the drawer is closing, don't change the selected route
-      if (!newValue) return;
-
-      // When the drawer is open, update the selected route based on the current route
-      const currentRoute = this.$route.name;
-      const selectedItem = this.items.find(item => item.route === currentRoute);
-
-      if (selectedItem) {
-        this.selectedRoute = selectedItem.route;
-      }
-    },
-  },
+  })
 };
 </script>
 
@@ -198,6 +172,10 @@ export default {
 
   .v-card {
     margin-top: 22px;
+  }
+  
+  .v-list-item__content {
+    padding: 10px 0 !important;
   }
 }
 

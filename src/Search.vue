@@ -762,7 +762,7 @@
     padding-right: 100px;
   }
 
-  @media (max-width: 1000px) {
+  @media (max-width: 701px) {
     .container {
       padding-left: 25px;
       padding-right: 25px;

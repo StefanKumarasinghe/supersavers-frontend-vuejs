@@ -1,21 +1,12 @@
 <template>
   <div id="app">
     <!-- Sidebar -->
-    <Sidebar :drawer="drawer" ref="sidebar" />
-    
-    <!-- Toolbar with Menu Icon -->
-   
-    
+    <Sidebar v-show="isDesktop && authToken" />
+    <!-- Toolbar with Menu Icon -->    
     <router-view></router-view>
-
-
-
-    <BottomNav :drawer="drawer" />
-    
+    <BottomNav v-if="isMobile && authToken" />
   </div>
-  
 </template>
-
 
 <script>
 import Sidebar from './components/Sidebar.vue';
@@ -24,47 +15,91 @@ import BottomNav from './components/BottomNav.vue';
 export default {
   components: {
     Sidebar,
-    BottomNav
-},
+    BottomNav,
+  },
   data() {
     return {
-      drawer: window.innerWidth >= 1280,
-
+      isDesktop: false,
+      isMobile: false,
+      showSidebar: false,
+      showBottomNav: false,
+      authToken:null
     };
   },
+  async beforeMount() {
+    this.TokenPromise();
+    this.checkIsMobile();
+    this.checkIsDesktop();
+    this.checkRoute(); // Check route during initial mount
+  },
   mounted() {
-        // Check if the screen width is less than 600 pixels (adjust as needed)
-     
-
-// Update isMobile when the window is resized
-
-    if (this.$route.path === '/' || this.$route.path === '/login') {
-      this.drawer = false;
-      this.isMobile = false;
-    }
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('click', this.handleDocumentClick);
+    this.checkRoute(); // Check route when the component is mounted
+    this.TokenPromise();
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('click', this.handleDocumentClick);
   },
   methods: {
-    handleResize() {
-      this.drawer = window.innerWidth >= 1280;
+    checkIsDesktop() {
+      this.isDesktop = window.innerWidth > 700;
+      window.addEventListener('resize', () => {
+        this.isDesktop = window.innerWidth > 700;
+      });
     },
-    toggleSidebar() {
-      this.drawer = !this.drawer;
+    checkIsMobile() {
+      this.isMobile = window.innerWidth <= 700;
+      window.addEventListener('resize', () => {
+        this.isMobile = window.innerWidth <= 700;
+      });
+    },
+    handleResize() {
+      this.checkRoute(); // Adjust based on the new screen size
     },
     handleDocumentClick(event) {
-      if (window.innerWidth < 1280) {
+      if (this.isMobile) {
         const sidebarElement = this.$refs.sidebar?.$el;
         if (sidebarElement && !sidebarElement.contains(event.target)) {
-          this.drawer = false;
+          this.showSidebar = false;
         }
       }
     },
-   
+    checkRoute() {
+      const isRestrictedRoute = this.$route.path === '/' || this.$route.path === '/login' || 
+                                this.$route.path === '/register' || this.$route.path === '/forgotpassword' ||
+                                this.$route.path === '/resetpassword';
+      this.showSidebar = this.isDesktop && !isRestrictedRoute;
+      this.showBottomNav = this.isMobile && !isRestrictedRoute;
+    },
+    // get Auth token
+    async TokenPromise() {
+      this.authToken = await this.getToken();
+    },
+    getToken() {
+      return new Promise( (resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
+    }
+  },
+  watch: {
+    $route() {
+      // When the route changes, check and update navigation bars
+      this.checkRoute();
+    },
+    authToken() {
+      console.log("authtoken:" + this.authToken);
+      if (this.authToken == null) {
+        this.TokenPromise();
+      }
+    },
   },
 };
 </script>

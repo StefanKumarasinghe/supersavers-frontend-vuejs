@@ -1,53 +1,67 @@
 <template>
-    <v-app>
-      <v-bottom-navigation class="bar" v-if="isMobile" fixed>
-        <v-btn class="nav" v-for="(item, i) in items" :key="i" @click="navigateTo(item.route)" :value="item.route">
-          <v-icon :color="selectedRoute === item.route ? 'orange' : 'black'" class="icon">
-            {{ item.icon }}
-          </v-icon>
-          <span>{{ item.label }}</span>
-        </v-btn>
-      </v-bottom-navigation>
-    </v-app>
-  </template>
-  
-  <script>
+  <v-app>
+    <v-layout class="overflow-visible" style="height: 56px;">
+    <v-bottom-navigation class="bar" fixed grow v-model="selectedItem">
+      <v-btn
+        rounded
+        v-for="(item, i) in items"
+        :key="i"
+        @click="navigateTo(item.route)"
+        :value="item.route"
+        class="nav"
+        :class="{
+          'green-btn': selectedItem === item.route,
+          'white--text': selectedItem === item.route,
+          'black--text': selectedItem !== item.route
+        }"
+      >
+        <span class="label font-weight-bold">
+          {{ item.label }}
+        </span>       
+        <v-icon class="icon">
+          {{ item.icon }}
+        </v-icon>
+      </v-btn>
+    </v-bottom-navigation>
+    </v-layout>
+  </v-app>
+</template>
+
+<script>
   export default {
+    async beforeMount() {
+      this.selectedItem = this.$route.name;
+    },
     data: () => ({
-      selectedRoute: "search",
+      selectedItem: "search",
       items: [
         { icon: "mdi-home-outline", route: "search", label: "Search" },
         { icon: "mdi-cart-outline", route: "cart", label: "Cart" },
         { icon: "mdi-bell-outline", route: "notification", label: "Notification" },
         { icon: "mdi-account-outline", route: "login", label: "Account" },
       ],
-      isMobile: false,
     }),
-    async beforeMount() {
-      this.checkIsMobile();
-    },
     methods: {
       async navigateTo(route) {
         await this.$router.push({ name: route });
-        this.selectedRoute=route
-      },
-      checkIsMobile() {
-        this.isMobile = window.innerWidth <= 700;
-  
-        window.addEventListener('resize', () => {
-          this.isMobile = window.innerWidth <= 700;
-        });
-      },
+        this.selectedItem=route
+      }
     },
   };
-  </script>
-  
-  <style>
+</script>
+
+<style>
   /* Add any additional styles for the bottom navigation here */
   .icon {
     width: 100%; /* Ensure the icon takes up the full width of the button */
-    /* Background color when active */
-    padding: 16px; /* Adjust padding as needed */
+    padding-top: 20px;
+    color: black;
+    background-color: transparent;
+  }
+  .label {
+    padding-top: 5px;
+    padding-bottom: 10px;
+    background-color: transparent;
   }
   .nav {
     background-color: white !important;
@@ -58,5 +72,10 @@
     height:auto !important;
     box-shadow: none !important;
   }
-  </style>
-  
+  .green-btn {
+    background-color: #2E7D32 !important;
+  }
+  .green-btn .white--text {
+    color: white !important;
+  }
+</style>  

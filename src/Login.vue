@@ -6,7 +6,7 @@
       <v-container fluid>
         <v-row align="center" justify="center" class="mt-5 py-5">
           <v-col cols="12" md="6" lg="6">
-            <v-card-title class="font-weight-bold orange--text text--darken-2 text-h4">Login</v-card-title>
+            <v-card-title class="font-weight-bold green--text text--darken-2 text-h4">Login</v-card-title>
             <v-card-text class="text-lg-h6 font-weight-light">Login to view the best deals and save on groceries.</v-card-text>
             <v-card-text class="my-4">
               <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
@@ -20,7 +20,7 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <div class="text-end mb-1 me-2"><router-link to="forgotpassword" class="font-weight-bold orange--text text-decoration-underline">Forgot password?</router-link></div>
+                <div class="text-end mb-1 me-2"><router-link to="forgotpassword" class="font-weight-bold green--text text-decoration-underline">Forgot password?</router-link></div>
                 <v-text-field 
                   v-model="password" 
                   label="Password" 
@@ -34,8 +34,8 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <v-btn color="orange" class="white--text mt-4 text-h6 font-weight-bold" width="100%" rounded height="45" @click="submitLogin">Login</v-btn>
-                <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold orange--text text-decoration-underline">Register</router-link></p>
+                <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%" rounded height="45" @click="submitLogin">Login</v-btn>
+                <p class="text-center mt-4">Don't have an account? <router-link to="register" class="font-weight-bold green--text text-decoration-underline">Register</router-link></p>
               </v-form>
             </v-card-text>
           </v-col>
@@ -53,11 +53,10 @@
             </p>          
           </v-col>
         </v-row>
-        <v-snackbar v-model="snackbar" color="white " dark>
+        <v-snackbar v-model="snackbar" color="white">
           <v-row align="center" justify="center" class="ma-0">
             <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
               {{ this.error }}
-              
             </v-col>
             <v-btn
                 color="pink"
@@ -164,6 +163,7 @@ export default {
 
             // Redirect to /search
             this.$router.push('/search');
+            window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
           } else {
             // Handle non-successful response
   
