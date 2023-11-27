@@ -24,6 +24,7 @@
             v-slot="{ active }"
             :ripple="false"
             :value="item.route"
+            :to="item.route"
           >
             <v-list-item-content>
               <router-link :to="item.route">
