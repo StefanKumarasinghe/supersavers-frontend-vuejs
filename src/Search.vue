@@ -2,8 +2,13 @@
 <template>
   <v-app>
     <v-container fluid>
-      <v-row align="center">
-        <v-col cols="10" md="10" lg="6">
+      <div class="mx-3 mt-5">
+        <h1>COMPARE PRICES</h1>
+        <span>A Great Way To Save Money. Please enter the specific product you are looking for to get the most affordable item.</span>
+      </div>
+
+      <v-row align="center" class="my-5">
+        <v-col cols="9" md="10" lg="6">
           <v-text-field
             v-model="searchTerm"
             @change="fetchProducts()"
@@ -20,7 +25,7 @@
         <v-col cols="2" md="2" lg="2">
           <v-menu rounded="lg" offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn class="mx-2" fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
+              <v-btn fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
                 <v-icon >
                   mdi-filter
                 </v-icon>
@@ -44,10 +49,7 @@
       </v-row>
 
       <!-- Results display -->
-      <div class="py-3 mt-5">
-        <h1>COMPARE PRICES</h1>
-        <p>A Great Way To Save Money. Please enter the specific product you are looking for to get the most affordable item.</p>
-      </div>
+      
 
       <!-- Category bar -->
       <v-app-bar color="transparent" flat class="">

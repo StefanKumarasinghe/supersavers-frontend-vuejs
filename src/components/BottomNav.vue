@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-layout class="overflow-visible" style="height: 56px;">
+    <v-layout class="overflow-visible">
     <v-bottom-navigation class="bar" fixed grow v-model="selectedItem">
       <v-btn
         rounded
@@ -54,7 +54,7 @@
   /* Add any additional styles for the bottom navigation here */
   .icon {
     width: 100%; /* Ensure the icon takes up the full width of the button */
-    padding-top: 20px;
+    padding-top: 10px;
     color: black;
     background-color: transparent;
   }

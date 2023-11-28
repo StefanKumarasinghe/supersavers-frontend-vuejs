@@ -32,9 +32,9 @@
         </v-container>
       </v-main>
     </v-app>
-  </template>
+</template>
   
-  <script>
+<script>
   export default {
     data() {
       return {
@@ -45,7 +45,6 @@
     async beforeMount() {
       await this.TokenPromise();
     },
-  
     methods: {
         async TokenPromise() {
       this.AuthToken = await this.getToken();
