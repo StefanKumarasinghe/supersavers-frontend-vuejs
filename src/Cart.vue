@@ -4,7 +4,7 @@
         <v-container fluid>
             <v-card flat>
                 <v-card-title class="py-5">
-                <h1 class="orange--text">
+                <h1 class="green--text">
                     Shopping List
                 </h1>
                 <v-alert

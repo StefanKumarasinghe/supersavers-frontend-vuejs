@@ -3,27 +3,28 @@
   <v-app>
     <v-container fluid>
       <v-row align="center">
-        <v-col cols="12" md="9" lg="8">
+        <v-col cols="10" md="10" lg="6">
           <v-text-field
             v-model="searchTerm"
             @change="fetchProducts()"
             label="Search"
-            class="xs12 sm12 md4 lg3"
-            md="5"
             filled
             prepend-inner-icon="mdi-magnify"
             solo
             flat
             rounded
             outlined
+            hide-details="true"
           ></v-text-field>
         </v-col>
-        <v-col cols="12" md="2" lg="4">
-          <v-menu transition="slide-y-transition">
+        <v-col cols="2" md="2" lg="2">
+          <v-menu rounded="lg" offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="transparent" class="text-center" v-on="on" v-bind="attrs">
-                <v-icon left>mdi-filter</v-icon>
-              </v-btn>
+              <v-btn class="mx-2" fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
+                <v-icon >
+                  mdi-filter
+                </v-icon>
+              </v-btn>              
             </template>
             <v-list>
               <v-list-item v-for="(value, key) in storeFilters" :key="key">
@@ -759,7 +760,7 @@
     padding-left: 100px;
     margin-right: auto;
     margin-left: auto;
-    padding-right: 100px;
+    padding-right: 50px;
   }
 
   @media (max-width: 701px) {
@@ -769,6 +770,12 @@
     }
   }
 
+  /* filter icon button */
+  .v-application--is-ltr .v-btn__content .v-icon--left {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
   .truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -776,7 +783,7 @@
   }
 
   .v-sheet.v-toolbar:not(.v-sheet--outlined) {
-      box-shadow: none;
+    box-shadow: none;
   }
 
   /*-- Category tabs --*/
@@ -791,7 +798,6 @@
     flex: 0 1 15px;
     justify-content: center;
     min-width: 15px;
-    
   }
 
   .active {

@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <!-- Sidebar -->
-    <Sidebar v-show="isDesktop && authToken" />
-    <!-- Toolbar with Menu Icon -->    
+    <Sidebar v-if="isDesktop && authToken" />
+    <!-- Toolbar with Menu Icon -->
     <router-view></router-view>
     <BottomNav v-if="isMobile && authToken" />
   </div>
@@ -44,15 +44,15 @@ export default {
   },
   methods: {
     checkIsDesktop() {
-      this.isDesktop = window.innerWidth > 700;
+      this.isDesktop = window.innerWidth > 701;
       window.addEventListener('resize', () => {
-        this.isDesktop = window.innerWidth > 700;
+        this.isDesktop = window.innerWidth > 701;
       });
     },
     checkIsMobile() {
-      this.isMobile = window.innerWidth <= 700;
+      this.isMobile = window.innerWidth <= 701;
       window.addEventListener('resize', () => {
-        this.isMobile = window.innerWidth <= 700;
+        this.isMobile = window.innerWidth <= 701;
       });
     },
     handleResize() {
