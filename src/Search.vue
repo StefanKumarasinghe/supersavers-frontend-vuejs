@@ -48,9 +48,6 @@
         </v-col>
       </v-row>
 
-      <!-- Results display -->
-      
-
       <!-- Category bar -->
       <v-app-bar color="transparent" flat class="">
         <v-tabs v-model="tab" stacked active-class="active">
@@ -68,17 +65,6 @@
         color="green"
         indeterminate
       ></v-progress-linear>
-
-      <!-- Pagination 
-      <v-toolbar class="mx-auto">
-        <v-btn class="mr-2" outlined>
-          <v-icon left>mdi-chevron-left</v-icon>
-        </v-btn>
-        <v-btn class="mr-2" outlined>
-          <v-icon right>mdi-chevron-right</v-icon>
-        </v-btn>
-      </v-toolbar>
-      -->
 
       <!-- Lowest price product -->
       <div fluid v-if="lowestPricedProduct" class="my-5 py-3 text-center-sm text-left-md">
@@ -99,9 +85,8 @@
                 ${{ smallestPrice(lowestPricedProduct) }} /
                 {{ lowestPricedProduct.size }}
               </v-card-title>
-              
                 <v-btn
-                  @click="addProductToGrocery(lowestPricedProduct)"
+                  @click="addItemToCart(lowestPricedProduct)"
                   color="success"
                 >
                   Add to Grocery
@@ -235,19 +220,19 @@
     
       </div>
       <v-snackbar v-model="snackbar" color="white" dark>
-          <v-row align="center" justify="center" class="ma-0">
-            <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-              {{ this.error }}
-            </v-col>
-            <v-btn
-                color="pink"
-                variant="text"
-                @click="snackbar = false"
-              >
-                Got it
-            </v-btn>
-          </v-row>
-        </v-snackbar>
+        <v-row align="center" justify="center" class="ma-0">
+          <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+            {{ this.error }}
+          </v-col>
+          <v-btn
+              color="pink"
+              variant="text"
+              @click="snackbar = false"
+            >
+              Got it
+          </v-btn>
+        </v-row>
+      </v-snackbar>
     </v-container>
   </v-app>
 </template>
@@ -407,34 +392,33 @@
         }
       },
       async TokenPromise() {
-      this.AuthToken = await this.getToken();
-      this.verifyAuthProcess();
-    },
-    getToken() {
-      return new Promise((resolve) => {
-        const tokenSimple = this.$store.getters.getTokenSimple;
-        if (tokenSimple) {
-          resolve(tokenSimple);
-        } else {
-          const token = this.$store.getters.getToken;
-          resolve(token);
-        }
-      });
-    },
-    async VerifyAuth() {
-      const response = await fetch('http://127.0.0.1:8000/verified', {
-             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-          if (!(response.ok)) {
-            console.error('Error:', response.statusText);
-            this.$router.push('/verify');
+        this.AuthToken = await this.getToken();
+        this.verifyAuthProcess();
+      },
+      getToken() {
+        return new Promise((resolve) => {
+          const tokenSimple = this.$store.getters.getTokenSimple;
+          if (tokenSimple) {
+            resolve(tokenSimple);
+          } else {
+            const token = this.$store.getters.getToken;
+            resolve(token);
           }
-    },
+        });
+      },
+      async VerifyAuth() {
+        const response = await fetch('http://127.0.0.1:8000/verified', {
+            method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+        if (!(response.ok)) {
+          console.error('Error:', response.statusText);
+          this.$router.push('/verify');
+        }
+      },
       async verifyAuthProcess() {
-    
         try {
           const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
@@ -442,7 +426,6 @@
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
             const data = await response.json();
             if (data.user == null) {
@@ -453,20 +436,15 @@
             }
           } else {
             console.error('Error:', response.statusText);
-       
           }
         } catch (error) {
           console.error('Error:', error);
-       
         }
-    },
+      },
       async handleTabClick(category) {
         this.loading=true;
         this.combinedProducts=[]
-        
-      
         switch (category) {
-          
           case 'Deals':
           this.storeFilters['Deals At Woolies']=true;
           this.storeFilters['Deals At Coles']=true;
@@ -511,70 +489,60 @@
           default:
             this.categoryProduct = await this.fetchProductsCat(['Chips', 'Shampoo', 'Chocolate', 'Deodorant', 'Toothbrush','Oreo', 'Ice Cream', 'Apples',]);
             break;
-          
-          
         }
       },
-      async fetchProductsCat(productNames) {
-      
-      const products = [];
-
-      try {
-
-      for (const productName of productNames) {
-        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
-          method: 'GET', // or 'POST' or other HTTP methods
-          headers: {
-            'Authorization': `Bearer ${this.AuthToken}`,
-            'Content-Type': 'application/json', // Adjust the content type if needed
-            // Add other headers as needed
-          },
-        });    products.push(...(await response.json()));
-      }
-      this.products=[]
-      this.storeFilters['Deals At Woolies']=false;
-      this.storeFilters['Deals At Coles']=false;
-      this.storeFilters['Deals At IGA']=false;
-      }catch {
-        this.error = "Couldn't retrieve the items from the specific category";
-            this.snackbar = true;
-      }
-      this.loading=false;
-      return products;
-      },
-      async fetchProducts() {
-      this.loading = true;
-
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.AuthToken}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          this.products = data;
-        } else {
-          console.error('Error:', response.statusText);
-          this.error = response.statusText;
+      async fetchProductsCat(productNames) {  
+        const products = [];
+        try {
+          for (const productName of productNames) {
+            const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
+              method: 'GET', // or 'POST' or other HTTP methods
+              headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json', // Adjust the content type if needed
+              },
+            });    
+            products.push(...(await response.json()));
+          }
+          this.products=[]
+          this.storeFilters['Deals At Woolies']=false;
+          this.storeFilters['Deals At Coles']=false;
+          this.storeFilters['Deals At IGA']=false;
+        }catch {
+          this.error = "Couldn't retrieve the items from the specific category";
           this.snackbar = true;
         }
-      } catch (error) {
-        console.error('Error:', error);
-        this.error = "Error in retrieving data..."
-        this.snackbar = true;
-      }
+        this.loading=false;
+        return products;
+      },
+      async fetchProducts() {
+        this.loading = true;
 
-      this.loading = false;
-    },
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
 
+          if (response.ok) {
+            const data = await response.json();
+            this.products = data;
+          } else {
+            console.error('Error:', response.statusText);
+            this.error = response.statusText;
+            this.snackbar = true;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          this.error = "Error in retrieving data..."
+          this.snackbar = true;
+        }
 
-      removeItemFromCart(index) {
-        this.groceryList.splice(index, 1);
-        this.saveGroceryList()
-      }, Completed(index) {
+        this.loading = false;
+      }, 
+      Completed(index) {
         this.completed.push(this.groceryList.splice(index, 1)[0])
         this.saveGroceryList()
       },
@@ -602,7 +570,6 @@
         }
         return bestStore;
       },
- 
       updateSavingsAndBestStore(product) {
         // Update overall savings
         this.savings += this.productSavings(product);
@@ -746,6 +713,12 @@
         } catch (error) {
           console.error('Error fetching data:', error);
         }
+      },
+      addItemToCart(item) {
+        item.quantity = 1;
+        this.$store.dispatch('addItem', item);
+        this.error = 'Item was successfully added to the list';
+        this.snackbar = true;
       }
     },
     components: {

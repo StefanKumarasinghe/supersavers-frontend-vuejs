@@ -25,17 +25,21 @@ export default new Vuex.Store({
       Vue.set(state, 'token', null);
     },
     addItem(state, item) {
-      state.cart.push(item);
-      console.warn(state.cart)
-      localStorage.setItem('cart', JSON.stringify(state.cart));
+      // Check if the item already exists in the cart
+      const existingItem = state.cart.find((cartItem) => cartItem.name === item.name && cartItem.bought === false);
+      // Item doesn't exist in the cart, add it
+      if (!existingItem) {
+        state.cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(state.cart));
+      }
     },
     removeItem(state, item) {
-      const index = state.cart.indexOf(item);
+      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name);
       if (index !== -1) {
         state.cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(state.cart));
       }
-    },
+    }
   },
   actions: {
     // Example action to set the token

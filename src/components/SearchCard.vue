@@ -3,7 +3,7 @@
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
         <h3 align="right"  class="px-2 py-1  "><span v-if="bestStoreForProduct(product)=='Coles'" class="red--text font-weight-bold">{{bestStoreForProduct(product)}}</span><span v-if="bestStoreForProduct(product)=='Woolworths'" class="green--text font-weight-bold">{{bestStoreForProduct(product)}}</span><span v-if="bestStoreForProduct(product)=='IGA'" class="white--text font-weight-bold iga_logo font-weight-bold p-2">  <v-span class="white--text font-weight-bold iga_logo">&nbsp;IGA&nbsp;</v-span></span></h3>
-        <v-img :src="product.image" width="90%" contain class="text-center mx-auto"></v-img>
+        <v-img :src="product.image" width="70%" contain class="text-center mx-auto"></v-img>
       <v-card-title>
         <h3 class="green--text font-weight-bold" >
             <span class=" p-0" v-if="product.coles_price && product.woolworths_price && !product.iga_price">
@@ -66,12 +66,18 @@
         </v-card-title>
         <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
         <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
-          <v-btn class="text-none text-subtitle-1 mb-3 white--text" color="green" @click="addItemToCart(product)" size="small" variant="flat">
-              Add To List
-          </v-btn>
-          <v-btn class="text-none text-subtitle-1 mb-3" size="small" variant="flat" @click="Notify(product)">
-              Listen
-          </v-btn>
+          <div class="row">
+            <div class="col-12">
+              <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="100%" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
+                Add To List
+              </v-btn>
+            </div>
+            <div class="col-12">
+              <v-btn class="text-none text-h6 mb-3" width="100%" height="100%" size="small" variant="flat" @click="Notify(deal)">
+                Listen
+              </v-btn>
+            </div>
+          </div>
         </v-card-actions>
       </v-card>
     </span>
@@ -169,13 +175,13 @@ export default {
         console.error('Error fetching products:', error);
       }
     },
-
     addItemToCart(product) {
+      product.quantity = 1;
       this.$store.dispatch('addItem', product);
       this.error = 'Item was successfully added to the list';
       this.snackbar = true;
+      console.log("item added" + product);
     },
-
     bestStoreForProduct(product) {
       const storePrices = {
         'Woolworths': product.woolworths_price,
