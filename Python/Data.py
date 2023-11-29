@@ -1,30 +1,29 @@
 
 origins = [
     "http://localhost:8082",
-    "http://localhost:8081",
-    "http://localhost:8080"
+    "http://localhost:8080",
 ]
 
 payload_woolworths_deals = {
-        "categoryId": "specialsgroup.3676",
-        "categoryVersion": "v2",
-        "enableAdReRanking": False,
-        "filters": [],
-        "formatObject": '{"name":"Half Price"}',
-        "gpBoost": 0,
-        "groupEdmVariants": True,
-        "isBundle": False,
-        "isHideUnavailableProducts": False,
-        "isMobile": True,
-        "isRegisteredRewardCardPromotion": False,
-        "isSpecial": True,
-        "location": "/shop/browse/specials/half-price",
-        "pageNumber": 1,
-        "pageSize": 8,
-        "sortType": "TraderRelevance",
-        "token": "",
-        "url": "/shop/browse/specials/half-price",
-    }
+    "categoryId": "specialsgroup.3676",
+    "categoryVersion": "v2",
+    "enableAdReRanking": False,
+    "filters": [{"Key": "SoldBy", "Items": [{"Term": "Woolworths"}]}],
+    "formatObject": '{"name":"Half Price"}',
+    "gpBoost": 0,
+    "groupEdmVariants": True,
+    "isBundle": False,
+    "isHideUnavailableProducts": False,
+    "isMobile": True,
+    "isRegisteredRewardCardPromotion": False,
+    "isSpecial": True,
+    "location": "/shop/browse/specials/half-price",
+    "pageNumber": 1,
+    "pageSize": 24,
+    "sortType": "TraderRelevance",
+    "token": "",
+    "url": "/shop/browse/specials/half-price",
+}
 
 header_woolworths_deals = {
         "Accept": "application/json, text/plain, */*",

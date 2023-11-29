@@ -1,5 +1,34 @@
 
 from fuzzywuzzy import fuzz
+import requests
+import re
+
+def get_coles_build():
+
+    url = 'https://www.coles.com.au/'
+
+    try:
+        # Fetch the HTML content of the website
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Search for the buildId pattern in the raw HTML using regular expression
+        build_id_pattern = re.compile(r'buildId":"([^"]+)"')
+        match = build_id_pattern.search(response.text)
+
+        if match:
+            # Extract the Build ID from the regular expression match
+            build_id = match.group(1)
+            return build_id 
+            
+        else:
+            print('Build ID not found in the raw HTML.')
+            return ""
+            
+    except requests.RequestException as e:
+        print(f'Error fetching the website: {e}')
+    except Exception as e:
+        print(f'Error: {e}')
 
 
 PRICE_TOLERANCE = 0.20

@@ -10,6 +10,7 @@ import Connect
 import Deals
 import Notification
 import PAI
+import DealsBulk
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
@@ -47,6 +48,9 @@ async def verified(current_user: str = Depends(AuthGrocery.PasswordRecoveryManag
 async def verify_email_endpoint(token: str):
     return await AuthGrocery.PasswordRecoveryManager.verify_email(token)
 
+@app.get("/resend-email")
+async def resend(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    return await AuthGrocery.UserManager.resend_verification_email()
 @app.post("/forgot-password")
 @limiter.limit("5/60minute")
 async def forgot_password(request: Request, email: str = Form(...)):

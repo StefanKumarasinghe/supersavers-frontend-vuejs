@@ -14,6 +14,8 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import os
 import re
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from validate_email_address import validate_email
 
 class User(BaseModel):
@@ -38,7 +40,7 @@ class SecurityConfig:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
     SECRET_KEY = secrets.token_urlsafe(32)  # Use a more secure method to load the secret key
     ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 class TokenGenerator:
     @staticmethod
@@ -91,10 +93,74 @@ class UserManager:
         return {"message": "User registered successfully", "access_token": access_token, "token_type": "bearer"}
 
     @staticmethod
+    async def resend_verification_email(email: str):
+        user = next((u for u in UserManager.users_db if u["email"] == email), None)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        if "verification_token" not in user:
+            raise HTTPException(status_code=400, detail="User already verified.")
+
+        verification_token = user["verification_token"]
+
+        # Create a new access token with a 1-hour expiration
+        access_token_expires = timedelta(hours=1)
+        new_access_token = TokenGenerator.create_access_token(data={"sub": user["username"]}, expires_delta=access_token_expires)
+
+        # Update the user's data with the new access token
+        user["access_token"] = new_access_token
+
+        # Send verification email
+        await UserManager.send_verification_email(email, verification_token)
+
+    @staticmethod
     async def send_verification_email(email: str, verification_token: str):
         verification_link = f"http://localhost:8080/verify?token={verification_token}"
         email_subject = "Verify Your Email"
-        email_body = f"Click the following link to verify your email: {verification_link}"
+
+        # Compose HTML email body
+        email_body = f"""
+            <html>
+                <head>
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #f4f4f4;
+                        }}
+                        .container {{
+                            max-width: 600px;
+                            margin: auto;
+                            padding: 20px;
+                            background-color: #ffffff;
+                            border-radius: 10px;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        }}
+                        p {{
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #333333;
+                        }}
+                        a {{
+                            color: #3498db;
+                            text-decoration: none;
+                        }}
+                        a:hover {{
+                            color: #1e87c5;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                    <h1>GroceryAPI</h1>
+                        <p>Click the following link to verify your email:</p>
+                        <p><a href="{verification_link}">Verify</a></p>
+                        <small>Make sure you verify your email within 1 hour as the token will expire</small>
+                    </div>
+                </body>
+            </html>
+        """
 
         # Use your email sending logic here
         # For example, you can use the Gmail API or an SMTP server
@@ -102,15 +168,19 @@ class UserManager:
         # Set up the Gmail service
         service = PasswordRecoveryManager.get_gmail_service()
 
-        # Create the email message
-        message = MIMEText(email_body)
+
+        message = MIMEMultipart()
+        message.attach(MIMEText(email_body, 'html'))
         message["to"] = email
         message["subject"] = email_subject
 
         raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
 
-        # Send the email
+
+        # Use your email sending logic here
+
         try:
+            # Send the email
             message = service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
             print("Verification email sent successfully:", message)
         except Exception as error:
@@ -156,7 +226,7 @@ class PasswordRecoveryManager:
         user = next((x for x in users_db if x["username"] == username), None)
         if user is None or not user.get("is_verified", False):
             raise HTTPException(status_code=403, detail="Email not verified")
-        return user
+        return {"message": "User has successfully verified"}
 
     @staticmethod
     async def request_password_reset(email: str):
@@ -176,7 +246,6 @@ class PasswordRecoveryManager:
             await PasswordRecoveryManager.send_email(user["email"], email_subject, email_body)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
-
         return {"message": "Password reset requested. Check your email for instructions."}
 
     @staticmethod
@@ -185,7 +254,6 @@ class PasswordRecoveryManager:
         if user:
             user["is_verified"] = True
             user.pop("verification_token")
-
             return {"message": "Email verification successful."}
         else:
             raise HTTPException(status_code=400, detail="Invalid verification token.")

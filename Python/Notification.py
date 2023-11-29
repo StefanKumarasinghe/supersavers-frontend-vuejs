@@ -1,12 +1,15 @@
 from typing import List, Optional
-from fastapi import HTTPException, Depends, Body
+from fastapi import HTTPException, Depends, Body, status
 from pydantic import BaseModel
 import AuthGrocery
-import Deals
+import DealsBulk
+import threading
+from time import sleep
 import firebase_admin
 from firebase_admin import credentials, messaging
 import logging
 import random
+import time
 import re
 from werkzeug.utils import secure_filename
 
@@ -30,7 +33,13 @@ class Item(BaseModel):
 
 codes_storage: List[Item] = []
 
+# Your existing add_item function
 async def add_item(item: Item = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    # Check if the item already exists
+    if any(existing_item.name == item.name and existing_item.user == current_user for existing_item in codes_storage):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Item {item.name} already exists for user {current_user}.")
+    
+    # If not, add the item
     item.user = current_user
     codes_storage.append(item)
     return {'message': f'Item {item.name} added by user {current_user}.'}
@@ -69,37 +78,42 @@ async def remove_item(item: Item = Body(...), current_user: str = Depends(AuthGr
 async def check_and_notify():
     products = []
     try:
-        woolies_products = await Deals.half_price_deals_woolies()
+        woolies_products = await DealsBulk.half_price_deals_woolies_bulk()
         products.extend(woolies_products)
     except Exception as e:
         logging.error(f"Error during Woolworths product retrieval: {e}")
 
     try:
-        iga_products = await Deals.half_price_deals_iga()
+        iga_products = await DealsBulk.half_price_deals_iga_bulk()
         products.extend(iga_products)
     except Exception as e:
         logging.error(f"Error during IGA product retrieval: {e}")
 
     try:
-        coles_products = await Deals.half_price_deals_coles()
+        coles_products = await DealsBulk.half_price_deals_coles_bulk()
         products.extend(coles_products)
     except Exception as e:
         logging.error(f"Error during Coles product retrieval: {e}")
 
     for stored_item in codes_storage:
-        for product in products:
-            product_code_str = str(product.stockcode)
-            if (
-                stored_item.woolworths_code == product_code_str
-                or stored_item.coles_code == product_code_str
-                or stored_item.iga_code == product_code_str
-            ):
-                send_notification(stored_item)
+     for product in products:
+        product_code_str = str(product.stockcode)
+        if stored_item.woolworths_code == product_code_str:
+            threading.Thread(target=send_notification_delayed, args=(stored_item, "Woolies", 0)).start()
+        elif stored_item.coles_code == product_code_str:
+            threading.Thread(target=send_notification_delayed, args=(stored_item, "Coles", 60)).start()
+        elif stored_item.iga_code == product_code_str:
+            threading.Thread(target=send_notification_delayed, args=(stored_item, "IGA", 120)).start()
+
+def send_notification_delayed(stored_item, store, delay_in_seconds):
+    sleep(delay_in_seconds)
+    send_notification(stored_item, store)
+
 
 def is_valid_registration_token(token):
     return re.match(r'^[a-zA-Z0-9_-]+$', token) is not None
 
-def send_notification(stored_item):
+def send_notification(stored_item, store):
     registration_token = stored_item.registration_token
 
     title_phrases = [
@@ -128,9 +142,10 @@ def send_notification(stored_item):
     message = messaging.Message(
         notification=messaging.Notification(
             title=selected_title,
-            body=f"{selected_body} {stored_item.name} is now on sale!",
+            body=f"{selected_body} {stored_item.name} is now on sale! at {store}",
         ),
         token=registration_token,
+        android=messaging.AndroidConfig(ttl=86400),
     )
 
     try:
@@ -138,5 +153,4 @@ def send_notification(stored_item):
         logging.info("Successfully sent message: %s", response)
     except Exception as e:
         logging.error("Error sending message: %s", e)
-
 

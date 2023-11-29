@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 WOOLWORTHS_COOKIES = None
 Woolworths_URL = "https://www.woolworths.com.au/apis/ui/Search/products"
-Coles_URL = "https://www.coles.com.au/_next/data/20231117.02_v3.60.0/en/search.json?q={query}"
+Coles_URL = "https://www.coles.com.au/_next/data/{build}/en/search.json?q={query}"
 IGA_URL = "https://www.igashop.com.au/api/storefront/stores/52511/search?misspelling=true&q={query}&take=5"
 
 class Product(BaseModel):
@@ -32,6 +32,13 @@ class Product(BaseModel):
 async def search_products(query: str,code:str):
     query = query.lower().strip()
     code = code.strip()
+
+    build = FuncTools.get_coles_build()
+
+
+
+
+
     woolworths_headers = {"Accept": "application/json, text/plain, */*","Content-Type": "application/json","Origin": "https://www.woolworths.com.au","Referer": "https://www.woolworths.com.au/shop/search/products?searchTerm={query}","User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36","Sec-Fetch-Dest": "empty","Sec-Fetch-Mode": "cors","Sec-Fetch-Site": "same-origin", "Cookie": "",}
     iga_headers = Data.headers_iga_deals
     woolworths_response = None
@@ -48,7 +55,7 @@ async def search_products(query: str,code:str):
         woolworths_headers["Cookie"] = WOOLWORTHS_COOKIES
         results = await asyncio.gather(
             client.post(Woolworths_URL, headers=woolworths_headers, json=woolworths_payload),
-            client.get(Coles_URL.format(query=query)),
+            client.get(Coles_URL.format(query=query,build=build)),
             client.get(IGA_URL.format(query=query), headers=iga_headers)
         )
         woolworths_response, coles_response, iga_response = results
@@ -72,7 +79,7 @@ async def search_products(query: str,code:str):
     try:
         iga_data = iga_response.json()
         iga_products = [{
-            'id': item['barcode'],
+            'id': item['sku'],
             'name': item['name'],
             'wasPrice': float(item.get('wasPriceNumeric', 0)),  # Use get to handle missing key
             'price': float(item.get('priceNumeric', 0)),  # Use get to handle missing key
