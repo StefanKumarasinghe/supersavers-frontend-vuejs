@@ -1,36 +1,39 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <v-app>
-      <v-main>
-        <v-container fluid class="notify-deals-container">
-        <h1 class="font-weight-bold mx-auto">Notify Deals</h1>
-          <v-row class="my-1 p-0">
-            <v-col v-for="product in products" :key="product.woolworths_code" cols="12" md="12">
-              <v-container class="product-card">
-                <v-row align="center" justify="start">
-                  <v-col cols="4">
-                    <v-img :src="product.image" height="200" class="py-2 product-image" contain></v-img>
-                  </v-col>
-                  <v-col cols="8">
-                    <v-card-title class="display-1 mb-2 orange--text product-title">
-                      <strong>{{ product.name }}</strong>
-                    </v-card-title>
-                    <v-card-subtitle class="mb-3 product-description">
+      <v-container fluid>
+        <div class="mx-3 mt-5">
+          <h1>Notify Deals</h1>
+          <p>With the notifications feature, you won't miss out on the item with the best deal!</p>
+        </div>
+        <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
+          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10">
+            <div class="col-12 col-md-3 col-lg-3 col-sm-12 py-0">
+              <div class="p-5 m-5">
+                <v-img :src="product.image" alt="Item Image" contain class="mx-auto" min-width="150" max-width="170"></v-img>
+              </div>
+            </div>
+            <div class="col-12 col-md-9 col-lg-9 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+              <div class="row">
+                <div class="col-12 col-md-12 col-lg-12 col-sm-12"> 
+                  <div class="text-overline font-weight-bold">
+                    <h2>{{product.name}}</h2>
+                  </div>
+                  <div class="py-5">
+                    <div class="mb-3 product-description">
                       {{ product.description }}
-                    </v-card-subtitle>
-                    <v-btn @click="removeProduct(product)" color="orange white--text" class="ml-3 remove-button">
-                      Remove
-                    </v-btn>
-                    <v-card-subtitle class="product-sale-info">
-                      <strong>The Item is on Sale at Woolies!</strong>
-                    </v-card-subtitle>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-main>
+                    </div>
+                  </div>
+                  <div>
+                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 p-5" color="green" height="40" width="150">Add To Cart</v-btn>
+                    <v-btn outlined rounded text class="font-weight-bold ms-4 text-subtitle-1" @click="removeProduct(product)" height="42" width="120">Remove</v-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </v-container>
     </v-app>
 </template>
   
@@ -40,6 +43,7 @@
       return {
         products: [],
         AuthToken: null,
+        quantities: []
       };
     },
     async beforeMount() {
@@ -85,8 +89,6 @@
           });
 
           if (response.ok) {
-
-          
               await this.VerifyAuth();
               this.fetchProducts()
             
@@ -143,10 +145,6 @@
   </script>
   
   <style scoped>
-  /* Custom styling */
-  .notify-deals-container {
-    padding: 20px;
-  }
   
   .product-card {
     margin: 10px;

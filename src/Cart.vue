@@ -27,159 +27,184 @@
               <v-tabs-items v-model="tab">
                 <!-- First content -->
                 <v-tab-item>
+                  <v-expansion-panels v-model="panel1" :disabled="disabled1" multiple flat>
 
-                  <!-- Woolworths -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>    
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listToBuy('Woolworths').length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listToBuy('Woolworths')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && !list.bought">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                    <!-- Woolworths -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listToBuy('Woolworths').length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
+                        </div>
+                        <div v-for="(list, i) in listToBuy('Woolworths')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && !list.bought">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
+                              </div>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-lg col-sm-12">
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}} | {{list.size}}</h2>
-                              </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md-5 col-lg col-sm-12">
-                              <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1">Remove</v-btn>
-                              <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green">Bought</v-btn>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
 
-                  <!-- Coles -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>        
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listToBuy('Coles').length == 0">No items from Coles are added to the item to buy list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listToBuy('Coles')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                    <!-- Coles -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listToBuy('Coles').length == 0">No items from Coles are added to the item to buy list...</v-span>    
+                        </div>
+                        <div v-for="(list, i) in listToBuy('Coles')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
+                              </div>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-lg col-sm-12">
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}} | {{list.size}}</h2>
-                              </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md-5 col-lg col-sm-12">
-                              <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1">Remove</v-btn>
-                              <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green">Bought</v-btn>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
 
-                  <!-- IGA -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>     
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listToBuy('IGA').length == 0">No items from IGA are added to the item to buy list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listToBuy('IGA')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                    <!-- IGA -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <div>
+                          <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>
+                        </div>
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listToBuy('IGA').length == 0">No items from IGA are added to the item to buy list...</v-span>    
+                        </div>
+                        <div v-for="(list, i) in listToBuy('IGA')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
+                              </div>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5 col-lg col-sm-12">
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}} | {{list.size}}</h2>
-                              </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md-5 col-lg col-sm-12">
-                              <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1">Remove</v-btn>
-                              <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green">Bought</v-btn>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
 
                   <div v-if="listToBuy('Woolworths').length != 0 || listToBuy('Coles').length != 0 || listToBuy('IGA').length != 0">
                     <v-divider class="divider"></v-divider>
@@ -199,146 +224,173 @@
 
                 <!-- Second tab content -->
                 <v-tab-item>
-                  <!-- Woolworths -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>        
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listBought('Woolworths').length == 0">No items from Woolworths are added to the bought list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listBought('Woolworths')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
-                          </div>
-                        </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}}</h2>
-                              </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <!-- Coles -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>        
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listBought('Coles').length == 0">No items from Coles are added to the bought list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listBought('Coles')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
-                          </div>
+                  <v-expansion-panels v-model="panel2" :disabled="disabled2" multiple flat>
+                    
+                    <!-- Woolworths -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listBought('Woolworths').length == 0">No items from Woolworths are added to the bought list...</v-span>    
                         </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}}</h2>
+                        <div v-for="(list, i) in listBought('Woolworths')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
-                                </span>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
                               </div>
                             </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
 
-                  <!-- IGA -->
-                  <div class="mt-5 pt-5">
-                    <div class="pb-3">
-                      <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>     
-                    </div>
-                    <div class="pb-3">
-                      <v-span v-show="listBought('IGA').length == 0">No items from IGA are added to the bought list...</v-span>    
-                    </div>
-                    <div v-for="(list, i) in listBought('IGA')" :key="i" class="d-flex justify-center">
-                      <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
-                        <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                          <div class="p-5 m-5">
-                            <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                          </div>
-                          <div class="py-3 text-center">
-                            <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                            <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                            <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
-                          </div>
+                    <!-- Coles -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>        
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listBought('Coles').length == 0">No items from Coles are added to the bought list...</v-span>    
                         </div>
-                        <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                          <div class="row">
-                            <div class="col-12 col-md col-lg-5 col-sm-12"> 
-                              <div class="text-overline font-weight-bold">
-                                <h2>{{list.name}}</h2>
+                        <div v-for="(list, i) in listBought('Coles')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
-                              <div class="py-5">
-                                <span class="text-h6">
-                                  <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
-                                </span>
-                                <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                  Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
-                                </span>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
                               </div>
                             </div>
-                            <div class="col-12 col-md col-lg col-sm-12">
-                              <div class="card-quantity">
-                                <div class="text-subtitle-1">Quantity:</div>
-                                <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <!-- IGA -->
+                    <v-expansion-panel>
+                      <v-expansion-panel-header class="mt-5">
+                        <div>
+                          <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>     
+                        </div>
+                        <template v-slot:actions>
+                          <v-icon color="black" size="30">
+                            $expand
+                          </v-icon>
+                        </template>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="pb-3">
+                          <v-span v-show="listBought('IGA').length == 0">No items from IGA are added to the bought list...</v-span>    
+                        </div>
+                        <div v-for="(list, i) in listBought('IGA')" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
+                              <div class="p-5 m-5">
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
+                              </div>
+                              <div class="py-3 text-center">
+                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
+                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
+                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
+                              <div class="row">
+                                <div class="col-12 col-md col-lg-5 col-sm-12"> 
+                                  <div class="text-overline font-weight-bold">
+                                    <h2>{{list.name}}</h2>
+                                  </div>
+                                  <div class="py-5">
+                                    <span class="text-h6">
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
+                                    </span>
+                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md col-lg col-sm-12">
+                                  <div class="card-quantity">
+                                    <div class="text-subtitle-1">Quantity:</div>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
                 </v-tab-item>
               </v-tabs-items>
             </v-card>
@@ -350,6 +402,10 @@
     export default {
     data () {
       return {
+        panel1: [0, 1, 2],
+        panel2: [0, 1, 2],
+        disabled1: false,
+        disabled2: false,
         tab: null,
         items: [
           'Items to buy', 'Bought items'

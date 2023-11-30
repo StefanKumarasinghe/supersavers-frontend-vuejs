@@ -1,14 +1,14 @@
 <template>
     <span>
         <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
-            <v-toolbar color="transparent" flat>
+            <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
+            <v-toolbar color="transparent" flat class="py-0">
                 <v-avatar color="yellow" rounded width="100" height="35">
-                    <span class="black--text font-weight-bold p-0" v-show="deal.new_price != null && deal.old_price != null"> 
+                    <span class="black--text font-weight-bold" v-show="deal.new_price != null && deal.old_price != null"> 
                         Save ${{ parseFloat(deal.old_price - deal.new_price).toFixed(2) }}
                     </span>
                 </v-avatar>
             </v-toolbar>
-            <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
             <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
                 {{ deal.name }} | {{deal.size}}
             </v-card-title>
