@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <!-- Sidebar -->
-    <Sidebar v-if="isDesktop && authToken" />
+    <Sidebar v-if="isDesktop && authToken && $route.name != 'explore'" />
+
     <!-- Toolbar with Menu Icon -->
     <router-view></router-view>
     <BottomNav v-if="isMobile && authToken" />

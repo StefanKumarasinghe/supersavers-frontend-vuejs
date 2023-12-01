@@ -44,9 +44,9 @@
                           <v-span v-show="listToBuy('Woolworths').length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
                         </div>
                         <div v-for="(list, i) in listToBuy('Woolworths')" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && !list.bought">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-10" v-if="list.source == 'Woolworths' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -59,7 +59,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                    <h4>{{list.name}} | {{list.size}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
                                   <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -104,7 +104,7 @@
                         <div v-for="(list, i) in listToBuy('Coles')" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -117,7 +117,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                    <h4>{{list.name}} | {{list.size}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -136,7 +136,7 @@
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
                                   <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -164,7 +164,7 @@
                         <div v-for="(list, i) in listToBuy('IGA')" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -177,7 +177,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}} | {{list.size}}</h2>
+                                    <h4>{{list.name}} | {{list.size}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -196,7 +196,7 @@
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
                                   <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -244,7 +244,7 @@
                         <div v-for="(list, i) in listBought('Woolworths')" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -257,7 +257,7 @@
                               <div class="row">
                                 <div class="col-12 col-md col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}}</h2>
+                                    <h4>{{list.name}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -298,7 +298,7 @@
                         <div v-for="(list, i) in listBought('Coles')" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -311,7 +311,7 @@
                               <div class="row">
                                 <div class="col-12 col-md col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}}</h2>
+                                    <h4>{{list.name}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -354,7 +354,7 @@
                         <div v-for="(list, i) in listBought('IGA')" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-5 m-5">
+                              <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
                               </div>
                               <div class="py-3 text-center">
@@ -367,7 +367,7 @@
                               <div class="row">
                                 <div class="col-12 col-md col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h2>{{list.name}}</h2>
+                                    <h4>{{list.name}}</h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -415,12 +415,67 @@
       }
     },
     beforeMount() {
+      this.TokenPromise()
       this.lists = this.$store.getters.getList;
       for (let i = 0; i < this.lists.length; i++) {
         this.quantities[i] = this.lists[i].quantity;
       }
     },
     methods: {
+      async beforeMount() {
+      await this.TokenPromise();
+    },
+        async TokenPromise() {
+      this.AuthToken = await this.getToken();
+      this.verifyAuthProcess();
+    },
+    getToken() {
+      return new Promise((resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+ 
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
+    },
+    async VerifyAuth() {
+      const response = await fetch('http://127.0.0.1:8000/verified', {
+             method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          if (!(response.ok)) {
+            console.error('Error:', response.statusText);
+            this.$router.push('/verify');
+          }
+    },
+      async verifyAuthProcess() {
+    
+        try {
+          const response = await fetch('http://127.0.0.1:8000/protected', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+
+          if (response.ok) {
+              await this.VerifyAuth();
+          
+            
+          } else {
+            console.error('Error:', response.statusText);
+            this.$router.push('/login');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          this.$router.push('/login');
+        }
+    },
       listToBuy(store) {
         const list = []
 

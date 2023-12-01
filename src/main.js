@@ -25,7 +25,7 @@ Vue.use(VueRouter);
 
 // Define routes
 const routes = [
-  { path: '/', component: Explore },
+  { path: '/', name:'explore', component: Explore },
   { path: '/register', component: Register },
   { path: '/verify', component: Verification },
   { path: '/notification', name: 'notification', component: Notification },

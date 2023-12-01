@@ -9,7 +9,7 @@
         <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10">
             <div class="col-12 col-md-3 col-lg-3 col-sm-12 py-0">
-              <div class="p-5 m-5">
+              <div class="p-1">
                 <v-img :src="product.image" alt="Item Image" contain class="mx-auto" min-width="150" max-width="170"></v-img>
               </div>
             </div>
@@ -25,7 +25,7 @@
                     </div>
                   </div>
                   <div>
-                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 p-5" color="green" height="40" width="150">Add To Cart</v-btn>
+
                     <v-btn outlined rounded text class="font-weight-bold ms-4 text-subtitle-1" @click="removeProduct(product)" height="42" width="120">Remove</v-btn>
                   </div>
                 </div>
@@ -124,12 +124,9 @@
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              name: String(product.name),
               woolworths_code: String(product.woolworths_code),
               coles_code: String(product.coles_code),
               iga_code: String(product.iga_code),
-              image: String(product.image),
-              description: String(product.description),
             }),
           });
   

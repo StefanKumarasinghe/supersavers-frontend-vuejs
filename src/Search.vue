@@ -391,34 +391,39 @@
           console.error("Error fetching suggestions:", error);
         }
       },
-      async TokenPromise() {
-        this.AuthToken = await this.getToken();
-        this.verifyAuthProcess();
-      },
-      getToken() {
-        return new Promise((resolve) => {
-          const tokenSimple = this.$store.getters.getTokenSimple;
-          if (tokenSimple) {
-            resolve(tokenSimple);
-          } else {
-            const token = this.$store.getters.getToken;
-            resolve(token);
-          }
-        });
-      },
-      async VerifyAuth() {
-        const response = await fetch('http://127.0.0.1:8000/verified', {
-            method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.AuthToken}`,
-          },
-        });
-        if (!(response.ok)) {
-          console.error('Error:', response.statusText);
-          this.$router.push('/verify');
+      async beforeMount() {
+      await this.TokenPromise();
+    },
+        async TokenPromise() {
+      this.AuthToken = await this.getToken();
+      this.verifyAuthProcess();
+    },
+    getToken() {
+      return new Promise((resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+ 
+          const token = this.$store.getters.getToken;
+          resolve(token);
         }
-      },
+      });
+    },
+    async VerifyAuth() {
+      const response = await fetch('http://127.0.0.1:8000/verified', {
+             method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          if (!(response.ok)) {
+            console.error('Error:', response.statusText);
+            this.$router.push('/verify');
+          }
+    },
       async verifyAuthProcess() {
+    
         try {
           const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
@@ -426,21 +431,20 @@
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
+
           if (response.ok) {
-            const data = await response.json();
-            if (data.user == null) {
-              this.$router.push('/login');
-            }else{
-              this.fetchWeeklyDeals();
               await this.VerifyAuth();
-            }
+              this.fetchWeeklyDeals()
+            
           } else {
             console.error('Error:', response.statusText);
+            this.$router.push('/login');
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$router.push('/login');
         }
-      },
+    },
       async handleTabClick(category) {
         this.loading=true;
         this.combinedProducts=[]
