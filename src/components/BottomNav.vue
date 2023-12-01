@@ -38,7 +38,7 @@
         { icon: "mdi-home-outline", route: "search", label: "Search" },
         { icon: "mdi-cart-outline", route: "cart", label: "Cart" },
         { icon: "mdi-bell-outline", route: "notification", label: "Notification" },
-        { icon: "mdi-account-outline", route: "login", label: "Account" },
+        { icon: "mdi-account-outline", route: "account", label: "Account" },
       ],
     }),
     methods: {

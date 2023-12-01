@@ -101,7 +101,7 @@ export default {
       { icon: "mdi-home-outline", route: "search" },
       { icon: "mdi-cart-outline", route: "cart" },
       { icon: "mdi-bell-outline", route: "notification" },
-      { icon: "mdi-account-outline", route: "/" },
+      { icon: "mdi-account-outline", route: "account" },
     ],
   }),
 };
