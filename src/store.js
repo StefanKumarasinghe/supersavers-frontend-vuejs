@@ -69,7 +69,6 @@ export default new Vuex.Store({
     getList: (state) => {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
       Vue.set(state, 'cart', cart);
-      
       return cart;
     },
     getToken: () => {

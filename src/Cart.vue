@@ -32,7 +32,7 @@
                     <!-- Woolworths -->
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
-                        <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>
+                        <h3 class="green--text font-weight-bold woolies-logo" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</h3>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
                             $expand
@@ -90,7 +90,7 @@
                     <!-- Coles -->
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
-                        <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>
+                        <h3 class="red--text font-weight-bold coles-logo " style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</h3>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
                             $expand
@@ -149,7 +149,7 @@
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
                         <div>
-                          <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>
+                          <h3 class="font-weight-bold iga-logo py-2" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</h3>
                         </div>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
@@ -230,7 +230,7 @@
                     <!-- Woolworths -->
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
-                        <v-span class="green--text font-weight-bold woolies-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>
+                        <h3 class="green--text font-weight-bold woolies-logo " style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</h3>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
                             $expand
@@ -284,7 +284,7 @@
                     <!-- Coles -->
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
-                        <v-span class="red--text font-weight-bold coles-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span>        
+                        <h3 class="red--text font-weight-bold coles-logo " style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</h3>        
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
                             $expand
@@ -339,7 +339,7 @@
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
                         <div>
-                          <v-span class="font-weight-bold iga-logo text-h4" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span>     
+                          <h3 class="font-weight-bold iga-logo" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</h3>     
                         </div>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
@@ -423,12 +423,15 @@
     methods: {
       listToBuy(store) {
         const list = []
+
         for (let i = 0; i < this.lists.length; i++) {
           if (this.lists[i].source == store && !this.lists[i].bought) {
             this.lists[i].number = i;
+           
             list.push(this.lists[i]);
           }
         }
+
         return list
       },
       listBought(store) {

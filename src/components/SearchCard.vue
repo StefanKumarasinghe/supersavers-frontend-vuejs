@@ -58,28 +58,48 @@
                 &nbsp;IGA&nbsp;
               </v-span>
             </v-span>
-        
         </h5>
         </v-card-title>
         <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
           {{ product.name }} | {{product.size}}
         </v-card-title>
         <v-spacer></v-spacer> <!-- Add a spacer to push the buttons to the bottom -->
+        <v-card-text>
+                <div class="card-quantity mx-1 my-2">
+                    <div class="text-subtitle-1">Quantity:</div>
+                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantity" append-outer-icon="mdi-plus" @click:append-outer="increment()" prepend-icon="mdi-minus" @click:prepend="decrement()"></v-text-field>
+                </div>
+        </v-card-text>
         <v-card-actions class="mx-2 mt-auto"> <!-- Use mt-auto to push the buttons to the bottom -->
           <div class="row">
             <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="100%" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
+              <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="100%" color="green" @click="addItemToCart(product)" size="small" variant="flat">
                 Add To List
               </v-btn>
             </div>
             <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3" width="100%" height="100%" size="small" variant="flat" @click="Notify(deal)">
+              <v-btn class="text-none text-h6 mb-3" width="100%" height="100%" size="small" variant="flat" @click="Notify(product)">
                 Listen
               </v-btn>
             </div>
           </div>
         </v-card-actions>
+
       </v-card>
+      <v-snackbar v-model="snackbar" color="white" dark>
+        <v-row align="center" justify="center" class="ma-0">
+          <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
+            {{ this.error }}
+          </v-col>
+          <v-btn
+              color="pink"
+              variant="text"
+              @click="snackbar = false"
+            >
+              Got it
+          </v-btn>
+        </v-row>
+      </v-snackbar>
     </span>
 </template>
 
@@ -93,9 +113,11 @@ export default {
       type: Object,
       required: true,
     },
+
     data: {
       AuthToken: null,
       registrationToken: null,
+     
     },
   },
 
@@ -103,6 +125,11 @@ export default {
     await this.TokenPromise();
     await this.getAndSendNotificationToken();
   },
+  data() {
+        return {
+            quantity: 1
+        }
+    },
 
   methods: {
     async getAndSendNotificationToken() {
@@ -175,13 +202,55 @@ export default {
         console.error('Error fetching products:', error);
       }
     },
-    addItemToCart(product) {
-      product.quantity = 1;
-      this.$store.dispatch('addItem', product);
-      this.error = 'Item was successfully added to the list';
-      this.snackbar = true;
-      console.log("item added" + product);
-    },
+    increment () {
+            this.quantity += 1;
+        },
+        decrement () {
+            if (this.quantity > 1) {
+                this.quantity -= 1;
+            }
+     },
+     addItemToCart(product) {
+  if (product) {
+    var x = { ...product }; // Create a copy to avoid modifying the original object
+    x.quantity = this.quantity;
+    x.bought = false;
+
+    const storePrices = {
+      'Woolworths': product.woolworths_price,
+      'Coles': product.coles_price,
+      'IGA': product.iga_price,
+    };
+
+    // Filter out null or undefined prices
+    const validPrices = Object.values(storePrices).filter(price => price !== null && price !== undefined);
+
+    // Check if there are valid prices
+    if (validPrices.length > 0) {
+      // Calculate the old and new prices based on valid prices
+      x.old_price = Math.max(...validPrices);
+      x.new_price = Math.min(...validPrices);
+
+      // Determine the store with the lowest price
+      let lowestStore = Object.keys(storePrices).find(store => storePrices[store] === x.new_price);
+
+      // Set the lowest price store as the source
+      x.source = lowestStore;
+    } else {
+      // No valid prices, set source to null
+      x.source = null;
+    }
+
+    // Dispatch to the store
+    this.$store.dispatch('addItem', x);
+    this.error = 'Item was successfully added to the list';
+    this.snackbar = true;
+  } else {
+    console.error('Invalid product:', x);
+  }
+}
+,
+
     bestStoreForProduct(product) {
       const storePrices = {
         'Woolworths': product.woolworths_price,

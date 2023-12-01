@@ -29,11 +29,6 @@
                             Add To List
                         </v-btn>
                     </div>
-                    <div class="col-12">
-                        <v-btn class="text-none text-h6 mb-3" width="100%" height="100%" size="small" variant="flat" @click="Notify(deal)">
-                            Listen
-                        </v-btn>
-                    </div>
                 </div>
             </v-card-actions>
         </v-card>
