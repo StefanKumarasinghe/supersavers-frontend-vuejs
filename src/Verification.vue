@@ -1,69 +1,34 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-app>
-      <v-main>
-        <div v-if="showSplashScreen" class="splash-screen" @animationend="onAnimationEnd">
-          <v-row align="center" justify="center">
-            <v-col cols="12" md="6" lg="6" class="splash-card">
-                <v-card-text class="font-weight-bold"><h2>Vmart</h2></v-card-text>
+  <v-app>
+    <v-main>
+      <div v-if="showSplashScreen" class="splash-screen" @animationend="onAnimationEnd">
+        <v-row align="center" justify="center">
+          <v-col cols="12" md="6" lg="6" class="splash-card">
+              <v-card-text class="font-weight-bold"><h2>Supersaver</h2></v-card-text>
+          </v-col>
+        </v-row>
+      </div>
+      <div v-else>
+        <v-container fluid>
+          <v-row align="center" justify="center" class="">
+            <v-col cols="12" md="6" lg="6">
+              <v-card-title class="font-weight-bold green--text">Verify Email</v-card-title>
+              <v-card-text class="text-lg-h6 font-weight-bold">
+                You are not yet done. To use the app, we will need you to verify your account before accessing the features
+              </v-card-text>
+              <v-card-text>
+                <v-btn color="green" class="font-weight-bold">Send another email</v-btn>
+              </v-card-text>
             </v-col>
           </v-row>
-        </div>
-        <div v-else>
-          <v-container fluid>
-            <v-row align="center" justify="center" class="">
-              <v-col cols="12" md="6" lg="6">
-                <v-card-title class="font-weight-bold orange--text">Verify Email</v-card-title>
-                <v-card-text class="text-lg-h6 font-weight-bold">
-                  You are not yet done. To use the app, we will need you to verify your account before accessing the features
-                </v-card-text>
-                <v-card-text>
-                  <v-btn color="orange" class="font-weight-bold">Send another email</v-btn>
-                </v-card-text>
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
-      </v-main>
-    </v-app>
-  </template>
+        </v-container>
+      </div>
+    </v-main>
+  </v-app>
+</template>
   
-  <style>
-  .splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: orange;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fade-out 2s ease-out; /* Adjust the duration as needed */
-  }
-  
-  @keyframes fade-out {
-    0% {
-      opacity: 1;
-    }
-    50%{
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  
-  .splash-card {
-    background-color: transparent;
-    color: white;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: center;
-  }
-  </style>
-  
-  <script>
+<script>
   export default {
     data() {
       return {
@@ -76,6 +41,10 @@
       this.TokenPromise();
       this.token = this.ExtractToken();
       this.CheckToken();
+      this.authCheckInterval = setInterval(this.CheckAuthenticationStatus, 5000);
+    },
+    beforeDestroy() {
+      clearInterval(this.authCheckInterval);
     },
     methods: {
       onAnimationEnd() {
@@ -150,7 +119,47 @@
           console.error('Error:', error);
         }
       },
+      async CheckAuthenticationStatus() {
+        this.TokenPromise();
+        if (!this.AuthToken) {
+          this.$router.push('/search');
+        }
+      }
     },
   };
-  </script>
+</script>
+
+<style>
+  .splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: green;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fade-out 2s ease-out; /* Adjust the duration as needed */
+  }
   
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    50%{
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .splash-card {
+    background-color: transparent;
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+</style>
