@@ -1,6 +1,6 @@
 <template>
     <span>
-        <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="400" height="100%" >
+        <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
             <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
             <v-toolbar color="transparent" flat class="py-0">
                 <v-avatar color="yellow" rounded width="100" height="35">
@@ -25,7 +25,7 @@
             <v-card-actions class="mx-2"> <!-- Use mt-auto to push the buttons to the bottom -->
                 <div class="row">
                     <div class="col-12">
-                        <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="100%" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
+                        <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="45px" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
                             Add To List
                         </v-btn>
                     </div>
@@ -105,34 +105,6 @@ export default {
                     resolve(token);
                 }
             });
-        },
-        async Notify(product) {
-            try {
-                // Use the messaging instance from Firebase
-                const messaging = getMessaging(firebase);
-
-                // Get the current registration token
-                const currentToken = await getToken(messaging);
-
-                await fetch('http://127.0.0.1:8000/add_item_notify', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.AuthToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: String(product.name),
-                    registration_token: String(currentToken),
-                    woolworths_code: String(product.stockcode_w),
-                    coles_code: String(product.stockcode_c),
-                    iga_code: String(product.stockcode_i),
-                    image: String(product.image),
-                    description: String(product.description),
-                }),
-                });
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
         },
         addItemToCart(product) {
             product.quantity = this.quantity;

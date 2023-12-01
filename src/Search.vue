@@ -85,13 +85,15 @@
                 ${{ smallestPrice(lowestPricedProduct) }} /
                 {{ lowestPricedProduct.size }}
               </v-card-title>
+              <v-card-action>
                 <v-btn
                   @click="addItemToCart(lowestPricedProduct)"
                   color="success"
+                  class="text-none text-h6 mb-3 white--text"
                 >
                   Add to Grocery
                 </v-btn>
-              
+              </v-card-action>
               <v-card-title>
                 <strong
                   >Deal Available At
@@ -105,12 +107,12 @@
       <!-- Skeleton loader -->
       <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
-          <v-col v-for="i in 4" :key="i" 
+          <v-col v-for="i in 6" :key="i" 
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3">
+            md="4"
+            lg="4">
             <v-skeleton-loader type="card"></v-skeleton-loader>
           </v-col>
         </v-row>
@@ -126,8 +128,8 @@
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3"
+            md="6"
+            lg="4"
             v-for="product in combinedProducts" 
             :key="product.name"
           >
@@ -146,8 +148,8 @@
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3"
+            md="6"
+            lg="4"
             v-for="product in categoryProduct" 
             :key="product.name"
           >
@@ -167,8 +169,8 @@
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3"
+            md="6"
+            lg="4"
             v-for="deal in weeklyDeals_w" 
             :key="deal.name"
           >
@@ -188,8 +190,8 @@
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3"
+            md="6"
+            lg="4"
             v-for="deal in weeklyDeals_coles" 
             :key="deal.name"
           >
@@ -209,8 +211,8 @@
             cols="12"
             xs="12"
             sm="6"
-            md="3"
-            lg="3"
+            md="6"
+            lg="4"
             v-for="deal in weeklyDeals_iga" 
             :key="deal.name"
           >
@@ -714,11 +716,44 @@
           console.error('Error fetching data:', error);
         }
       },
-      addItemToCart(item) {
-        item.quantity = 1;
-        this.$store.dispatch('addItem', item);
-        this.error = 'Item was successfully added to the list';
-        this.snackbar = true;
+      addItemToCart(product) {
+        if (product) {
+          var x = { ...product }; // Create a copy to avoid modifying the original object
+          x.quantity = 1;
+          x.bought = false;
+
+          const storePrices = {
+            'Woolworths': product.woolworths_price,
+            'Coles': product.coles_price,
+            'IGA': product.iga_price,
+          };
+
+          // Filter out null or undefined prices
+          const validPrices = Object.values(storePrices).filter(price => price !== null && price !== undefined);
+
+          // Check if there are valid prices
+          if (validPrices.length > 0) {
+            // Calculate the old and new prices based on valid prices
+            x.old_price = Math.max(...validPrices);
+            x.new_price = Math.min(...validPrices);
+
+            // Determine the store with the lowest price
+            let lowestStore = Object.keys(storePrices).find(store => storePrices[store] === x.new_price);
+
+            // Set the lowest price store as the source
+            x.source = lowestStore;
+          } else {
+            // No valid prices, set source to null
+            x.source = null;
+          }
+
+          // Dispatch to the store
+          this.$store.dispatch('addItem', x);
+          this.error = 'Item was successfully added to the list';
+          this.snackbar = true;
+        } else {
+          console.error('Invalid product:', x);
+        }
       }
     },
     components: {

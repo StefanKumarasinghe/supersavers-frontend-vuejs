@@ -26,7 +26,7 @@ export default new Vuex.Store({
     },
     addItem(state, item) {
       // Check if the item already exists in the cart
-      const existingItem = state.cart.find((cartItem) => cartItem.name === item.name && cartItem.bought === false);
+      const existingItem = state.cart.find((cartItem) => cartItem.name === item.name && cartItem.bought === false && cartItem.source === item.source);
       // Item doesn't exist in the cart, add it
       if (!existingItem) {
         state.cart.push(item);
@@ -34,7 +34,7 @@ export default new Vuex.Store({
       }
     },
     removeItem(state, item) {
-      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name);
+      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name && cartItem.source === item.source);
       if (index !== -1) {
         state.cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(state.cart));

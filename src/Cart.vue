@@ -43,7 +43,7 @@
                         <div class="pb-3">
                           <v-span v-show="listToBuy('Woolworths').length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listToBuy('Woolworths')" :key="i" class="d-flex justify-center">
+                        <div v-for="(list, i) in lists" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-5 m-5">
@@ -63,22 +63,22 @@
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(i)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(i, quantities[i])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -101,7 +101,7 @@
                         <div class="pb-3">
                           <v-span v-show="listToBuy('Coles').length == 0">No items from Coles are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listToBuy('Coles')" :key="i" class="d-flex justify-center">
+                        <div v-for="(list, i) in lists" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-5 m-5">
@@ -121,22 +121,22 @@
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(i)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(i, quantities[i])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -161,7 +161,7 @@
                         <div class="pb-3">
                           <v-span v-show="listToBuy('IGA').length == 0">No items from IGA are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listToBuy('IGA')" :key="i" class="d-flex justify-center">
+                        <div v-for="(list, i) in lists" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-5 m-5">
@@ -181,22 +181,22 @@
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[list.number]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[list.number]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[list.number]" append-outer-icon="mdi-plus" @click:append-outer="increment(list.number)" prepend-icon="mdi-minus" @click:prepend="decrement(list.number)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(i)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(i, quantities[i])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="100">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -451,7 +451,7 @@
           this.$set(this.quantities, index, this.quantities[index] - 1);
         }
       },
-      removeItemFromCart(index,) {
+      removeItemFromCart(index) {
         this.$store.dispatch('removeItem', this.lists[index]);
         this.quantities.splice(index, 1);
       },
@@ -470,21 +470,12 @@
       },
       saveTotal() {
         let sum = 0;
-        for (let i = 0; i < this.listToBuy("Woolworths").length; i++) {
-          sum += this.quantities[this.listToBuy("Woolworths")[i].number] * (this.listToBuy("Woolworths")[i].old_price - this.listToBuy("Woolworths")[i].new_price);
-        }
-        for (let i = 0; i < this.listToBuy("Coles").length; i++) {
-          sum += this.quantities[this.listToBuy("Coles")[i].number] * (this.listToBuy("Coles")[i].old_price - this.listToBuy("Coles")[i].new_price);
-        }
-        for (let i = 0; i < this.listToBuy("IGA").length; i++) {
-          sum += this.quantities[this.listToBuy("IGA")[i].number] * (this.listToBuy("IGA")[i].old_price - this.listToBuy("IGA")[i].new_price);
-        }
+        
         return sum.toFixed(2);
       },
       boughtItem(index, quantity) {
         this.lists[index].quantity = quantity
         this.lists[index].bought = true;
-        console.log("index: " + index);
       }
     }
   }
