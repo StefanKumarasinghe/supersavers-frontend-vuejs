@@ -11,19 +11,37 @@
       </div>
       <div v-else>
         <v-container fluid>
-          <v-row align="center" justify="center" class="">
+          <v-row align="center" justify="center" class="mt-5 pt-5">
             <v-col cols="12" md="6" lg="6">
-              <v-card-title class="font-weight-bold green--text">Verify Email</v-card-title>
-              <v-card-text class="text-lg-h6 font-weight-bold">
+              <h1 class="font-weight-bold green--text">Verify Email</h1>
+              <h5 class="fw-bold text-success my-5">
                 You are not yet done. To use the app, we will need you to verify your account before accessing the features
-              </v-card-text>
-              <v-card-text>
-                <v-btn color="green" class="font-weight-bold">Send another email</v-btn>
-              </v-card-text>
+              </h5>
+                <v-btn color="green" class="white--text font-weight-bold mx-0 mt-3" @click="resendEmail" >Send another email</v-btn>
             </v-col>
           </v-row>
         </v-container>
       </div>
+      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
+              <v-icon>mdi-check</v-icon>
+            </v-avatar>
+            <v-avatar v-else color="red" size="30px" class="me-3">
+              <v-icon>mdi-alert-circle-outline</v-icon>
+            </v-avatar>
+
+          <span class="white--text font-weight-bold">{{ this.message }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="green"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
     </v-main>
   </v-app>
 </template>
@@ -35,6 +53,9 @@
         token: null,
         AuthToken: null,
         showSplashScreen: true,
+        snackbarError:false,
+        snackbar:false,
+        snackbarTimeout:2500,
       };
     },
     created() {
@@ -69,7 +90,9 @@
             } else {
               const data = await response.json();
               console.error('Error:', data.error || 'Unknown error');
-              alert("An unexpected error occurred. Please try again.");
+              this.snackbarError= true;
+              this.message = "The token is not correct. Could not verify email";
+               this.snackbar = true;
             }
           } catch (error) {
             console.error('Error:', error);
@@ -84,7 +107,12 @@
           },
         });
         if (response.ok) {
-          this.$router.push('/search');
+          this.snackbarError= false;
+          this.message = "Seems like you are verified...";
+          this.snackbar = true;
+          this.$nextTick(() => {
+           this.$router.push('/search');
+          });
         }
       },
       getToken() {
@@ -119,6 +147,32 @@
           console.error('Error:', error);
         }
       },
+      async resendEmail() {
+        try {
+          const response = await fetch('http://127.0.0.1:8000/resend-email', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          if (response.ok) {
+            this.snackbarError= false;
+            this.message = "Successfully resent your email. Only valid for 1 hour...";
+            this.snackbar = await true;
+          } else {
+            this.snackbarError= true;
+            this.message = "Error sending that email. Try again later";
+            this.snackbar = await true;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          this.snackbarError= true;
+          this.message = "Something went wrong";
+          this.snackbar = await true;
+        }
+      },
+      
+
       async CheckAuthenticationStatus() {
         this.TokenPromise();
         if (!this.AuthToken) {

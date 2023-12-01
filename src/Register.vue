@@ -78,20 +78,26 @@
           </v-col>
         </v-row>
         <div class="text-center ma-2">
-          <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout">
-            <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-            <span class="white--text font-weight-bold">{{ this.error }}!</span>
-            <template v-slot:action="{ attrs }">
-              <v-btn
-                color="red"
-                text
-                v-bind="attrs"
-                @click="snackbar = false"
-              >
-                <b>Close</b>
-              </v-btn>
-            </template>
-          </v-snackbar>
+          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
+              <v-icon>mdi-check</v-icon>
+            </v-avatar>
+            <v-avatar v-else color="red" size="30px" class="me-3">
+              <v-icon>mdi-alert-circle-outline</v-icon>
+            </v-avatar>
+
+          <span class="white--text font-weight-bold">{{ this.message }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="green"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
         </div>
       </v-container>
     </v-main>
@@ -109,6 +115,7 @@ export default {
       username: '',
       snackbarError: false,
       snackbarTimeout: 2500,
+      snackbar:false,
       error: null,
       nameRules: [
         value => {
@@ -171,17 +178,17 @@ export default {
           if (response.ok) {
             const data = await response.json();
             if (data.user != null) {
+              this.snackbarError = true;
+              this.error = "You are already logged in ...";
+              this.snackbar = true;
               this.$router.push('/search');
             }
           } else {
             console.error('Error:', response.statusText);
-            this.error = response.statusText;
-            this.snackbar = true;
           }
         } catch (error) {
           console.error('Error:', error);
-          this.error = error.statusText;
-          this.snackbar = true;
+      
         }
       }
     },
@@ -203,19 +210,32 @@ export default {
           }),
         });
         if (response.ok) {
-          const data = await response.json();
-          const token = data.access_token;
-          await this.$store.dispatch('setToken', token);
-          this.$router.push('/verify');
-        } else {
-    
-          this.error = response.statusText;
-          this.snackbar = true;
-        }
+            const data = await response.json();
+            this.snackbarError= false;
+            this.message = "Successfully created your super savers account";
+            this.snackbar = await true;
+            
+            const token = data.access_token;
+            // Store the token globally
+            await this.$store.dispatch('setToken', token);
+
+            // Redirect to /search
+            this.$nextTick(() => {
+            this.$router.push('/search');
+            });
+            window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+          }else {
+            const data = await response.json();
+            this.snackbarError= true,
+            this.message = "Something is wrong : "+data.detail;
+            this.snackbar = true;
+          }
       } catch (error) {
         console.error('Registration failed:', error);
-        //this.error = response.statusText;
+        this.snackbarError= true,
+        this.message = "Something is went wrong";
         this.snackbar = true;
+      
       }
     },
   },

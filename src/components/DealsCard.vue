@@ -1,6 +1,9 @@
 <template>
     <span>
         <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
+            <button @click="shareApp(deal)" large class="text-start m-1 font-weight-bold">
+      <span class="mdi  mdi-share-variant"></span>
+    </button>
             <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
             <v-toolbar color="transparent" flat class="py-0">
                 <v-avatar color="yellow" rounded width="100" height="35">
@@ -86,6 +89,35 @@ export default {
                 this.quantity -= 1;
             }
         },
+        shareApp(product) {
+  // Check if the Web Share API is supported by the browser
+  if (navigator.share) {
+    // Calculate total and savings
+
+
+    // Message parts
+    const messageParts = [
+  `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
+  `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
+  `🛒 Visit SuperSavers.au to snag this awesome deal: https://supersavers.au 🌈`,
+];
+
+
+    // Combine all parts into the final message
+    const shareMessage = messageParts.join('\n');
+
+    // Use the Web Share API to share the message
+    navigator
+      .share({
+        title: "SuperSavers",
+        text: shareMessage,
+      })
+      .then(() => console.log('Shared successfully'))
+      .catch((error) => console.error('Error sharing:', error));
+  } else {
+    console.error('Error sharing: Web Share API is not supported');
+  }
+},
         async getAndSendNotificationToken() {
             try {
                 // Request permission to show notifications

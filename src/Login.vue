@@ -54,20 +54,26 @@
           </v-col>
         </v-row>
         <div class="text-center ma-2">
-          <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout">
-            <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-            <span class="white--text font-weight-bold">{{ this.error }}!</span>
-            <template v-slot:action="{ attrs }">
-              <v-btn
-                color="red"
-                text
-                v-bind="attrs"
-                @click="snackbar = false"
-              >
-                <b>Close</b>
-              </v-btn>
-            </template>
-          </v-snackbar>
+          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
+              <v-icon>mdi-check</v-icon>
+            </v-avatar>
+            <v-avatar v-else color="red" size="30px" class="me-3">
+              <v-icon>mdi-alert-circle-outline</v-icon>
+            </v-avatar>
+
+          <span class="white--text font-weight-bold">{{ this.message }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="green"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
         </div>
       </v-container>
     </v-main>
@@ -83,6 +89,7 @@ export default {
     return {
       AuthToken: null,
       username: '',
+      snackbar:false,
       snackbarError: false,
       snackbarTimeout: 2500,
       error: null,
@@ -132,10 +139,14 @@ export default {
           if (response.ok) {
             const data = await response.json();
             if (data.user != null) {
+              this.snackbarError = true;
+              this.error = "You are already logged in ...";
+              this.snackbar = true;
               this.$router.push('/search');
             }
           } else {
             console.error('Error:', response.statusText);
+            
           }
         } catch (error) {
           console.error('Error:', error);
@@ -157,26 +168,33 @@ export default {
           });
 
           if (response.ok) {
+            this.snackbarError= false,
+            this.message = 'Successfully signed in';
+            
+            this.snackbar = true;
             const data = await response.json();
             const token = data.access_token;
 
             // Store the token globally
             await this.$store.dispatch('setToken', token);
 
+            
             // Redirect to /search
+            this.$nextTick(() => {
             this.$router.push('/search');
+            });
             window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
-          } else {
-            // Handle non-successful response
-  
-            this.error = response.statusText;
+          
+          }else {
+            const data = await response.json();
+            this.snackbarError= true,
+            this.message = "Something is wrong : "+data.detail;
             this.snackbar = true;
           }
         } catch (error) {
-   
-          // Handle error
-          //this.error = response.statusText;
-          this.snackbar = true;
+        this.snackbarError= true,
+        this.message = 'Something went wrong with loggin in';
+        this.snackbar = true;
         }
       }
     },

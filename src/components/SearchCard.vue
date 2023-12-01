@@ -2,7 +2,10 @@
 <template>
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-        <v-img :src="product.image" width="70%" contain class="text-center mx-auto"></v-img>
+        <button @click="shareApp(product)" large class="text-start m-1 font-weight-bold">
+      <span class="mdi  mdi-share-variant"></span>
+    </button>
+        <v-img :src="product.image" width="70%" contain class="mx-auto">  </v-img>
         <v-card-title class="black--text font-weight-bold px-4" style="display: inline-block; word-break: break-word;">
           {{ product.name }} | {{product.size}}
           <v-card v-if="product.woolworths_price" :style="isSelected === 'Woolworths' ? 'border: 1px solid green;': ''" :outlined="isSelected!='Woolworths'" @click="selectStore('Woolworths')">
@@ -113,6 +116,38 @@ export default {
       // You can use the store variable to identify which store is selected
       console.log(`Selected store: ${store}`);
     },
+    shareApp(product) {
+  // Check if the Web Share API is supported by the browser
+  if (navigator.share) {
+    // Calculate total and savings
+
+
+    // Message parts
+    const messageParts = [
+  `🛒 Hey friend, check out this awesome deal on ${product.name}! 🌟`,
+  `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
+  `🛒 Coles Price: AUD ${product.coles_price}`,
+  `🏪 IGA Price: AUD ${product.iga_price}`,
+  `🌟 Visit SuperSavers.au to save on groceries: https://supersavers.au 🌈`,
+];
+
+
+    // Combine all parts into the final message
+    const shareMessage = messageParts.join('\n');
+
+    // Use the Web Share API to share the message
+    navigator
+      .share({
+        title: "SuperSavers",
+        text: shareMessage,
+      })
+      .then(() => console.log('Shared successfully'))
+      .catch((error) => console.error('Error sharing:', error));
+  } else {
+    console.error('Error sharing: Web Share API is not supported');
+  }
+}
+,
     async getAndSendNotificationToken() {
       try {
         // Request permission to show notifications

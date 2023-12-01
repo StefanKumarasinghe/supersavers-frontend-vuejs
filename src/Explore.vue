@@ -32,7 +32,7 @@
           <div class="row py-5 my-5">
             <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0" data-aos="fade-up" data-aos-delay="200">
               <h1 class="text-white">SuperSavers</h1>
-              <p class="text-white">Compare Deals and Save Heaps on Groceries At Coles, Woolies & IGA!</p>
+              <p class="text-white">Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
               <a href="/search" class="btn btn-outline-light w-50  rounded-pill px-3 py-2 ">Get started</a>
 
             </div>
@@ -74,20 +74,21 @@
                 <span class="bg-danger text-white fw-bold p-1">IGA</span>.
                 Our platform provides real-time price comparisons, allows you to create a grocery list, and shows your potential savings.
               </p>
-              <table class="table">
-  <tbody>
-    <tr v-for="item in ['Compare real-time prices', 'Create and manage your grocery list', 'Receive notifications for specific products on deal']" :key="item">
-      <td><i class="bi bi-check2"></i></td>
-      <td>{{ item }}</td>
-    </tr>
-  </tbody>
-</table>
+      
 
             </div>
             <div class="col-lg-6">
               <p>We understand the value of your money, and with SuperSaver, you can make informed decisions to get the best deals. Subscribe now and start saving!</p>
             </div>
           </div>
+          <table class="table text-center">
+  <tbody>
+    <tr v-for="item in ['Compare real-time prices', 'Calculate and manage your grocery list', 'Notfiy you when something is on sale','Direct Comparison of prices', 'Famous deals and products from Woolies, Coles and IGA']" :key="item">
+      <td><i class="bi bi-check2"></i></td>
+      <td>{{ item }}</td>
+    </tr>
+  </tbody>
+</table>
         </div>
       </div>
       <!-- Services Section -->
@@ -737,7 +738,7 @@ section {
 .services .icon-box .icon i {
   color: #47b2e4;
   font-size: 36px;
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
 .services .icon-box h4 {
@@ -758,7 +759,7 @@ section {
 }
 
 .services .icon-box:hover {
-  transform: translateY(-10px);
+  transform: translateY(-20px);
 }
 
 .services .icon-box:hover h4 a {

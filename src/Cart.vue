@@ -3,11 +3,19 @@
     <v-app>
         <v-container fluid>
           <div class="mx-3 mt-5">
-            <h1>
-              SHOPPING LIST
-            </h1>
-            <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-          </div>
+    <h1>
+      SHOPPING LIST
+    </h1>
+    <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
+    <button @click="shareShoppingList" large class="font-weight-bold text-success">
+      <span class="mdi  mdi-share-variant"></span>
+      Share Shopping List
+    </button>
+    <button @click="shareApp" large class=" mx-4 font-weight-bold text-danger">
+      <span class="mdi  mdi-share-variant"></span>
+      Share the love
+    </button>
+  </div>
             <v-card flat>
               <v-tabs
                 v-model="tab"
@@ -77,7 +85,7 @@
                                     <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
-                                <div class="col-12 col-md-5 col-lg col-sm-12">s
+                                <div class="col-12 col-md-5 col-lg col-sm-12">
                                   <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
                                   <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
 
@@ -399,6 +407,11 @@
               </v-tabs-items>
             </v-card>
         </v-container>
+       <v-card-text></v-card-text>
+       <v-card-text></v-card-text>
+       <v-card-text></v-card-text>
+       <v-card-text></v-card-text>
+       <v-card-text></v-card-text>
     </v-app>
 </template>
 
@@ -523,6 +536,86 @@
         }
         return sum.toFixed(2);
       },
+      generateShareMessage() {
+  const messageParts = [];
+
+  // Separate items by store
+  const itemsByStore = {
+    Woolworths: [],
+    Coles: [],
+    IGA: [],
+  };
+
+  for (let i = 0; i < this.lists.length; i++) {
+    const item = this.lists[i];
+    const quantity = this.quantities[i];
+
+    // Determine the store for the item
+    let storeName = 'Unknown';
+    if (item.source === 'Woolworths') {
+      storeName = 'Woolworths';
+    } else if (item.source === 'Coles') {
+      storeName = 'Coles';
+    } else if (item.source === 'IGA') {
+      storeName = 'IGA';
+    }
+
+    // Construct a part of the message for each item with store information
+    const itemMessage = `${quantity} x ${item.name}`;
+    
+    // Add the item to the corresponding store category
+    itemsByStore[storeName].push(itemMessage);
+  }
+
+  // Add items from each store to the message
+  for (const storeName in itemsByStore) {
+    if (itemsByStore[storeName].length > 0) {
+      messageParts.push(`--- ${storeName} ---`);
+      messageParts.push(...itemsByStore[storeName]);
+    }
+  }
+
+  // Add total and save amounts to the message
+  const totalMessage = `Your Total Bill is ${this.calTotal()}`;
+  const saveMessage = `You Saved ${this.saveTotal()} with SuperSavers.au, for more details visit https://supersavers.au to save heaps on groceries...`;
+  messageParts.push(totalMessage);
+  messageParts.push(saveMessage);
+
+  // Combine all parts into the final message
+  const finalMessage = messageParts.join('\n');
+  return finalMessage;
+},
+    shareShoppingList() {
+      const message = this.generateShareMessage();
+
+      // Check if the Web Share API is supported by the browser
+      if (navigator.share) {
+        navigator
+          .share({
+            title: 'SuperSavers Grocery List',
+            text: message,
+          })
+          .then(() => console.log('Shared successfully'))
+          .catch((error) => console.error('Error sharing:', error));
+      } else {
+        console.error('Error sharing')
+      }
+    },
+    shareApp() {
+
+      // Check if the Web Share API is supported by the browser
+      if (navigator.share) {
+        navigator
+          .share({
+            title: 'Save Money with SuperSavers on Groceries',
+            text: "You can save heaps at Coles, Woolies and IGA with SuperSavers by never missing out on deals. Visit https://supersavers.au",
+          })
+          .then(() => console.log('Shared successfully'))
+          .catch((error) => console.error('Error sharing:', error));
+      } else {
+        console.error('Error sharing')
+      }
+    },
       saveTotal() {
         let sum = 0;
         for (let i = 0; i < this.lists.length; i++) {

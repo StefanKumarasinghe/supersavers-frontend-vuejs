@@ -11,7 +11,7 @@
       style="transform: translateX(0%);"
     >
       <v-avatar class="d-block text-center mx-auto mt-4" size="80">
-        <v-icon color="green" x-large>mdi-basket</v-icon>
+        <v-icon color="green" @click="$router.push('/')" x-large>mdi-basket</v-icon>
       </v-avatar>
 
       <v-card flat class="rounded-xl mx-4 mx-auto text-center">

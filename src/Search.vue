@@ -81,24 +81,19 @@
               <v-card-title class="display-1">
                 <strong>{{ lowestPricedProduct.name }}</strong>
               </v-card-title>
-              <v-card-title class="display-6 green--text">
+              <v-card-title class="display-6 ">
+                {{ lowestPricedProduct.description }}
+              </v-card-title>
+              <v-card-title class="display-6 font-weight-bold green--text">
                 ${{ smallestPrice(lowestPricedProduct) }} /
                 {{ lowestPricedProduct.size }}
               </v-card-title>
-              <v-card-action>
-                <v-btn
-                  @click="addItemToCart(lowestPricedProduct)"
-                  color="success"
-                  class="text-none text-h6 mb-3 white--text"
-                >
-                  Add to Grocery
-                </v-btn>
-              </v-card-action>
               <v-card-title>
-                <strong
-                  >Deal Available At
-                  {{ bestStoreForProduct(lowestPricedProduct) }}</strong
-                >
+                Deal Available At 
+                <strong :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">
+ {{ bestStoreForProduct(lowestPricedProduct) }}
+</strong>
+
               </v-card-title>
             </v-col>
           </v-row>
@@ -266,9 +261,6 @@
         loading: false,
         loading_start:true,
         storeFilters: {
-           Woolies: true,
-           IGA: true,
-           Coles: true,
           "Deals At Woolies": true,
           "Deals At Coles": true,
           "Deals At IGA": true,
