@@ -39,6 +39,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
 async def protected(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
     return {"message": "This is an authenticated route", "user": current_user}
 
+
 # Routes for password recovery
 @app.get("/verified")
 async def verified(current_user: str = Depends(AuthGrocery.PasswordRecoveryManager.is_email_verified)):
@@ -50,7 +51,9 @@ async def verify_email_endpoint(token: str):
 
 @app.get("/resend-email")
 async def resend(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
-    return await AuthGrocery.UserManager.resend_verification_email()
+    
+
+    return await AuthGrocery.UserManager.resend_verification_email(current_user)
 @app.post("/forgot-password")
 @limiter.limit("5/60minute")
 async def forgot_password(request: Request, email: str = Form(...)):
@@ -68,7 +71,7 @@ async def add_item(item: Notification.Item = Body(...), current_user: str = Depe
     return await Notification.add_item(item, current_user)
 
 @app.post('/remove_item_notify')
-async def remove_item(item: Notification.Item = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+async def remove_item(item: Notification.Item_Remove = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
     return await Notification.remove_item(item, current_user)
 
 @app.post('/retrieve_notify')

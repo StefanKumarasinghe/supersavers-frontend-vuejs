@@ -93,8 +93,8 @@ class UserManager:
         return {"message": "User registered successfully", "access_token": access_token, "token_type": "bearer"}
 
     @staticmethod
-    async def resend_verification_email(email: str):
-        user = next((u for u in UserManager.users_db if u["email"] == email), None)
+    async def resend_verification_email(username: str):
+        user = next((u for u in users_db if u["username"] == username), None)
         if user is None:
             raise HTTPException(status_code=404, detail="User not found.")
 
@@ -111,7 +111,8 @@ class UserManager:
         user["access_token"] = new_access_token
 
         # Send verification email
-        await UserManager.send_verification_email(email, verification_token)
+        await UserManager.send_verification_email(user["email"], verification_token)
+
 
     @staticmethod
     async def send_verification_email(email: str, verification_token: str):

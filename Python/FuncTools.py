@@ -133,6 +133,8 @@ def is_similarwi(woolworths_product: dict, iga_product: dict) -> bool:
 
         if similarity_score < 0.75:
             return False
+        
+        PRICE_TOLERANCE = 0.10
 
         if not (1 - PRICE_TOLERANCE) * woolworths_undiscounted_price <= iga_price <= (1 + PRICE_TOLERANCE) * woolworths_undiscounted_price:
             return False
@@ -140,7 +142,7 @@ def is_similarwi(woolworths_product: dict, iga_product: dict) -> bool:
         size_w = woolworths_product['Products'][0].get("PackageSize", "N/A")
         size_i = iga_product['size']
 
-        if semantic_similarity(str(size_w), str(size_i)) < 0.75:
+        if semantic_similarity(str(size_w), str(size_i)) < 0.85:
             return False
 
         if brand1.lower() != "woolworths" and brand1.lower() != "iga":

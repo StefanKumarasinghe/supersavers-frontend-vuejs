@@ -31,6 +31,12 @@ class Item(BaseModel):
     image: str
     description: str
 
+class Item_Remove(BaseModel):
+    woolworths_code: str
+    coles_code: str
+    iga_code: str
+
+
 codes_storage: List[Item] = []
 
 # Your existing add_item function
@@ -48,7 +54,7 @@ async def retrieve_all_item(current_user: str = Depends(AuthGrocery.UserManager.
     user_items = [item for item in codes_storage if item.user == current_user]
     return user_items
 
-async def remove_item(item: Item = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+async def remove_item(item: Item_Remove = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
     try:
         index_to_remove = next((i for i, stored_item in enumerate(codes_storage) if stored_item.woolworths_code == item.woolworths_code), None)
         
