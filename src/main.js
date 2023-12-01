@@ -13,6 +13,7 @@ import Verification from './Verification.vue';
 import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
 import store from './store';
+import Account from './Account.vue';
 
 // Import Firebase
 import { initializeApp } from 'firebase/app';
@@ -34,7 +35,8 @@ const routes = [
   { path: '/login', name: 'login', component: Login },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/forgotpassword', component: ForgotPassword },
-  { path: '/resetpassword', component: ResetPassword }
+  { path: '/resetpassword', component: ResetPassword },
+  { path: '/account', component: Account }
 ];
 
 // Create the router instance
