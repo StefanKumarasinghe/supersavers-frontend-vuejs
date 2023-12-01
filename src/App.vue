@@ -30,16 +30,12 @@ export default {
     this.TokenPromise();
     this.checkIsMobile();
     this.checkIsDesktop();
-    this.checkRoute(); // Check route during initial mount
   },
   mounted() {
-    window.addEventListener('resize', this.handleResize);
     document.addEventListener('click', this.handleDocumentClick);
-    this.checkRoute(); // Check route when the component is mounted
     this.TokenPromise();
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('click', this.handleDocumentClick);
   },
   methods: {
@@ -55,9 +51,6 @@ export default {
         this.isMobile = window.innerWidth <= 701;
       });
     },
-    handleResize() {
-      this.checkRoute(); // Adjust based on the new screen size
-    },
     handleDocumentClick(event) {
       if (this.isMobile) {
         const sidebarElement = this.$refs.sidebar?.$el;
@@ -65,13 +58,6 @@ export default {
           this.showSidebar = false;
         }
       }
-    },
-    checkRoute() {
-      const isRestrictedRoute = this.$route.path === '/' || this.$route.path === '/login' || 
-                                this.$route.path === '/register' || this.$route.path === '/forgotpassword' ||
-                                this.$route.path === '/resetpassword';
-      this.showSidebar = this.isDesktop && !isRestrictedRoute;
-      this.showBottomNav = this.isMobile && !isRestrictedRoute;
     },
     // get Auth token
     async TokenPromise() {
@@ -90,12 +76,7 @@ export default {
     }
   },
   watch: {
-    $route() {
-      // When the route changes, check and update navigation bars
-      this.checkRoute();
-    },
     authToken() {
-      console.log("authtoken:" + this.authToken);
       if (this.authToken == null) {
         this.TokenPromise();
       }

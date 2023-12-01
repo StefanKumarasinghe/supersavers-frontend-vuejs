@@ -221,20 +221,38 @@
         </v-row>
     
       </div>
-      <v-snackbar v-model="snackbar" color="white" dark>
-        <v-row align="center" justify="center" class="ma-0">
-          <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-            {{ this.error }}
-          </v-col>
-          <v-btn
-              color="pink"
-              variant="text"
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+          <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
+          <span class="white--text font-weight-bold">{{ this.message }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="green"
+              text
+              v-bind="attrs"
               @click="snackbar = false"
             >
-              Got it
-          </v-btn>
-        </v-row>
-      </v-snackbar>
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout">
+          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
+          <span class="white--text font-weight-bold">{{ this.error }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="red"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
     </v-container>
   </v-app>
 </template>
@@ -269,7 +287,6 @@
         weeklyDeals_w: [],
         weeklyDeals_iga: [],
         weeklyDeals_coles: [],
-        snackbar: false,
         error: null,
         // searchClosed: true, -> search field open and close
         selection:1,
@@ -287,7 +304,10 @@
           { name: 'Seafood', icon: 'mdi-fish' },
           { name: 'Snacks', icon: 'mdi-french-fries' },
           { name: 'Personal care', icon: 'mdi-toothbrush' }
-        ]
+        ],
+        snackbar: false,
+        snackbarError: false,
+        snackbarTimeout: 2500
       };
     },
     computed: {
@@ -511,8 +531,7 @@
           this.storeFilters['Deals At Coles']=false;
           this.storeFilters['Deals At IGA']=false;
         }catch {
-          this.error = "Couldn't retrieve the items from the specific category";
-          this.snackbar = true;
+          console.log("Couldn't retrieve the items from the specific category");
         }
         this.loading=false;
         return products;
@@ -532,14 +551,12 @@
             const data = await response.json();
             this.products = data;
           } else {
-            console.error('Error:', response.statusText);
             this.error = response.statusText;
-            this.snackbar = true;
+            this.snackbarError = true;
           }
         } catch (error) {
-          console.error('Error:', error);
           this.error = "Error in retrieving data..."
-          this.snackbar = true;
+          this.snackbarError = true;
         }
 
         this.loading = false;
@@ -597,9 +614,8 @@
           this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 8);
           
         } catch (error) {
-          console.error("Failed to fetch weekly deals:", error);
-          this.error = "Failed to get deals from Woolies"
-          this.snackbar = true;
+          this.error = "Failed to fetch Woolworths weekly deals: " + error;
+          this.snackbarError = true;  
         } 
         try {
           const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles', {
@@ -615,7 +631,8 @@
           this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
          
         } catch (error) {
-          console.error("Failed to fetch weekly deals:", error);
+          this.error = "Failed to fetch Coles weekly deals: " + error;
+          this.snackbarError = true;          
         }
         try {
           const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga', {
@@ -630,7 +647,8 @@
           this.weeklyDeals_iga =  await responseIga.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
         } catch (error) {
-          console.error("Failed to fetch weekly deals:", error);
+          this.error = "Failed to fetch IGA weekly deals: " + error;
+          this.snackbarError = true;  
         } finally {
           this.loading_start= false;
         }
@@ -650,15 +668,14 @@
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }else {
-            this.error = "Item Successfully added to the Notification List";
+            this.message = "Item is added successfully to the Notification List";
             this.snackbar = true;
           }
           const result = await response.json();
           console.log(result.message);  // Log the response from the backend
         } catch (error) {
-          console.error('Failed to add Item', error);
-          this.error = "Failed to add item";
-          this.snackbar = true;
+          this.error = "Failed to add item: " + error;
+          this.snackbarError = true;  
         }
       },
       getLowestPrice() {
@@ -749,7 +766,7 @@
 
           // Dispatch to the store
           this.$store.dispatch('addItem', x);
-          this.error = 'Item was successfully added to the list';
+          this.message = 'Item was successfully added to the list';
           this.snackbar = true;
         } else {
           console.error('Invalid product:', x);
