@@ -43,6 +43,20 @@ const router = new VueRouter({
   routes
 });
 
+// Navigation guard to check authentication before navigating to each route
+router.beforeEach((to, from, next) => {
+  // These routes do not require login token
+  const requiresAuth = !['/', '/login', '/register', '/forgotpassword', '/resetpassword', '/verify'].includes(to.path);
+
+  // If authentication is required and the user is not authenticated, redirect to login
+  if (requiresAuth && !store.getters.getToken) {
+    next('/login');
+  } else {
+    // Continue to the next route
+    next();
+  }
+});
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAe9k5tAHaQednuCXEwMdJAzwv7dDKRhMk",

@@ -77,20 +77,22 @@
             </v-card-text>
           </v-col>
         </v-row>
-        <v-snackbar v-model="snackbar" color="white" dark>
-          <v-row align="center" justify="center" class="ma-0">
-            <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-              {{ this.error }}
-            </v-col>
-            <v-btn
-                color="pink"
-                variant="text"
+        <div class="text-center ma-2">
+          <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout">
+            <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
+            <span class="white--text font-weight-bold">{{ this.error }}!</span>
+            <template v-slot:action="{ attrs }">
+              <v-btn
+                color="red"
+                text
+                v-bind="attrs"
                 @click="snackbar = false"
               >
-                Got it
-            </v-btn>
-          </v-row>
-        </v-snackbar>
+                <b>Close</b>
+              </v-btn>
+            </template>
+          </v-snackbar>
+        </div>
       </v-container>
     </v-main>
   </v-app>
@@ -105,7 +107,8 @@ export default {
     return {
       AuthToken: null,
       username: '',
-      snackbar: false,
+      snackbarError: false,
+      snackbarTimeout: 2500,
       error: null,
       nameRules: [
         value => {
@@ -203,7 +206,7 @@ export default {
           const data = await response.json();
           const token = data.access_token;
           await this.$store.dispatch('setToken', token);
-          this.$router.push('/search');
+          this.$router.push('/verify');
         } else {
     
           this.error = response.statusText;

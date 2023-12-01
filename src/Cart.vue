@@ -516,20 +516,20 @@
       },
       calTotal() {
         let sum = 0;
-        for (let i = 0; i < this.listToBuy("Woolworths").length; i++) {
-          sum += this.quantities[this.listToBuy("Woolworths")[i].number] * this.listToBuy("Woolworths")[i].new_price;
-        }
-        for (let i = 0; i < this.listToBuy("Coles").length; i++) {
-          sum += this.quantities[this.listToBuy("Coles")[i].number] * this.listToBuy("Coles")[i].new_price;
-        }
-        for (let i = 0; i < this.listToBuy("IGA").length; i++) {
-          sum += this.quantities[this.listToBuy("IGA")[i].number] * this.listToBuy("IGA")[i].new_price;
+        for (let i = 0; i < this.lists.length; i++) {
+          if (this.lists[i].bought == false) {
+            sum += this.quantities[i] * (this.lists[i].new_price);
+          }
         }
         return sum.toFixed(2);
       },
       saveTotal() {
         let sum = 0;
-        
+        for (let i = 0; i < this.lists.length; i++) {
+          if (this.lists[i].bought == false) {
+            sum += this.quantities[i] * (this.lists[i].old_price - this.lists[i].new_price);
+          }
+        }
         return sum.toFixed(2);
       },
       boughtItem(index, quantity) {

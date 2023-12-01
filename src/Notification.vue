@@ -25,8 +25,7 @@
                     </div>
                   </div>
                   <div>
-
-                    <v-btn outlined rounded text class="font-weight-bold ms-4 text-subtitle-1" @click="removeProduct(product)" height="42" width="120">Remove</v-btn>
+                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 " color="green" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
                   </div>
                 </div>
               </div>

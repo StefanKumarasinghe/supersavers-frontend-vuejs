@@ -7,7 +7,7 @@
           {{ product.name }} | {{product.size}}
           <v-card v-if="product.woolworths_price" :style="isSelected === 'Woolworths' ? 'border: 1px solid green;': ''" :outlined="isSelected!='Woolworths'" @click="selectStore('Woolworths')">
             <v-row>
-              <v-col class="green--text font-weight-bold text-h6" style="display: inline-block; word-break: break-word; white-space: nowrap;">
+              <v-col class="green--text font-weight-bold " style="display: inline-block; word-break: break-word; white-space: nowrap;">
                 Woolworths
               </v-col>
               <v-col class="d-flex flex-row-reverse" :class="{'grey--text': isSelected !== 'Woolworths', 'text-h5 font-weight-bold': isSelected === 'Woolworths'}">
@@ -43,7 +43,7 @@
         <v-card-actions class="mx-2 mt-auto"> 
           <div class="row">
             <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected)" size="small" variant="flat">
+              <v-btn class="text-none text-h6 mb-3 white--text me-1" dark width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected), snackbar = true" size="small" variant="flat">
                 Add To List
               </v-btn>
             </div>
@@ -56,20 +56,22 @@
         </v-card-actions>
 
       </v-card>
-      <v-snackbar v-model="snackbar" color="white" dark>
-        <v-row align="center" justify="center" class="ma-0">
-          <v-col cols="12" sm="10" md="8" lg="6" class="black--text font-weight-bold text-center">
-            {{ this.error }}
-          </v-col>
-          <v-btn
-              color="pink"
-              variant="text"
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+          <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
+          <span class="white--text font-weight-bold">{{ this.message }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="green"
+              text
+              v-bind="attrs"
               @click="snackbar = false"
             >
-              Got it
-          </v-btn>
-        </v-row>
-      </v-snackbar>
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
     </span>
 </template>
 
@@ -97,11 +99,12 @@ export default {
   },
   data() {
     return {
+      snackbar: false,
       isSelected: "Woolworths",
-      quantity: 1
+      quantity: 1,
+      snackbarTimeout: 2500
     }
-    },
-
+  },
   methods: {
     selectStore(store) {
       // Toggle the isSelected value based on the current state
@@ -121,7 +124,6 @@ export default {
           
           // Get the current registration token
           const currentToken = await getToken(messaging);
-          console.log(currentToken);
 
           // Assign the registration token to the component data
           this.registrationToken = currentToken;
@@ -176,6 +178,8 @@ export default {
             description: String(product.description),
           }),
         });
+        this.message = 'Item is added successfully to notify list';
+        this.snackbar = true;
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -209,9 +213,6 @@ export default {
           x.old_price = Math.max(...validPrices);
           x.new_price = storePrices[selectedStore];
 
-          // Determine the store with the lowest price
-          //let lowestStore = Object.keys(storePrices).find(store => storePrices[store] === x.new_price);
-
           // Set the lowest price store as the source
           x.source = selectedStore;
         } else {
@@ -221,8 +222,7 @@ export default {
 
         // Dispatch to the store
         this.$store.dispatch('addItem', x);
-        this.error = 'Item was successfully added to the list';
-        this.snackbar = true;
+        this.message = 'Item is added successfully to the list';
       } else {
         console.error('Invalid product:', x);
       }
@@ -247,6 +247,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style>
+  .v-snack:not(.v-snack--centered):not(.v-snack--top) {
+    align-items: flex-start;
+  }
 </style>

@@ -32,6 +32,22 @@
                 </div>
             </v-card-actions>
         </v-card>
+        <div class="text-center ma-2">
+            <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+            <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
+            <span class="white--text font-weight-bold">{{ this.message }}!</span>
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                color="green"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+                >
+                <b>Close</b>
+                </v-btn>
+            </template>
+            </v-snackbar>
+        </div>
     </span>
 </template>
 
@@ -56,7 +72,9 @@ export default {
     },
     data() {
         return {
-            quantity: 1
+            quantity: 1,
+            snackbar: false,
+            snackbarTimeout: 2500
         }
     },
     methods: {
@@ -110,7 +128,7 @@ export default {
             product.quantity = this.quantity;
             product.bought = false;
             this.$store.dispatch('addItem', product);
-            this.error = 'Item was successfully added to the list';
+            this.message = 'Item is added successfully to the list';
             this.snackbar = true;
         }
     },
