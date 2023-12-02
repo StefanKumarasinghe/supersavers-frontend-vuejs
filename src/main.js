@@ -36,7 +36,7 @@ const routes = [
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/forgotpassword', component: ForgotPassword },
   { path: '/resetpassword', component: ResetPassword },
-  { path: '/account', component: Account }
+  { path: '/account',name:'account', component: Account }
 ];
 
 // Create the router instance
