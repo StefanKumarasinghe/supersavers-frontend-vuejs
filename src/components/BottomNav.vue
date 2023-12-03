@@ -6,7 +6,7 @@
         rounded
         v-for="(item, i) in items"
         :key="i"
-        @click="navigateTo(item.route)"
+        :to="item.route"
         :value="item.route"
         class="nav"
         :class="{
@@ -40,13 +40,7 @@
         { icon: "mdi-bell-outline", route: "notification", label: "Notification" },
         { icon: "mdi-account-outline", route: "account", label: "Account" },
       ],
-    }),
-    methods: {
-      async navigateTo(route) {
-        await this.$router.push({ name: route });
-        this.selectedItem=route
-      }
-    },
+    })
   };
 </script>
 

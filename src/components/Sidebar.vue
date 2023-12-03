@@ -61,11 +61,9 @@ export default {
     await this.TokenPromise();
     // Get the initial route from the $route object
     this.selectedItem = this.$route.name;
-    console.log(this.$route.name);
   },
 
   watch: {
-    // Watch for changes in the route and update the selectedItem accordingly
     $route(to) {
       this.selectedItem = to.name;
     },
@@ -132,6 +130,7 @@ export default {
     text-decoration: none;
     width: 60px;
     height: 60px;
+    color: white;
   }
 
   .v-card {

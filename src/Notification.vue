@@ -3,7 +3,7 @@
     <v-app>
       <v-container fluid>
         <div class="mx-3 mt-5">
-          <h1>Notify Deals</h1>
+          <h1>NOTIFY DEALS</h1>
           <p>With the notifications feature, you won't miss out on the item with the best deal!</p>
         </div>
         <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
