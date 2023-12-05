@@ -8,80 +8,39 @@
           SETTINGS
         </h2>
         <v-alert border="left" colored-border type="info" elevation="2" color="green" prominent class="mt-5" width="auto">
+          <h3>Hey, {{ user.name }}</h3>
           This is your profile page, you can manage notifications, subscriptions and even account details.
         </v-alert>
-
-        <v-card flat>
-          <v-card-text>
-            <v-row fluid>
-              <v-col cols="12" md="4" lg="3">
-                <v-img :src="require('@/assets/profile-1.png')" alt="Profile Image" class="profile-image"></v-img>
-              </v-col>
-              <v-col cols="12" md="8" lg="9">
-                <v-list fluid>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <h2>HEY {{ user.name.toUpperCase() }}</h2>
-                    </v-list-item-content>
-                  </v-list-item>
-
-                  <!-- Annual Savings -->
-                  <v-card>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon color="success">mdi-currency-usd</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <h4>Annual Savings</h4>
-                        <h3 class="my-2 text--green">AUD 30</h3>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-card>
-
-                  <!-- Monthly Savings -->
-                  <v-card>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon color="success">mdi-currency-usd</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <h4>Monthly Savings</h4>
-                        <h3 class="my-2 text--green">AUD 5</h3>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-card>
-
-                  <!-- Keep Saving -->
-                  <v-card>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-row>
-                          <v-col  cols="12" md="12" class="font-weight-bold">
-                            <v-list-item>
-                              <v-list-item-content>
-                                <v-list-item-title class="h5">Monthly Subscription</v-list-item-title>
-                                <v-list-item-subtitle>3.99 AUD</v-list-item-subtitle>
-                                <v-list-item-subtitle>Next Renewal Date: 23/10/2024</v-list-item-subtitle>
-                                <v-list-item-subtitle>Membership Status: Active</v-list-item-subtitle>
-                              </v-list-item-content>
-                            </v-list-item>
-                            <v-card-actions>
-                            <v-card-text><v-btn color="success" class="font-weight-bold" >Manage</v-btn> <v-btn color="red" class="white--text font-weight-bold">End</v-btn></v-card-text> 
-                            </v-card-actions>
-                          </v-col>
-                        </v-row></v-list-item-content>
-                    </v-list-item>
-                  </v-card>
-                </v-list>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <!-- Additional content if needed -->
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+        <v-row fluid>
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="12" md="4" lg="3" align-self="center">
+            <v-img :src="require('@/assets/profile-1.png')" alt="Profile Image" class="profile-image"></v-img>
+          </v-col>
+          <v-col cols="12" md="8" lg="9">
+            <!-- Keep Saving -->
+            <div class="black--text box-border my-5 text-center">
+              <v-row class="text-center">
+                <h5 class="font-weight-bold">Monthly Subscription </h5>
+              </v-row>
+              <v-row class="text-center">
+                <h4 class="green--text font-weight-bold">$ AUD 3.99</h4>
+              </v-row>
+              <v-row class="text-center">
+                <p><b>Next Renewal Date:</b> 23/10/2024</p>
+                <p><b>Membership Status:</b> Active</p>
+              </v-row>
+              <v-btn color="success" class="font-weight-bold text-center">Manage</v-btn> 
+            </div>
+            <div class="text-black box-border my-5 pe-5 pb-5 text-center">
+              <v-row class="text-center align-center"> <!-- Added align-center class -->
+                <h5 class="font-weight-bold">Monthly Savings</h5>
+                <h4 class="green--text font-weight-bold">$ AUD 30</h4>
+              </v-row>
+              <v-row class="text-center align-center"> <!-- Added align-center class -->
+                <LineChart/>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
         <v-divider :thickness="12" color="black"></v-divider>
 
         <!-- Personal information -->
@@ -207,7 +166,11 @@
 }
 </style>
 <script>
+import LineChart from './components/LineChart.vue'
 export default {
+  components: {
+    LineChart
+  },
   data() {
     return {
       AuthToken:null,
@@ -346,4 +309,14 @@ export default {
   border-radius: 50%;
   width: 100%;
 }
+
+.box-border {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding-left: 25px;
+  padding-top: 25px;
+  padding-bottom: 15px;
+  box-shadow: 1px 1px 10px 0px lightgray;
+}
+
 </style>
