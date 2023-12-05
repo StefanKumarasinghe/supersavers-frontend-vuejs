@@ -397,7 +397,7 @@
     methods: {
       async OnCallSuggestion() {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/search_suggestions`);
+          const response = await fetch(`${this.$GroceryAPI}/search_suggestions`);
           // Assuming the API returns a list of suggestions
           this.searchSuggestions = response.data.suggestions;
         } catch (error) {
@@ -424,7 +424,7 @@
       });
     },
     async VerifyAuth() {
-      const response = await fetch('http://127.0.0.1:8000/verified', {
+      const response = await fetch(`${this.$GroceryAPI}/verified`, {
              method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -438,7 +438,7 @@
       async verifyAuthProcess() {
     
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -512,7 +512,7 @@
         const products = [];
         try {
           for (const productName of productNames) {
-            const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
+            const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
               method: 'GET', // or 'POST' or other HTTP methods
               headers: {
                 'Authorization': `Bearer ${this.AuthToken}`,
@@ -535,7 +535,7 @@
         this.loading = true;
 
         try {
-          const response = await fetch(`http://127.0.0.1:8000/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
+          const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -596,7 +596,7 @@
         try {
          
           
-          const responseWoolies = await fetch(`http://127.0.0.1:8000/half-price-deals_woolies`, {
+          const responseWoolies = await fetch(`${this.$GroceryAPI}/half-price-deals_woolies`, {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -613,7 +613,7 @@
           this.snackbarError = true;  
         } 
         try {
-          const responseColes = await fetch('http://127.0.0.1:8000/half-price-deals_coles', {
+          const responseColes = await fetch(`${this.$GroceryAPI}/half-price-deals_coles`, {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -650,7 +650,7 @@
       },
       async AddToNotify(item){
         try {
-          const response = await fetch('http://127.0.0.1:8000/add_item_notify', {
+          const response = await fetch(`${this.$GroceryAPI}/add_item_notify`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -711,7 +711,7 @@
       },
       async fetchDataForCategory(category) {
         try {
-          const response = await fetch(`http://127.0.0.1:8000/search/${category}/${encodeURIComponent(this.postalCode)}`, {
+          const response = await fetch(`${this.$GroceryAPI}/search/${category}/${encodeURIComponent(this.postalCode)}`, {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,

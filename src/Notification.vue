@@ -66,7 +66,7 @@
       });
     },
     async VerifyAuth() {
-      const response = await fetch('http://127.0.0.1:8000/verified', {
+      const response = await fetch(`${this.$GroceryAPI}/verified`, {
              method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -80,7 +80,7 @@
       async verifyAuthProcess() {
     
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -102,7 +102,7 @@
     },
       async fetchProducts() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/retrieve_notify', {
+          const response = await fetch(`${this.$GroceryAPI}/retrieve_notify`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -116,7 +116,7 @@
       },
       async removeProduct(product) {
         try {
-         await fetch('http://127.0.0.1:8000/remove_item_notify', {
+         await fetch(`${this.$GroceryAPI}/remove_item_notify`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,

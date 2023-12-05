@@ -112,7 +112,7 @@
         formData.append('password', password);
 
         // Use the FormData object in the fetch request
-        const response = await fetch('http://127.0.0.1:8000/reset-password', {
+        const response = await fetch(`${this.$GroceryAPI}/reset-password`, {
           method: 'POST',
           body: formData,
         });

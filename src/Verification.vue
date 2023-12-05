@@ -84,7 +84,7 @@
       async CheckToken() {
         if (this.token) {
           try {
-            const response = await fetch(`http://127.0.0.1:8000/verify-email?token=${this.token}`);
+            const response = await fetch(`${this.$GroceryAPI}/verify-email?token=${this.token}`);
             if (response.ok) {
               this.$router.push('/search');
             } else {
@@ -100,7 +100,7 @@
         }
       },
       async VerifyAuth() {
-        const response = await fetch('http://127.0.0.1:8000/verified', {
+        const response = await fetch(`${this.$GroceryAPI}/verified`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${this.AuthToken}`,
@@ -132,7 +132,7 @@
       },
       async verifyAuthProcess() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -149,7 +149,7 @@
       },
       async resendEmail() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/resend-email', {
+          const response = await fetch(`${this.$GroceryAPI}/resend-email`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,

@@ -282,7 +282,7 @@ export default {
       });
     },
     async VerifyAuth() {
-      const response = await fetch('http://127.0.0.1:8000/verified', {
+      const response = await fetch(`${this.$GroceryAPI}/verified`, {
              method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -296,7 +296,7 @@ export default {
       async verifyAuthProcess() {
     
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,

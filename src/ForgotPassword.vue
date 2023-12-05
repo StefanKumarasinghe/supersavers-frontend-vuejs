@@ -62,7 +62,7 @@
         if (this.$refs.loginForm.validate()) {
           // Send a POST request to the FastAPI endpoint
           try {
-            const response = await fetch('http://127.0.0.1:8000/forgot-password', {
+            const response = await fetch(`${this.$GroceryAPI}/forgot-password`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded', // Change content type if necessary

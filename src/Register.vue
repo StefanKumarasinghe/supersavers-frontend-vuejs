@@ -168,7 +168,7 @@ export default {
     async verifyAuthProcess() {
       if (this.AuthToken != null) {
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -198,7 +198,7 @@ export default {
         return;
     }
       try {
-        const response = await fetch('http://127.0.0.1:8000/register', {
+        const response = await fetch(`${this.$GroceryAPI}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

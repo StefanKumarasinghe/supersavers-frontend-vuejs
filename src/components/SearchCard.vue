@@ -197,7 +197,7 @@ export default {
         // Get the current registration token
         const currentToken = await getToken(messaging);
 
-        await fetch('http://127.0.0.1:8000/add_item_notify', {
+        await fetch(`${this.$GroceryAPI}/add_item_notify`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.AuthToken}`,

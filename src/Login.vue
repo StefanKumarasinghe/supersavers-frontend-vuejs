@@ -129,7 +129,7 @@ export default {
     async verifyAuthProcess() {
       if (this.AuthToken !== null) {
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${this.AuthToken}`,
@@ -156,7 +156,7 @@ export default {
     async submitLogin() {
       if (this.$refs.loginForm.validate()) {
         try {
-          const response = await fetch('http://127.0.0.1:8000/login', {
+          const response = await fetch(`${this.$GroceryAPI}/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
