@@ -4,188 +4,159 @@
     <v-container fluid>
       <!-- User Information Section -->
       <div class="mx-3 mt-5">
-        <h1>User Information</h1>
+        <h2>
+          SETTINGS
+        </h2>
+        <v-alert border="left" colored-border type="info" elevation="2" color="green" prominent class="mt-5" width="auto">
+          <h3>Hey, {{ user.name }}</h3>
+          This is your profile page, you can manage notifications, subscriptions and even account details.
+        </v-alert>
         <v-row fluid>
-          <v-col cols="12" md="12">
-            <v-card class="mb-3" flat>
-              <v-card-title class="h5 mb-2">Personal Details</v-card-title>
-              <v-card-text>
-                <v-row fluid>
-                  <v-col cols="12" md="4" lg="3">
-                    <v-img :src="require('@/assets/profile-1.png')" alt="Profile Image" class="profile-image"></v-img>
-                  </v-col>
-                  <v-col cols="12" md="8" lg="9">
-                    <v-list fluid>
-                      <v-list-item>
-                        <v-list-item-content>
-                          <h2>HEY {{ user.name.toUpperCase() }}</h2>
-                          <v-alert color="success my-2 font-weight-bold white--text"
-                                   class="mx-0">This is your profile page, you can manage notifications, subscriptions and even account details</v-alert>
-                        </v-list-item-content>
-                      </v-list-item>
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="12" md="4" lg="3" align-self="center">
+            <v-img :src="require('@/assets/profile-1.png')" alt="Profile Image" class="profile-image"></v-img>
+          </v-col>
+          <v-col cols="12" md="8" lg="9">
+            <!-- Keep Saving -->
+            <div class="black--text box-border my-5 text-center">
+              <v-row class="text-center">
+                <h5 class="font-weight-bold">Monthly Subscription </h5>
+              </v-row>
+              <v-row class="text-center">
+                <h4 class="green--text font-weight-bold">$ AUD 3.99</h4>
+              </v-row>
+              <v-row class="text-center">
+                <p><b>Next Renewal Date:</b> 23/10/2024</p>
+                <p><b>Membership Status:</b> Active</p>
+              </v-row>
+              <v-btn color="success" class="font-weight-bold text-center">Manage</v-btn> 
+            </div>
+            <div class="text-black box-border my-5 pe-5 pb-5 text-center">
+              <v-row class="text-center align-center"> <!-- Added align-center class -->
+                <h5 class="font-weight-bold">Monthly Savings</h5>
+                <h4 class="green--text font-weight-bold">$ AUD 30</h4>
+              </v-row>
+              <v-row class="text-center align-center"> <!-- Added align-center class -->
+                <LineChart/>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
+        <v-divider :thickness="12" color="black"></v-divider>
 
-                      <!-- Annual Savings -->
-                      <v-row class="mb-4">
-                        <v-col>
-                          <v-card>
-                            <v-list-item>
-                              <v-list-item-avatar>
-                                <v-icon color="success">mdi-currency-usd</v-icon>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <h3>Annual Savings</h3>
-                                <h2 class="my-2 text--green">AUD 30</h2>
-                              </v-list-item-content>
-                            </v-list-item>
-                          </v-card>
-                        </v-col>
-                      </v-row>
+        <!-- Personal information -->
+        <div class="row">
+          <div class="col-lg-4 col-md-3 col-12">
+            <h5 class="font-weight-bold">
+            <v-icon color="black">mdi-account-box</v-icon> Personal information
+            </h5>
+          </div>
+          <div class="col-lg-8 col-md-9 col-12">
+            <div class="row font-weight-bold">
+              Display Name:
+            </div>
+            <div class="row">
+              <v-text-field
+                single-line
+                outlined
+                v-model="user.name"
+              ></v-text-field>
+            </div>
+            <div class="row font-weight-bold">
+              Email Address:
+            </div>
+            <div class="row">
+              <v-text-field
+                single-line
+                outlined
+                v-model="user.email"
+              ></v-text-field>
+            </div>
+          </div>
+        </div>
+        <v-divider :thickness="12" color="black"></v-divider>
 
-                      <!-- Monthly Savings -->
-                      <v-row class="mb-4">
-                        <v-col>
-                          <v-card>
-                            <v-list-item>
-                              <v-list-item-avatar>
-                                <v-icon color="success">mdi-currency-usd</v-icon>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <h3>Monthly Savings</h3>
-                                <h2 class="my-2 text--green">AUD 5</h2>
-                              </v-list-item-content>
-                            </v-list-item>
-                          </v-card>
-                        </v-col>
-                      </v-row>
+        <!-- Change password -->
+        <div class="row">
+          <div class="col-lg-4 col-md-3 col-12">
+            <h5 class="font-weight-bold">
+            <v-icon color="black">mdi-shield-account</v-icon> Change Password
+            </h5>
+          </div>
+          <div class="col-lg-8 col-md-9 col-12">
+            <div class="row font-weight-bold">
+              Old Password:
+            </div>
+            <div class="row">
+              <v-text-field
+                single-line
+                outlined
+                type="password"
+              ></v-text-field>
+            </div>
+            <div class="row font-weight-bold">
+              New Password:
+            </div>
+            <div class="row">
+              <v-text-field
+                single-line
+                outlined
+                type="password"
+              ></v-text-field>
+            </div>
+            <div class="row font-weight-bold">
+              Confirm New Password:
+            </div>
+            <div class="row">
+              <v-text-field
+                single-line
+                outlined
+                type="password"
+              ></v-text-field>
+            </div>
+            <div class="row">
+              <v-btn color="green font-weight-bold white--text" height="50">Change password</v-btn>
+            </div>
+          </div>
+        </div>
+        <v-divider :thickness="12" color="black"></v-divider>
 
-                 
+        <!-- Notifications -->
+        <div class="row">
+          <div class="col-lg-4 col-md-3 col-12">
+            <h5 class="font-weight-bold">
+            <v-icon color="black">mdi-bell</v-icon> Notifications
+            </h5>
+          </div>
+          <div class="col-lg-8 col-md-9 col-12">
+            <div class="row" :v-model="selectedSubscriptions" v-for="(subscription, index) in subscriptions" :key="index">
+              <div class="col-10 col-lg-11 col-md-11">
+                <div class="font-weight-bold">{{subscription.name}}</div>
+                <div>{{subscription.description}}</div>
+              </div>
+              <div class="col-2 col-lg-1 col-md-1">
+                <v-switch v-model="subscription.enabled" color="green"></v-switch>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                      <!-- Keep Saving -->
-                      <v-row class="mb-4">
-                        <v-col>
-                          <v-card>
-                            <v-list-item>
-                              <v-list-item-content>
-                                <v-row>
-      <v-col  cols="12" md="12" class="font-weight-bold">
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="h5">Monthly Subscription</v-list-item-title>
-              <v-list-item-subtitle>3.99 AUD</v-list-item-subtitle>
-              <v-list-item-subtitle>Next Renewal Date: 23/10/2024</v-list-item-subtitle>
-              <v-list-item-subtitle>Membership Status: Active</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-card-actions>
-           <v-card-text><v-btn color="success" class="font-weight-bold" >Manage</v-btn> <v-btn color="red" class="white--text font-weight-bold">End</v-btn></v-card-text> 
-          </v-card-actions>
-      </v-col>
-    </v-row></v-list-item-content>
-                            </v-list-item>
-                          </v-card>
-                        </v-col>
-                      </v-row>
+        <v-row class="d-flex justify-center mb-5 align-center">
+          <v-col cols="12" md="6">
+            <!-- Logout Link -->
+            <v-btn @click="logout" color="red" class="w-100 mx-auto font-weight-bold" height="50" outlined>
+              Logout
+            </v-btn>
+          </v-col>
 
-                    </v-list>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <!-- Additional content if needed -->
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+          <v-col cols="12" md="6">
+            <!-- Cart Link -->
+            <v-btn to="/cart" color="success" class="w-100 font-weight-bold" height="50">
+              update
+            </v-btn>
           </v-col>
         </v-row>
       </div>
-
-  
-
-      <div class="mx-3 mt-5">
-        <h1>Manage</h1>
-
-        <v-card class="mb-3" flat>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-card-title class="h5 mb-2">Notification Preferences</v-card-title>
-              <v-list>
-                <v-list-item-group v-model="selectedSubscriptions">
-                  <v-list-item v-for="(subscription, index) in subscriptions" :key="index">
-                    <v-list-item-action>
-                      <v-switch v-model="subscription.enabled" color="primary"></v-switch>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title class="font-weight-bold">{{ subscription.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ subscription.description }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-              <v-divider></v-divider>
-            </v-col>
-
-            <v-col cols="12" md="6">
-              <v-container fluid>
-    <v-card-title>Change Password</v-card-title>
-    <v-form @submit.prevent="changePassword">
-      <!-- Old Password Input -->
-      <v-text-field
-        v-model="oldPassword"
-        label="Old Password"
-        type="password"
-        required
-      ></v-text-field>
-
-      <!-- New Password Input -->
-      <v-text-field
-        v-model="newPassword"
-        label="New Password"
-        type="password"
-        required
-      ></v-text-field>
-
-      <!-- Confirm New Password Input -->
-      <v-text-field
-        v-model="confirmPassword"
-        label="Confirm New Password"
-        type="password"
-        required
-      ></v-text-field>
-
-      <!-- Change Password Button -->
-      <v-btn type="submit" color="primary">Change Password</v-btn>
-    </v-form>
-  </v-container>
-            </v-col>
-          </v-row>
-        </v-card>
-      </div>
     </v-container>
-    <v-container class="mb-5">
-    <v-row class="d-flex justify-center mb-5 align-center">
-      <v-col cols="12" md="4">
-        <!-- Logout Link -->
-        <v-btn @click="logout" color="red" class="w-100 mx-auto" outlined>
-          Logout
-        </v-btn>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <!-- Cart Link -->
-        <v-btn to="/cart" color="success " class="w-100" outlined>
-          Cart
-        </v-btn>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <!-- Notifications Link -->
-        <v-btn to="/notification" color="primary" class="w-100" outlined>
-          Notifications
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
   </v-app>
 </template>
 <style scoped>
@@ -195,7 +166,11 @@
 }
 </style>
 <script>
+import LineChart from './components/LineChart.vue'
 export default {
+  components: {
+    LineChart
+  },
   data() {
     return {
       AuthToken:null,
@@ -306,6 +281,7 @@ export default {
           if (response.ok) {
               const data = await response.json()
               this.user.name = data.user
+              this.user.email = data.email
               await this.VerifyAuth();
             
           } else {
@@ -334,5 +310,13 @@ export default {
   width: 100%;
 }
 
-/* Add your custom styles here */
+.box-border {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding-left: 25px;
+  padding-top: 25px;
+  padding-bottom: 15px;
+  box-shadow: 1px 1px 10px 0px lightgray;
+}
+
 </style>

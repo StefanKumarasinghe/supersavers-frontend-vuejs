@@ -1,21 +1,21 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-app>
-        <v-container fluid>
-          <div class="mx-3 mt-5">
-    <h1>
-      SHOPPING LIST
-    </h1>
-    <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-    <button @click="shareShoppingList" large class="font-weight-bold text-success">
-      <span class="mdi  mdi-share-variant"></span>
-      Share Shopping List
-    </button>
-    <button @click="shareApp" large class=" mx-4 font-weight-bold text-danger">
-      <span class="mdi  mdi-share-variant"></span>
-      Share the love
-    </button>
-  </div>
+  <v-app>
+    <v-container fluid>
+      <div class="mx-3 mt-5">
+        <h1>
+          SHOPPING LIST
+        </h1>
+        <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
+        <button @click="shareShoppingList" large class="font-weight-bold text-success">
+          <span class="mdi  mdi-share-variant"></span>
+          Share Shopping List
+        </button>
+        <button @click="shareApp" large class=" mx-4 font-weight-bold text-danger">
+          <span class="mdi  mdi-share-variant"></span>
+          Share the love
+        </button>
+      </div>
             <v-card flat>
               <v-tabs
                 v-model="tab"
