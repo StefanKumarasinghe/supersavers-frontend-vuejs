@@ -7,11 +7,11 @@
           SHOPPING LIST
         </h1>
         <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-        <button @click="shareShoppingList" large class="font-weight-bold text-success">
+        <button @click="shareShoppingList"  class="font-weight-bold text-success">
           <span class="mdi  mdi-share-variant"></span>
           Share Shopping List
         </button>
-        <button @click="shareApp" large class=" mx-4 font-weight-bold text-danger">
+        <button @click="shareApp"  class=" mx-2 font-weight-bold text-danger">
           <span class="mdi  mdi-share-variant"></span>
           Share the love
         </button>

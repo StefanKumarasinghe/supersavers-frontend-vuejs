@@ -13,7 +13,6 @@ import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
 import store from './store';
 import Account from './Account.vue';
-import Membership from './Membership.vue';
 
 // Import Firebase
 import { initializeApp } from 'firebase/app';
@@ -24,12 +23,11 @@ Vue.config.productionTip = false;
 // Use the router
 Vue.use(VueRouter);
 
-Vue.prototype.$GroceryAPI = "http://16.50.231.30:8000";
+Vue.prototype.$GroceryAPI = "http://127.0.0.1:8000";
 
 // Define routes
 const routes = [
   { path: '/', name:'explore', component: Explore },
-  { path: '/membership', name:'subscription', component: Membership },
   { path: '/register', component: Register },
   { path: '/verify', component: Verification },
   { path: '/notification', name: 'notification', component: Notification },

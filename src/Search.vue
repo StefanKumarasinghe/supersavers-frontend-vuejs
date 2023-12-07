@@ -394,6 +394,9 @@
       // Retrieve the groceryList from local storage when the component is mounted
       this.retrieveGroceryList();
     },
+    async beforeMount() {
+      await this.TokenPromise();
+    },
     methods: {
       async OnCallSuggestion() {
         try {
@@ -404,12 +407,9 @@
           console.error("Error fetching suggestions:", error);
         }
       },
-      async beforeMount() {
-      await this.TokenPromise();
-    },
-        async TokenPromise() {
+      async TokenPromise() {
       this.AuthToken = await this.getToken();
-      this.verifyAuthProcess();
+      await this.verifyAuthProcess();
     },
     getToken() {
       return new Promise((resolve) => {
@@ -424,7 +424,7 @@
       });
     },
     async VerifyAuth() {
-      const response = await fetch(`${this.$GroceryAPI}/verified`, {
+      const response = await fetch('http://127.0.0.1:8000/verified', {
              method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -438,7 +438,7 @@
       async verifyAuthProcess() {
     
         try {
-          const response = await fetch(`${this.$GroceryAPI}/protected`, {
+          const response = await fetch('http://127.0.0.1:8000/protected', {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -555,24 +555,11 @@
         }
 
         this.loading = false;
-      }, 
-      Completed(index) {
-        this.completed.push(this.groceryList.splice(index, 1)[0])
-        this.saveGroceryList()
-      },
-      retrieveGroceryList() {
-        const storedGroceryList = localStorage.getItem('groceryList');
-        if (storedGroceryList) {
-          this.groceryList = JSON.parse(storedGroceryList);
-        }
       },
       bestStoreForProduct(product) {
         const storePrices = {
           'Woolworths': product.woolworths_price,
           'Coles': product.coles_price,
-          'Aldi': product.aldi_price,
-          'IGA': product.iga_price,
-          'Chemist Warehouse': product.chemist_price
         };
         let bestStore = '';
         let lowestPrice = Infinity;
@@ -584,13 +571,6 @@
         }
         return bestStore;
       },
-      updateSavingsAndBestStore(product) {
-        // Update overall savings
-        this.savings += this.productSavings(product);
-
-        // TODO: You will need logic here to update the 'bestStore' value.
-        // This can be based on the minimum price amongst all stores or some other logic.
-      },  
       async fetchWeeklyDeals() {
         this.loading_start = true;
         try {
@@ -646,31 +626,6 @@
           this.snackbarError = true;  
         } finally {
           this.loading_start= false;
-        }
-      },
-      async AddToNotify(item){
-        try {
-          const response = await fetch(`${this.$GroceryAPI}/add_item_notify`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              item: item,  // Assuming item is an object with properties like item, woolworths_code, coles_code, iga_code
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }else {
-            this.message = "Item is added successfully to the Notification List";
-            this.snackbar = true;
-          }
-          const result = await response.json();
-          console.log(result.message);  // Log the response from the backend
-        } catch (error) {
-          this.error = "Failed to add item: " + error;
-          this.snackbarError = true;  
         }
       },
       getLowestPrice() {
