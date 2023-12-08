@@ -11,6 +11,7 @@ import ForgotPassword from './ForgotPassword.vue';
 import Verification from './Verification.vue';
 import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
+import Management from './Management.vue';
 import store from './store';
 import Account from './Account.vue';
 
@@ -36,7 +37,8 @@ const routes = [
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/forgotpassword', component: ForgotPassword },
   { path: '/resetpassword', component: ResetPassword },
-  { path: '/account',name:'account', component: Account }
+  { path: '/account',name:'account', component: Account },
+  { path: '/subscription',name:'subscription', component: Management }
 ];
 
 // Create the router instance

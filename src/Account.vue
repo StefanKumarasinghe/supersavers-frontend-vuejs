@@ -179,36 +179,6 @@ export default {
         email: null
         // Add more user details as needed
       },
-      notifications: [
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-        {
-          message: "Oreo is on Sale at Coles",
-          visible: true,
-        },
-      ],
       subscriptions: [
         {
           name: 'Deal Alerts',
