@@ -10,7 +10,7 @@ import Connect
 import Deals
 import Notification
 import PAI
-import DealsBulk
+
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()

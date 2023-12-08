@@ -1,11 +1,13 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app v-if="notAuthenticated">
     <v-main>
+         
       <div v-if="showSplashScreen" class="splash-screen" @animationend="onAnimationEnd">
+          
         <v-row align="center" justify="center">
           <v-col cols="12" md="6" lg="6" class="splash-card">
-              <v-card-text class="font-weight-bold"><h2>Supersaver</h2></v-card-text>
+              <v-card-text class=""><h2>Supersaver</h2></v-card-text>
           </v-col>
         </v-row>
       </div>
@@ -13,11 +15,11 @@
         <v-container fluid>
           <v-row align="center" justify="center" class="mt-5 pt-5">
             <v-col cols="12" md="6" lg="6">
-              <h1 class="font-weight-bold green--text">Verify Email</h1>
-              <h5 class="fw-bold text-success my-5">
+              <h1 class=" green--text">Verify Email</h1>
+              <h5 class=" my-5">
                 You are not yet done. To use the app, we will need you to verify your account before accessing the features
               </h5>
-                <v-btn color="green" class="white--text font-weight-bold mx-0 mt-3" @click="resendEmail" >Send another email</v-btn>
+                <v-btn color="green" outlined class="white--text font-weight-bold mx-0 mt-3" @click="resendEmail" >Send another email</v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -50,6 +52,7 @@
   export default {
     data() {
       return {
+        notAuthenticated:false,
         token: null,
         AuthToken: null,
         showSplashScreen: true,
@@ -58,10 +61,10 @@
         snackbarTimeout:2500,
       };
     },
-    created() {
-      this.TokenPromise();
+   async beforeMount() {
+      await this.TokenPromise();
       this.token = this.ExtractToken();
-      this.CheckToken();
+      await this.CheckToken();
       this.authCheckInterval = setInterval(this.CheckAuthenticationStatus, 5000);
     },
     beforeDestroy() {
@@ -111,24 +114,27 @@
           this.message = "Seems like you are verified...";
           this.snackbar = true;
           this.$nextTick(() => {
-           this.$router.push('/search');
+          this.$router.push('/search');
           });
+        }else{
+           this.notAuthenticated=true;
         }
       },
       getToken() {
-        return new Promise((resolve) => {
-          const tokenSimple = this.$store.getters.getTokenSimple;
-          if (tokenSimple) {
-            resolve(tokenSimple);
-          } else {
-            const token = this.$store.getters.getToken;
-            resolve(token);
-          }
-        });
+     return new Promise((resolve) => {
+        const tokenSimple = this.$store.getters.getTokenSimple;
+        if (tokenSimple) {
+          resolve(tokenSimple);
+        } else {
+ 
+          const token = this.$store.getters.getToken;
+          resolve(token);
+        }
+      });
       },
       async TokenPromise() {
         this.AuthToken = await this.getToken();
-        this.verifyAuthProcess();
+        await this.verifyAuthProcess();
       },
       async verifyAuthProcess() {
         try {
@@ -142,9 +148,15 @@
             await this.VerifyAuth();
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
+            this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
+          this.$router.push('/login');
+          window.location.reload();
         }
       },
       async resendEmail() {

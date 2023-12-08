@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-app>
+    <v-app v-if="authenticated">
       <v-container fluid>
         <div class="mx-3 mt-5">
           <h1>NOTIFY DEALS</h1>
@@ -16,12 +16,12 @@
             <div class="col-12 col-md-9 col-lg-9 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
               <div class="row">
                 <div class="col-12 col-md-12 col-lg-12 col-sm-12"> 
-                  <div class="text-overline font-weight-bold">
+                  <div class="text-overline font-weight-bold" style="display: inline-block; word-break: break-word;">
                     <h2>{{product.name}}</h2>
                   </div>
                   <div class="py-5">
-                    <div class="mb-3 product-description">
-                      {{ product.description }}
+                    <div class="mb-3 product-description" style="display: inline-block; word-break: break-word;">
+                      <p>{{ product.description.replace(/<[^>]*>/g, ' ') }}</p>
                     </div>
                   </div>
                   <div>
@@ -42,6 +42,7 @@
       return {
         products: [],
         AuthToken: null,
+        authenticated:false,
         quantities: []
       };
     },
@@ -90,14 +91,19 @@
           if (response.ok) {
               await this.VerifyAuth();
               this.fetchProducts()
+              this.authenticated=true;
             
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
     },
       async fetchProducts() {

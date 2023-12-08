@@ -1,17 +1,17 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app v-if="authenticated">
     <v-container fluid>
       <div class="mx-3 mt-5">
         <h1>
           SHOPPING LIST
         </h1>
         <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-        <button @click="shareShoppingList"  class="font-weight-bold text-success">
+        <button @click="shareShoppingList"  class="font-weight-bold col-6 col-lg-3 text-success">
           <span class="mdi  mdi-share-variant"></span>
-          Share Shopping List
+          Share  List
         </button>
-        <button @click="shareApp"  class=" mx-2 font-weight-bold text-danger">
+        <button @click="shareApp"  class="col-6 col-lg-3 font-weight-bold text-danger">
           <span class="mdi  mdi-share-variant"></span>
           Share the love
         </button>
@@ -283,7 +283,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -337,7 +337,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -393,7 +393,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -419,6 +419,7 @@
     export default {
     data () {
       return {
+        authenticated:false,
         panel1: [0, 1, 2],
         panel2: [0, 1, 2],
         disabled1: false,
@@ -468,6 +469,8 @@
           if (!(response.ok)) {
             console.error('Error:', response.statusText);
             this.$router.push('/verify');
+          }else {
+            this.authenticated=true
           }
     },
       async verifyAuthProcess() {
@@ -486,11 +489,15 @@
             
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
     },
       listToBuy(store) {
@@ -517,10 +524,14 @@
       },
       increment (index) {
         this.$set(this.quantities, index, this.quantities[index] + 1);
+        this.lists[index].quantity = this.quantities[index];
+        this.$store.dispatch('updateItem', this.lists[index]);
       },
       decrement (index) {
         if (this.quantities[index] > 1) {
           this.$set(this.quantities, index, this.quantities[index] - 1);
+          this.lists[index].quantity = this.quantities[index];
+          this.$store.dispatch('updateItem', this.lists[index]);
         }
       },
       removeItemFromCart(index) {
@@ -626,8 +637,10 @@
         return sum.toFixed(2);
       },
       boughtItem(index, quantity) {
-        this.lists[index].quantity = quantity
+        this.lists[index].quantity = quantity;
         this.lists[index].bought = true;
+        this.$store.dispatch('updateItem', this.lists[index]);
+        this.list.pop[index]
       }
     }
   }

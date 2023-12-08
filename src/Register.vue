@@ -78,26 +78,21 @@
           </v-col>
         </v-row>
         <div class="text-center ma-2">
-          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" >
             <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
               <v-icon>mdi-check</v-icon>
             </v-avatar>
             <v-avatar v-else color="red" size="30px" class="me-3">
               <v-icon>mdi-alert-circle-outline</v-icon>
             </v-avatar>
-
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
+            <span class="white--text font-weight-bold">{{ this.message }}!</span>
+            <template v-slot:action="{ attrs }">
+              <v-btn color="green" text v-bind="attrs" @click="snackbar = false">
+                <b>Close</b>
+                <v-icon>mdi-window-close</v-icon>
+              </v-btn>
+            </template>
+          </v-snackbar>
         </div>
       </v-container>
     </v-main>
@@ -178,8 +173,8 @@ export default {
           if (response.ok) {
             const data = await response.json();
             if (data.user != null) {
-              this.snackbarError = true;
-              this.error = "You are already logged in ...";
+              this.snackbarError = false;
+              this.message = "You are already logged in ...";
               this.snackbar = true;
               this.$router.push('/search');
             }
@@ -192,52 +187,54 @@ export default {
         }
       }
     },
-    async submitRegistration() {
-      if (this.password !== this.confirmPassword) {
-        this.$toast.error("Passwords don't match!");
-        return;
-    }
-      try {
-        const response = await fetch(`${this.$GroceryAPI}/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: this.username.toLowerCase(),
-            email: this.email.toLowerCase(),
-            hashed_password: this.password,
-          }),
-        });
-        if (response.ok) {
-            const data = await response.json();
-            this.snackbarError= false;
-            this.message = "Successfully created your super savers account";
-            this.snackbar = await true;
-            
-            const token = data.access_token;
-            // Store the token globally
-            await this.$store.dispatch('setToken', token);
+ async submitRegistration() {
+  try {
+    const response = await fetch(`${this.$GroceryAPI}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: this.username.toLowerCase(),
+        email: this.email.toLowerCase(),
+        hashed_password: this.password,
+      }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      this.snackbarError = false;
+      this.message = "Successfully created your super savers account";
+      this.snackbar = true;
 
-            // Redirect to /search
-            this.$nextTick(() => {
-            this.$router.push('/search');
-            });
-            window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
-          }else {
-            const data = await response.json();
-            this.snackbarError= true,
-            this.message = "Something is wrong : "+data.detail;
-            this.snackbar = true;
-          }
-      } catch (error) {
-        console.error('Registration failed:', error);
-        this.snackbarError= true,
-        this.message = "Something is went wrong";
-        this.snackbar = true;
+      const token = data.access_token;
+      // Store the token globally
+
+      await this.$store.dispatch('setToken', token);
+     
+      window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+          
+      await new Promise(resolve => setTimeout(resolve , 1000));
+       // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+      // Redirect to /search
+      this.$nextTick(() => {
+      this.$router.push('/verify');
+      });
       
-      }
-    },
+          
+  
+    } else {
+      const data = await response.json();
+      this.snackbarError = true;
+      this.message = "Something is wrong : " + data.detail;
+      this.snackbar = true;
+    }
+  } catch (error) {
+    console.error('Registration failed:', error);
+    this.snackbarError = true;
+    this.message = "Something went wrong";
+    this.snackbar = true;
+  }
+},
   },
 };
 </script>
@@ -246,4 +243,6 @@ export default {
 .v-application .v-application--wrap {
   min-height: 0vh;
 }
+
+
 </style>

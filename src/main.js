@@ -13,6 +13,7 @@ import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
 import store from './store';
 import Account from './Account.vue';
+import Subscription from './Subscription.vue';
 
 // Import Firebase
 import { initializeApp } from 'firebase/app';
@@ -29,14 +30,15 @@ Vue.prototype.$GroceryAPI = "http://127.0.0.1:8000";
 const routes = [
   { path: '/', name:'explore', component: Explore },
   { path: '/register', component: Register },
-  { path: '/verify', component: Verification },
+  { path: '/verify', name: 'verify', component: Verification },
   { path: '/notification', name: 'notification', component: Notification },
   { path: '/search', name: 'search', component: Search },
   { path: '/login', name: 'login', component: Login },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/forgotpassword', component: ForgotPassword },
   { path: '/resetpassword', component: ResetPassword },
-  { path: '/account',name:'account', component: Account }
+  { path: '/account',name:'account', component: Account },
+  { path: '/subscription', name:'subscription', component: Subscription}
 ];
 
 // Create the router instance

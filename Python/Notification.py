@@ -9,7 +9,7 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 import logging
 import random
-import time
+
 import re
 from werkzeug.utils import secure_filename
 
