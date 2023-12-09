@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <!-- Sidebar -->
-    <Sidebar v-if="isDesktop && authToken" />
+    <Sidebar v-if="isDesktop && authToken && this.$route.name !== 'verify'" />
 
     <!-- Toolbar with Menu Icon -->
     <router-view :class="isMobile? 'mb-5' : ''"></router-view>
-    <BottomNav v-if="isMobile && authToken" />
+    <BottomNav v-if="isMobile && authToken  && this.$route.name !== 'subscription' && this.$route.name !== 'explore'"/>
   </div>
 </template>
 

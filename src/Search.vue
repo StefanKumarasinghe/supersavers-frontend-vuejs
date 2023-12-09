@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app v-if="authenticated">
     <v-container fluid>
       <div class="mx-3 mt-5">
         <h1>COMPARE PRICES</h1>
@@ -78,11 +78,11 @@
               ></v-img>
             </v-col>
             <v-col cols="12" md="7">
-              <v-card-title class="display-1">
+              <v-card-title class="display-1" style="display: inline-block; word-break: break-word;">
                 <strong>{{ lowestPricedProduct.name }}</strong>
               </v-card-title>
-              <v-card-title class="display-6 ">
-                {{ lowestPricedProduct.description }}
+              <v-card-title class="display-6" style="display: inline-block; word-break: break-word;">
+               <p>{{ lowestPricedProduct.description.replace(/<[^>]*>/g, ' ') }}</p>
               </v-card-title>
               <v-card-title class="display-6 font-weight-bold green--text">
                 ${{ smallestPrice(lowestPricedProduct) }} /
@@ -99,19 +99,7 @@
           </v-row>
       </div>
 
-      <!-- Skeleton loader -->
-      <div v-if="loading_start" class="mt-5 pt-5 text-center">
-        <v-row>
-          <v-col v-for="i in 6" :key="i" 
-            cols="12"
-            xs="12"
-            sm="6"
-            md="4"
-            lg="4">
-            <v-skeleton-loader type="card"></v-skeleton-loader>
-          </v-col>
-        </v-row>
-      </div>
+     
 
       <!-- Best deal at Woolworths and Coles -->
       <div v-if="combinedProducts.length" class="my-4">
@@ -123,7 +111,7 @@
             cols="12"
             xs="12"
             sm="6"
-            md="6"
+            md="4"
             lg="4"
             v-for="product in combinedProducts" 
             :key="product.name"
@@ -143,7 +131,7 @@
             cols="12"
             xs="12"
             sm="6"
-            md="6"
+            md="4"
             lg="4"
             v-for="product in categoryProduct" 
             :key="product.name"
@@ -164,7 +152,7 @@
             cols="12"
             xs="12"
             sm="6"
-            md="6"
+            md="4"
             lg="4"
             v-for="deal in weeklyDeals_w" 
             :key="deal.name"
@@ -185,7 +173,7 @@
             cols="12"
             xs="12"
             sm="6"
-            md="6"
+            md="4"
             lg="4"
             v-for="deal in weeklyDeals_coles" 
             :key="deal.name"
@@ -206,7 +194,7 @@
             cols="12"
             xs="12"
             sm="6"
-            md="6"
+            md="4"
             lg="4"
             v-for="deal in weeklyDeals_iga" 
             :key="deal.name"
@@ -215,6 +203,22 @@
           </v-col>
         </v-row>
       </div>
+
+
+       <!-- Skeleton loader -->
+      <div v-if="loading_start" class="mt-5 pt-5 text-center">
+        <v-row>
+          <v-col v-for="i in 6" :key="i" 
+            cols="12"
+            xs="12"
+            sm="6"
+            md="4"
+            lg="4">
+            <v-skeleton-loader type="card"></v-skeleton-loader>
+          </v-col>
+        </v-row>
+      </div>
+      
       <div class="text-center ma-2">
         <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
           <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
@@ -232,7 +236,7 @@
         </v-snackbar>
       </div>
       <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout">
+        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
           <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
           <span class="white--text font-weight-bold">{{ this.error }}!</span>
           <template v-slot:action="{ attrs }">
@@ -258,6 +262,7 @@
   export default {
     data() {
       return {
+        authenticated:false,
         loading: false,
         loading_start:true,
         storeFilters: {
@@ -376,7 +381,6 @@
     },
     async created() {
       this.getUserLocation();
-      await this.TokenPromise();
 
     },
     watch: {
@@ -424,7 +428,7 @@
       });
     },
     async VerifyAuth() {
-      const response = await fetch('http://127.0.0.1:8000/verified', {
+      const response = await fetch(`${this.$GroceryAPI}/verified`, {
              method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -433,12 +437,16 @@
           if (!(response.ok)) {
             console.error('Error:', response.statusText);
             this.$router.push('/verify');
+          }else {
+            this.authenticated = true
+            await this.fetchWeeklyDeals()
+            
           }
     },
       async verifyAuthProcess() {
     
         try {
-          const response = await fetch('http://127.0.0.1:8000/protected', {
+          const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -447,15 +455,19 @@
 
           if (response.ok) {
               await this.VerifyAuth();
-              this.fetchWeeklyDeals()
+             
             
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
     },
       async handleTabClick(category) {
@@ -572,10 +584,12 @@
         return bestStore;
       },
       async fetchWeeklyDeals() {
+     
+        this.weeklyDeals_w=this.$store.state.weeklyDealsW;
+        this.weeklyDeals_iga=this.$store.state.weeklyDealsIGA;
+        this.weeklyDeals_coles=this.$store.state.weeklyDealsColes;  
         this.loading_start = true;
-        try {
-         
-          
+        try{
           const responseWoolies = await fetch(`${this.$GroceryAPI}/half-price-deals_woolies`, {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
@@ -586,7 +600,10 @@
           }); 
           
           this.weeklyDeals_w = await responseWoolies.json();
-          this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 8);
+  
+          this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 6);
+          this.$store.commit('setWeeklyDealsW', this.weeklyDeals_w);
+
           
         } catch (error) {
           this.error = "Failed to fetch Woolworths weekly deals: " + error;
@@ -603,14 +620,15 @@
           }); 
           
           this.weeklyDeals_coles= await responseColes.json();
-          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 8); // Get only the first 8 elements
+          this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 6);
+          this.$store.commit('setWeeklyDealsColes',  this.weeklyDeals_coles);
          
         } catch (error) {
           this.error = "Failed to fetch Coles weekly deals: " + error;
           this.snackbarError = true;          
         }
         try {
-          const responseIga = await fetch('http://127.0.0.1:8000/half-price-deals_iga', {
+          const responseIga = await fetch(`${this.$GroceryAPI}/half-price-deals_iga`, {
             method: 'GET', // or 'POST' or other HTTP methods
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
@@ -620,10 +638,10 @@
           }); 
           
           this.weeklyDeals_iga =  await responseIga.json();
-          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 6); 
+          this.$store.commit('setWeeklyDealsIGA', this.weeklyDeals_iga);
         } catch (error) {
-          this.error = "Failed to fetch IGA weekly deals: " + error;
-          this.snackbarError = true;  
+          console.error('Failed to get the deals from iga')
         } finally {
           this.loading_start= false;
         }
@@ -676,52 +694,13 @@
           }); 
           
           this.weeklyDeals_iga = await response.json();
-          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 8); // Get only the first 8 elements
+          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 6); 
           this.products = await response.json();
           // Process and use the data as needed
         } catch (error) {
           console.error('Error fetching data:', error);
         }
       },
-      addItemToCart(product) {
-        if (product) {
-          var x = { ...product }; // Create a copy to avoid modifying the original object
-          x.quantity = 1;
-          x.bought = false;
-
-          const storePrices = {
-            'Woolworths': product.woolworths_price,
-            'Coles': product.coles_price,
-            'IGA': product.iga_price,
-          };
-
-          // Filter out null or undefined prices
-          const validPrices = Object.values(storePrices).filter(price => price !== null && price !== undefined);
-
-          // Check if there are valid prices
-          if (validPrices.length > 0) {
-            // Calculate the old and new prices based on valid prices
-            x.old_price = Math.max(...validPrices);
-            x.new_price = Math.min(...validPrices);
-
-            // Determine the store with the lowest price
-            let lowestStore = Object.keys(storePrices).find(store => storePrices[store] === x.new_price);
-
-            // Set the lowest price store as the source
-            x.source = lowestStore;
-          } else {
-            // No valid prices, set source to null
-            x.source = null;
-          }
-
-          // Dispatch to the store
-          this.$store.dispatch('addItem', x);
-          this.message = 'Item was successfully added to the list';
-          this.snackbar = true;
-        } else {
-          console.error('Invalid product:', x);
-        }
-      }
     },
     components: {
       SearchCard,
@@ -741,6 +720,9 @@
   }
 
   @media (max-width: 701px) {
+    .snackbar-custom-style {
+  margin-bottom: 76px; /* Adjust the margin to fit the height of the browser's controls */
+}
     .container {
       padding-left: 25px;
       padding-right: 25px;

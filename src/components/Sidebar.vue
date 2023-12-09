@@ -72,7 +72,7 @@ export default {
   methods: {
     async logout() {
       await this.$store.commit('clearToken');
-      location.href = "/login";
+      location.href = "/";
     },
     async login() {
       location.href = "/login";

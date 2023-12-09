@@ -156,13 +156,34 @@ export default {
                 }
             });
         },
-        addItemToCart(product) {
-            product.quantity = this.quantity;
-            product.bought = false;
-            this.$store.dispatch('addItem', product);
-            this.message = 'Item is added successfully to the list';
-            this.snackbar = true;
-        }
+        async addItemToCart(product) {
+    try {
+        console.log(product);
+        product.quantity = this.quantity;
+        product.bought = false;
+        await fetch(`${this.$GroceryAPI}/add_item_cart`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(product.name),
+                old_price: parseFloat(product.old_price),
+                new_price: parseFloat(product.new_price),
+                source: String(product.source),
+                quantity: parseInt(product.quantity, 10),
+                image: String(product.image),
+                description: String(product.description),
+            }),
+        });
+        this.message = 'Item is added successfully to the list';
+        this.snackbar = true;
+    } catch (error) {
+        console.error('Error adding item to cart:', error);
+    }
+}
+
     },
 };
 </script>

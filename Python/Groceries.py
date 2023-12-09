@@ -10,7 +10,9 @@ import Connect
 import Deals
 import Notification
 import PAI
-import DealsBulk
+import Cart
+
+
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
@@ -23,9 +25,9 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 Connect.middleware(app)
 
 # Routes for user management and authentication
-@app.post("/register")
+@app.post("/register",  response_model=None)
 @limiter.limit("10/60minute")
-async def register(request: Request, user: AuthGrocery.User):
+async def register(request: Request,user:  AuthGrocery.UserModel):
     user_manager = AuthGrocery.UserManager()
     return await user_manager.register_user(user)
 
@@ -43,7 +45,7 @@ async def protected(current_user: str = Depends(AuthGrocery.UserManager.get_curr
 # Routes for password recovery
 @app.get("/verified")
 async def verified(current_user: str = Depends(AuthGrocery.PasswordRecoveryManager.is_email_verified)):
-    return {"message": "This user is verified", "user": current_user}
+    return {"message": "This user is verified", "user" : current_user }
 
 @app.get("/verify-email")
 async def verify_email_endpoint(token: str):
@@ -81,6 +83,82 @@ async def get_item(current_user: str = Depends(AuthGrocery.UserManager.get_curre
 @app.get("/run_notification")
 async def check_and_notify():
     return await Notification.check_and_notify()
+
+
+
+@app.post('/retrieve_bought')
+async def get_bought_items(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        bought_items = await Cart.get_cart_items_bought(current_user)
+        return bought_items
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+@app.post('/retrieve_unbought')
+async def get_unbought_items(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+        unbought_items = await Cart.get_cart_items_unbought(current_user)
+        return unbought_items
+
+@app.post('/retrieve_saving_user')
+async def saving(current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+        saving = await Cart.saving(current_user)
+        return saving
+
+
+@app.post('/add_item_cart')
+async def add_item_to_cart(item: Cart.ItemCart = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+     response = await Cart.add_to_cart(item, current_user)
+     return response
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+@app.post('/remove_cart')
+async def remove_item_from_cart(item: Cart.ItemIdentity = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        response = await Cart.remove_from_cart(item, current_user)
+        return response
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+@app.post('/increase_cart_quantity')
+async def increment(item: Cart.ItemIdentity = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        response = await Cart.increment(item, current_user)
+        return response
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+@app.post('/reduce_cart_quantity')
+async def increment(item: Cart.ItemIdentity = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        response = await Cart.decrement(item, current_user)
+        return response
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+
+@app.post('/update_cart')
+async def update_cart_item(item: Cart.ItemIdentity = Body(...), current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        response = await Cart.change_bought(item, current_user)
+        return response
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
+
 
 # Routes for product search and deals
 @app.get("/search/{query}/{code}", response_model=List[PAI.Product])

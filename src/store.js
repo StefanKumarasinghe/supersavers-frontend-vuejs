@@ -7,6 +7,9 @@ export default new Vuex.Store({
   state: {
     token: null,
     active: null,
+    weeklyDealsW: [],
+    weeklyDealsIGA: [],
+    weeklyDealsColes: [],
     cart: [],
   },
   mutations: {
@@ -24,6 +27,15 @@ export default new Vuex.Store({
     clearTokenSimple(state) {
       Vue.set(state, 'token', null);
     },
+    setWeeklyDealsW(state, deals) {
+      state.weeklyDealsW = deals;
+    },
+    setWeeklyDealsIGA(state, deals) {
+      state.weeklyDealsIGA = deals;
+    },
+    setWeeklyDealsColes(state, deals) {
+      state.weeklyDealsColes = deals;
+    },
     addItem(state, item) {
       // Check if the item already exists in the cart
       const existingItem = state.cart.find((cartItem) => cartItem.name === item.name && cartItem.bought === false && cartItem.source === item.source);
@@ -39,6 +51,14 @@ export default new Vuex.Store({
         state.cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(state.cart));
       }
+    },
+    updateItem(state, item) {
+      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name && cartItem.source === item.source);
+      if (index !== -1) {
+        state.cart[index] = item;
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     }
   },
   actions: {
@@ -46,6 +66,7 @@ export default new Vuex.Store({
     setToken({ commit }, token) {
       commit('setToken', token);
     },
+    
     // Example action to clear the token
     clearToken({ commit }) {
       commit('clearToken');
@@ -58,6 +79,9 @@ export default new Vuex.Store({
     },
     removeItem({ commit }, item) {
       commit('removeItem', item);
+    },
+    updateItem({ commit }, item) {
+      commit('updateItem', item);
     },
   },
   getters: {

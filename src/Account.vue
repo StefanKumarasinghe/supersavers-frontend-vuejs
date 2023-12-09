@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app v-if="authenticated">
     <v-container fluid>
       <!-- User Information Section -->
       <div class="mx-3 mt-5">
@@ -22,58 +22,31 @@
                 <h5 class="font-weight-bold">Monthly Subscription </h5>
               </v-row>
               <v-row class="text-center">
-                <h4 class="green--text font-weight-bold">$ AUD 3.99</h4>
+                <h4 class="green--text font-weight-bold">FREE</h4>
+                      <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="auto">
+          Supersavers will only be free until it is tested. You are using a testing version
+        </v-alert>
+
               </v-row>
               <v-row class="text-center">
-                <p><b>Next Renewal Date:</b> 23/10/2024</p>
-                <p><b>Membership Status:</b> Active</p>
+               
+                <p><b>Next Renewal Date:</b> N/A</p>
+                <p><b>Membership Status:</b> BETA</p>
               </v-row>
-              <v-btn color="success" class="font-weight-bold text-center">Manage</v-btn> 
+              <v-btn color="success" class="font-weight-bold text-center" to="">Manage</v-btn> 
             </div>
             <div class="text-black box-border my-5 pe-5 pb-5 text-center">
               <v-row class="text-center align-center"> <!-- Added align-center class -->
                 <h5 class="font-weight-bold">Monthly Savings</h5>
-                <h4 class="green--text font-weight-bold">$ AUD 30</h4>
+                <h4 class="green--text font-weight-bold">$ AUD {{ saving }}</h4>
               </v-row>
-              <v-row class="text-center align-center"> <!-- Added align-center class -->
-                <LineChart/>
-              </v-row>
+          
             </div>
           </v-col>
         </v-row>
         <v-divider :thickness="12" color="black"></v-divider>
 
-        <!-- Personal information -->
-        <div class="row">
-          <div class="col-lg-4 col-md-3 col-12">
-            <h5 class="font-weight-bold">
-            <v-icon color="black">mdi-account-box</v-icon> Personal information
-            </h5>
-          </div>
-          <div class="col-lg-8 col-md-9 col-12">
-            <div class="row font-weight-bold">
-              Display Name:
-            </div>
-            <div class="row">
-              <v-text-field
-                single-line
-                outlined
-                v-model="user.name"
-              ></v-text-field>
-            </div>
-            <div class="row font-weight-bold">
-              Email Address:
-            </div>
-            <div class="row">
-              <v-text-field
-                single-line
-                outlined
-                v-model="user.email"
-              ></v-text-field>
-            </div>
-          </div>
-        </div>
-        <v-divider :thickness="12" color="black"></v-divider>
+
 
         <!-- Change password -->
         <div class="row">
@@ -141,19 +114,15 @@
         </div>
 
         <v-row class="d-flex justify-center mb-5 align-center">
+   
           <v-col cols="12" md="6">
             <!-- Logout Link -->
-            <v-btn @click="logout" color="red" class="w-100 mx-auto font-weight-bold" height="50" outlined>
+            <v-btn @click="logout" color="red" class="w-100 mx-auto font-weight-bold"  height="50" outlined>
               Logout
             </v-btn>
           </v-col>
 
-          <v-col cols="12" md="6">
-            <!-- Cart Link -->
-            <v-btn to="/cart" color="success" class="w-100 font-weight-bold" height="50">
-              update
-            </v-btn>
-          </v-col>
+     
         </v-row>
       </div>
     </v-container>
@@ -166,16 +135,16 @@
 }
 </style>
 <script>
-import LineChart from './components/LineChart.vue'
+
 export default {
-  components: {
-    LineChart
-  },
+
   data() {
     return {
+      authenticated:false,
       AuthToken:null,
       user: {
         name: null,
+        saving:0,
         email: null
         // Add more user details as needed
       },
@@ -202,6 +171,7 @@ export default {
   },
   async beforeMount() {
       await this.TokenPromise();
+      await this.Saving();
     },
   methods : {
     closeNotification(id) {
@@ -214,6 +184,10 @@ export default {
       this.AuthToken = await this.getToken();
       this.verifyAuthProcess();
     },
+    async logout() {
+      await this.$store.commit('clearToken');
+      location.href = "/";
+    },
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
@@ -225,18 +199,6 @@ export default {
           resolve(token);
         }
       });
-    },
-    async VerifyAuth() {
-      const response = await fetch(`${this.$GroceryAPI}/verified`, {
-             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-          if (!(response.ok)) {
-            console.error('Error:', response.statusText);
-            this.$router.push('/verify');
-          }
     },
       async verifyAuthProcess() {
     
@@ -252,17 +214,44 @@ export default {
               const data = await response.json()
               this.user.name = data.user
               this.user.email = data.email
-              await this.VerifyAuth();
+              this.authenticated=true;
             
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
+            
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
+      },
+      async Saving() {
+    
+    try {
+      const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.AuthToken}`,
+        },
+      });
+
+      if (response.ok) {
+          const data = await response.json()
+          this.saving= data
+        
+      } else {
+        console.error('Error:', response.statusText);
       }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   },
 };
 </script>

@@ -1,17 +1,17 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app v-if="authenticated">
     <v-container fluid>
       <div class="mx-3 mt-5">
         <h1>
           SHOPPING LIST
         </h1>
         <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-        <button @click="shareShoppingList"  class="font-weight-bold text-success">
+        <button @click="shareShoppingList"  class="font-weight-bold col-6 col-lg-3 text-success">
           <span class="mdi  mdi-share-variant"></span>
-          Share Shopping List
+          Share  List
         </button>
-        <button @click="shareApp"  class=" mx-2 font-weight-bold text-danger">
+        <button @click="shareApp"  class="col-6 col-lg-3 font-weight-bold text-danger">
           <span class="mdi  mdi-share-variant"></span>
           Share the love
         </button>
@@ -49,10 +49,10 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listToBuy('Woolworths').length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
+                          <v-span v-show="Unbought_w.length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listToBuy('Woolworths')" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-10" v-if="list.source == 'Woolworths' && !list.bought">
+                        <div v-for="(list, i) in Unbought_w" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-10" >
 
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
@@ -68,26 +68,26 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} | {{list.size}}</h4>
+                                    <h4>{{list.name}} </h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
 
                                 </div>
                               </div>
@@ -109,9 +109,9 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listToBuy('Coles').length == 0">No items from Coles are added to the item to buy list...</v-span>    
+                          <v-span v-show="Unbought_c.length == 0">No items from Coles are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in lists" :key="i" class="d-flex justify-center">
+                        <div v-for="(list, i) in Unbought_c" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
@@ -127,26 +127,26 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} | {{list.size}}</h4>
+                                    <h4>{{list.name}} </h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
                                 </div>
                               </div>
                             </div>
@@ -169,9 +169,9 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listToBuy('IGA').length == 0">No items from IGA are added to the item to buy list...</v-span>    
+                          <v-span v-show="Unbought_i.length == 0">No items from IGA are added to the item to buy list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in lists" :key="i" class="d-flex justify-center">
+                        <div v-for="(list, i) in Unbought_i" :key="i" class="d-flex justify-center">
                           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
@@ -187,27 +187,26 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} | {{list.size}}</h4>
+                                    <h4>{{list.name}} </h4>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
-                                      <b>$ {{(list.new_price * quantities[i]).toFixed(2)}}&nbsp;&nbsp;</b>
+                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* quantities[i]).toFixed(2) }}
+                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="quantities[i]" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.number)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.number, quantities[list.number])" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
+                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
+                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
 
                                 </div>
                               </div>
@@ -218,7 +217,7 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
-                  <div v-if="listToBuy('Woolworths').length != 0 || listToBuy('Coles').length != 0 || listToBuy('IGA').length != 0">
+                  <div>
                     <v-divider class="divider"></v-divider>
                     <div class="d-flex flex-row-reverse">
                       <h2 class="black--text">Total: {{calTotal()}}</h2>
@@ -251,10 +250,10 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listBought('Woolworths').length == 0">No items from Woolworths are added to the bought list...</v-span>    
+                          <v-span v-show="bought_w.length == 0">No items from Woolworths are added to the bought list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listBought('Woolworths')" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Woolworths' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                        <div v-for="(list, i) in bought_w" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
@@ -283,7 +282,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -305,10 +304,11 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listBought('Coles').length == 0">No items from Coles are added to the bought list...</v-span>    
+                          <v-span v-show="bought_c.length == 0">No items from Coles are added to the bought list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listBought('Coles')" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                        <div v-for="(list, i) in bought_c" :key="i" class="d-flex justify-center">
+
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10"  style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
@@ -337,7 +337,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -361,10 +361,10 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="listBought('IGA').length == 0">No items from IGA are added to the bought list...</v-span>    
+                          <v-span v-show="bought_i.length == 0">No items from IGA are added to the bought list...</v-span>    
                         </div>
-                        <div v-for="(list, i) in listBought('IGA')" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && list.bought" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                        <div v-for="(list, i) in bought_i" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10"  style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
@@ -393,7 +393,7 @@
                                 <div class="col-12 col-md col-lg col-sm-12">
                                   <div class="card-quantity">
                                     <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)" readonly></v-text-field>
+                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
                                   </div>
                                 </div>
                               </div>
@@ -419,6 +419,7 @@
     export default {
     data () {
       return {
+        authenticated:false,
         panel1: [0, 1, 2],
         panel2: [0, 1, 2],
         disabled1: false,
@@ -428,6 +429,8 @@
           'Items to buy', 'Bought items'
         ],
         lists: [],
+        bought: [],
+        unbought:[],
         quantities: []
       }
     },
@@ -437,6 +440,29 @@
       for (let i = 0; i < this.lists.length; i++) {
         this.quantities[i] = this.lists[i].quantity;
       }
+      
+    },
+    computed : {
+      Unbought_c() {
+      return this.unbought.filter(item => item.source === "Coles");
+      },
+      Unbought_w() {
+        return this.unbought.filter(item => item.source === "Woolworths");
+      },
+      Unbought_i() {
+        return this.unbought.filter(item => item.source === "IGA");
+      },
+      bought_c() {
+        return this.bought.filter(item => item.source === "Coles");
+      },
+      bought_w() {
+       
+        return this.bought.filter(item => item.source === "Woolworths");
+        
+      },
+      bought_i() {
+        return this.bought.filter(item => item.source === "IGA");
+      },
     },
     methods: {
       async beforeMount() {
@@ -468,8 +494,62 @@
           if (!(response.ok)) {
             console.error('Error:', response.statusText);
             this.$router.push('/verify');
+          }else {
+            this.authenticated=true
+            
+
           }
     },
+
+    async fetchCart() {
+      
+        try {
+          const response = await fetch(`${this.$GroceryAPI}/retrieve_unbought`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          const data = await response.json();
+          this.unbought = data; // Update with your actual data structure
+        } catch (error) {
+          console.error('Error fetching products:', error);
+        }
+        try {
+          const response = await fetch(`${this.$GroceryAPI}/retrieve_bought`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          const data = await response.json();
+          this.bought= data; // Update with your actual data structure
+        } catch (error) {
+          console.error('Error fetching products:', error);
+        }
+      },
+      async removeProduct(product) {
+        try {
+         await fetch(`${this.$GroceryAPI}/remove_item_notify`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              woolworths_code: String(product.woolworths_code),
+              coles_code: String(product.coles_code),
+              iga_code: String(product.iga_code),
+            }),
+          });
+  
+
+          this.products = this.products.filter((prod) => prod.woolworths_code !== product.woolworths_code);
+  
+        } catch (error) {
+          console.error('Error removing product:', error);
+        }
+      },
       async verifyAuthProcess() {
     
         try {
@@ -481,57 +561,83 @@
           });
 
           if (response.ok) {
+              
               await this.VerifyAuth();
-          
-            
+              await this.fetchCart()
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
     },
-      listToBuy(store) {
-        const list = []
+  
+  
+      async increment (index) {
+        try {
+        
+        const response = await fetch(`${this.$GroceryAPI}/increase_cart_quantity`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(this.unbought[index].name)
+            }),
+        });
 
-        for (let i = 0; i < this.lists.length; i++) {
-          if (this.lists[i].source == store && !this.lists[i].bought) {
-            this.lists[i].number = i;
-           
-            list.push(this.lists[i]);
-          }
+        if (response.ok) {
+            if (this.unbought[index].quantity<100) {
+            this.unbought[index].quantity = this.unbought[index].quantity + 1;
+            }
+             // Update with your actual data structure
+        } else {
+            console.error('Error updating cart:', response.statusText);
         }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
+      },
+      async decrement (index) {
+        if (this.unbought[index].quantity>0) {
+        
+        
+        try {
+        
+        const response = await fetch(`${this.$GroceryAPI}/reduce_cart_quantity`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(this.unbought[index].name)
+            }),
+        });
 
-        return list
-      },
-      listBought(store) {
-        const list = []
-        for (let i = 0; i < this.lists.length; i++) {
-          if (this.lists[i].source == store && this.lists[i].bought) {
-            list.push(this.lists[i]);
-          }
+        if (response.ok) {
+            this.unbought[index].quantity = this.unbought[index].quantity - 1;
+             // Update with your actual data structure
+        } else {
+            console.error('Error updating cart:', response.statusText);
         }
-        return list
-      },
-      increment (index) {
-        this.$set(this.quantities, index, this.quantities[index] + 1);
-      },
-      decrement (index) {
-        if (this.quantities[index] > 1) {
-          this.$set(this.quantities, index, this.quantities[index] - 1);
-        }
-      },
-      removeItemFromCart(index) {
-        this.$store.dispatch('removeItem', this.lists[index]);
-        this.quantities.splice(index, 1);
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
+  }
       },
       calTotal() {
         let sum = 0;
-        for (let i = 0; i < this.lists.length; i++) {
-          if (this.lists[i].bought == false) {
-            sum += this.quantities[i] * (this.lists[i].new_price);
+        for (let i = 0; i < this.unbought.length; i++) {
+          if (this.unbought[i]) {
+            sum += this.unbought[i].quantity * (this.unbought[i].new_price);
           }
         }
         return sum.toFixed(2);
@@ -618,17 +724,76 @@
     },
       saveTotal() {
         let sum = 0;
-        for (let i = 0; i < this.lists.length; i++) {
-          if (this.lists[i].bought == false) {
-            sum += this.quantities[i] * (this.lists[i].old_price - this.lists[i].new_price);
+        for (let i = 0; i < this.unbought.length; i++) {
+          if (this.unbought[i]) {
+            sum += this.unbought[i].quantity * (this.unbought[i].old_price - this.unbought[i].new_price);
           }
         }
         return sum.toFixed(2);
       },
-      boughtItem(index, quantity) {
-        this.lists[index].quantity = quantity
-        this.lists[index].bought = true;
-      }
+      async boughtItem(name) {
+    try {
+      
+        const response = await fetch(`${this.$GroceryAPI}/update_cart`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(name)
+            }),
+        });
+
+        if (response.ok) {
+          let index = this.unbought.findIndex(item => item.name == name);
+
+// If the item is found in unbought, remove it and push it to bought
+if (index !== -1) {
+  let removedItem = this.unbought.splice(index, 1)[0];
+  this.bought.push(removedItem);
+} else {
+  console.error(`Could not remove item`);
+} // Update with your actual data structure
+        } else {
+            console.error('Error updating cart:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
+},
+      async removeItemFromCart(name) {
+        try {
+        const response = await fetch(`${this.$GroceryAPI}/remove_cart`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(name)
+            }),
+        });
+
+        if (response.ok) {
+          let index = this.unbought.findIndex(item => item.name == name);
+
+// If the item is found in unbought, remove it and push it to bought
+if (index !== -1) {
+ this.unbought.splice(index, 1)[0];
+ 
+} else {
+  console.error(`Could not remove item`);
+}
+             // Update with your actual data structure
+        } else {
+            console.error('Error updating cart:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
+      },
+
     }
   }
 </script>

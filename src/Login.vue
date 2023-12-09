@@ -137,13 +137,11 @@ export default {
           });
 
           if (response.ok) {
-            const data = await response.json();
-            if (data.user != null) {
-              this.snackbarError = true;
+              this.snackbarError = false;
               this.error = "You are already logged in ...";
               this.snackbar = true;
               this.$router.push('/search');
-            }
+         
           } else {
             console.error('Error:', response.statusText);
             
@@ -168,11 +166,11 @@ export default {
           });
 
           if (response.ok) {
+            const data = await response.json();
             this.snackbarError= false,
             this.message = 'Successfully signed in';
-            
             this.snackbar = true;
-            const data = await response.json();
+           
             const token = data.access_token;
 
             // Store the token globally
@@ -206,4 +204,5 @@ export default {
 .v-application .v-application--wrap {
   min-height: 0vh;
 }
+
 </style>

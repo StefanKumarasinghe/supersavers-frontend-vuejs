@@ -46,7 +46,7 @@
         <v-card-actions class="mx-2 mt-auto"> 
           <div class="row">
             <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3 white--text me-1" dark width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected), snackbar = true" size="small" variant="flat">
+              <v-btn class="text-none text-h6 mb-3 white--text me-1" dark width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected)" size="small" variant="flat">
                 Add To List
               </v-btn>
             </div>
@@ -227,7 +227,7 @@ export default {
         this.quantity -= 1;
       }
     },
-    addItemToCart(product, selectedStore) {
+    async addItemToCart(product, selectedStore) {
       if (product) {
         var x = { ...product }; // Create a copy to avoid modifying the original object
         x.quantity = this.quantity;
@@ -255,9 +255,25 @@ export default {
           x.source = null;
         }
 
-        // Dispatch to the store
-        this.$store.dispatch('addItem', x);
-        this.message = 'Item is added successfully to the list';
+        await fetch(`${this.$GroceryAPI}/add_item_cart`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: String(x.name),
+                old_price: parseFloat(x.old_price),
+                new_price: parseFloat(x.new_price),
+               source: String(x.source),
+                quantity: parseInt(x.quantity, 10),
+                image: String(x.image),
+                description: String(x.description),
+            }),
+        })
+        this.message = 'Item is added successfully to grocery list';
+        this.snackbar = true;
+        
       } else {
         console.error('Invalid product:', x);
       }
