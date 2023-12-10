@@ -7,11 +7,11 @@
           SHOPPING LIST
         </h1>
         <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-        <button @click="shareShoppingList"  class="font-weight-bold col-6 col-lg-3 text-success">
+        <button @click="shareShoppingList"  class="font-weight-bold text-start col-6 col-lg-3 text-success">
           <span class="mdi  mdi-share-variant"></span>
           Share  List
         </button>
-        <button @click="shareApp"  class="col-6 col-lg-3 font-weight-bold text-danger">
+        <button @click="shareApp"  class="col-6  text-start col-lg-3 font-weight-bold text-danger">
           <span class="mdi  mdi-share-variant"></span>
           Share the love
         </button>
@@ -52,7 +52,7 @@
                           <v-span v-show="Unbought_w.length == 0">No items from Woolworths are added to the item to buy list...</v-span>    
                         </div>
                         <div v-for="(list, i) in Unbought_w" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-10" >
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12" >
 
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
@@ -68,7 +68,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} </h4>
+                                    <h5>{{list.name}} </h5>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -86,8 +86,24 @@
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
+                               <div class="col-12 col-md-5 col-lg col-sm-12 d-flex justify-between">
+
+  <!-- Remove Button -->
+  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">
+    <v-icon color="red">
+      mdi-close-circle-outline
+    </v-icon>
+    Remove
+  </v-btn>
+
+  <!-- Buy Button -->
+  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="50">
+    <v-icon>
+      mdi-check-circle
+    </v-icon>
+    
+  </v-btn>
+</div>
 
                                 </div>
                               </div>
@@ -112,7 +128,7 @@
                           <v-span v-show="Unbought_c.length == 0">No items from Coles are added to the item to buy list...</v-span>    
                         </div>
                         <div v-for="(list, i) in Unbought_c" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'Coles' && !list.bought">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12" v-if="list.source == 'Coles' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
@@ -127,7 +143,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} </h4>
+                                    <h5>{{list.name}} </h5>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -144,10 +160,24 @@
                                     <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity" append-outer-icon="mdi-plus" @click:append-outer="increment(i)" prepend-icon="mdi-minus" @click:prepend="decrement(i)"></v-text-field>
                                   </div>
                                 </div>
-                                <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
-                                </div>
+                                <div class="col-12 col-md-5 col-lg col-sm-12 d-flex justify-between">
+  <!-- Remove Button -->
+  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">
+    <v-icon color="red">
+      mdi-close-circle-outline
+    </v-icon>
+    Remove
+  </v-btn>
+
+  <!-- Buy Button -->
+  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="50">
+    <v-icon>
+      mdi-check-circle
+    </v-icon>
+    
+  </v-btn>
+</div>
+
                               </div>
                             </div>
                           </div>
@@ -172,7 +202,7 @@
                           <v-span v-show="Unbought_i.length == 0">No items from IGA are added to the item to buy list...</v-span>    
                         </div>
                         <div v-for="(list, i) in Unbought_i" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" v-if="list.source == 'IGA' && !list.bought">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12" v-if="list.source == 'IGA' && !list.bought">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
                                 <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
@@ -187,7 +217,7 @@
                               <div class="row">
                                 <div class="col-12 col-md-4 col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}} </h4>
+                                    <h5>{{list.name}} </h5>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
@@ -205,8 +235,24 @@
                                   </div>
                                 </div>
                                 <div class="col-12 col-md-5 col-lg col-sm-12">
-                                  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">Remove</v-btn>
-                                  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="120">Buy</v-btn>
+                                  <div class="col-12 col-md-5 col-lg col-sm-12 d-flex justify-between">
+
+  <!-- Remove Button -->
+  <v-btn outlined rounded text @click="removeItemFromCart(list.name)" class="font-weight-bold text-subtitle-1" height="42" width="120">
+    <v-icon color="red">
+      mdi-close-circle-outline
+    </v-icon>
+    Remove
+  </v-btn>
+
+  <!-- Buy Button -->
+  <v-btn rounded @click="boughtItem(list.name)" class="font-weight-bold white--text ms-4 text-subtitle-1" color="green" height="40" width="50">
+    <v-icon>
+      mdi-check-circle
+    </v-icon>
+    
+  </v-btn>
+</div>
 
                                 </div>
                               </div>
@@ -238,10 +284,10 @@
 
                   <v-expansion-panels v-model="panel2" :disabled="disabled2" multiple flat>
                     
-                    <!-- Woolworths -->
+                    <!-- ALL BOUGHT -->
                     <v-expansion-panel>
                       <v-expansion-panel-header class="mt-5">
-                        <h3 class="green--text font-weight-bold woolies-logo " style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</h3>
+                        <h4 class=" font-weight-bold green--text " ><v-icon color="green">  mdi-checkbox-marked-circle-outline</v-icon> Checked List</h4>
                         <template v-slot:actions>
                           <v-icon color="black" size="30">
                             $expand
@@ -250,13 +296,14 @@
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="pb-3">
-                          <v-span v-show="bought_w.length == 0">No items from Woolworths are added to the bought list...</v-span>    
+                          <v-span v-show="bought_order.length == 0">You haven't bought anything...</v-span>    
                         </div>
-                        <div v-for="(list, i) in bought_w" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10" style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
+                        <h6 class="fw-bold">Latest</h6>
+                        <div v-for="(list, i) in bought_order" :key="i" class="d-flex justify-center">
+                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12" style="">
                             <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
                               <div class="p-1">
-                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
+                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="180"></v-img>
                               </div>
                               <div class="py-3 text-center">
                                 <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
@@ -268,14 +315,14 @@
                               <div class="row">
                                 <div class="col-12 col-md col-lg-5 col-sm-12"> 
                                   <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}}</h4>
+                                    <h6 class="fw-bold">{{list.name}}</h6>
                                   </div>
                                   <div class="py-5">
                                     <span class="text-h6">
                                       <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
                                     </span>
                                     <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
+                                      Saved $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
                                     </span>
                                   </div>
                                 </div>
@@ -290,117 +337,11 @@
                           </div>
                         </div>
                       </v-expansion-panel-content>
-                    </v-expansion-panel>
-
-                    <!-- Coles -->
-                    <v-expansion-panel>
-                      <v-expansion-panel-header class="mt-5">
-                        <h3 class="red--text font-weight-bold coles-logo " style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</h3>        
-                        <template v-slot:actions>
-                          <v-icon color="black" size="30">
-                            $expand
-                          </v-icon>
-                        </template>
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <div class="pb-3">
-                          <v-span v-show="bought_c.length == 0">No items from Coles are added to the bought list...</v-span>    
-                        </div>
-                        <div v-for="(list, i) in bought_c" :key="i" class="d-flex justify-center">
-
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10"  style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
-                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-1">
-                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                              </div>
-                              <div class="py-3 text-center">
-                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
-                              </div>
-                            </div>
-                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                              <div class="row">
-                                <div class="col-12 col-md col-lg-5 col-sm-12"> 
-                                  <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}}</h4>
-                                  </div>
-                                  <div class="py-5">
-                                    <span class="text-h6">
-                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
-                                    </span>
-                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md col-lg col-sm-12">
-                                  <div class="card-quantity">
-                                    <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-
-                    <!-- IGA -->
-                    <v-expansion-panel>
-                      <v-expansion-panel-header class="mt-5">
-                        <div>
-                          <h3 class="font-weight-bold iga-logo" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</h3>     
-                        </div>
-                        <template v-slot:actions>
-                          <v-icon color="black" size="30">
-                            $expand
-                          </v-icon>
-                        </template>
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <div class="pb-3">
-                          <v-span v-show="bought_i.length == 0">No items from IGA are added to the bought list...</v-span>    
-                        </div>
-                        <div v-for="(list, i) in bought_i" :key="i" class="d-flex justify-center">
-                          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10"  style="color: grey; border: 1px solid grey; background-color: rgb(236, 236, 236, 0.5);">
-                            <div class="col-12 col-md-2 col-lg-2 col-sm-12 py-0">
-                              <div class="p-1">
-                                <v-img :src="list.image" alt="Item Image" contain class="mx-auto" min-width="130" max-width="140"></v-img>
-                              </div>
-                              <div class="py-3 text-center">
-                                <v-span class="green--text font-weight-bold woolies-logo" v-show="list.source == 'Woolworths'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Woolworths</v-span>              
-                                <v-span class="red--text font-weight-bold coles-logo" v-show="list.source == 'Coles'" style="display: inline-block; word-break: break-word; white-space: nowrap;">Coles</v-span> 
-                                <v-span class="font-weight-bold iga-logo" v-show="list.source == 'IGA'" style="display: inline-block; word-break: break-word; white-space: nowrap;">&nbsp;IGA&nbsp;</v-span> 
-                              </div>
-                            </div>
-                            <div class="col-12 col-md-10 col-lg-10 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
-                              <div class="row">
-                                <div class="col-12 col-md col-lg-5 col-sm-12"> 
-                                  <div class="text-overline font-weight-bold">
-                                    <h4>{{list.name}}</h4>
-                                  </div>
-                                  <div class="py-5">
-                                    <span class="text-h6">
-                                      <b>$ {{(list.new_price * list.quantity).toFixed(2)}}&nbsp;&nbsp;</b>
-                                    </span>
-                                    <span class="black--text font-weight-bold card-avatar-inside" style="display: inline-block; word-break: break-word; white-space: nowrap;"> 
-                                      Save $ {{ (parseFloat(list.old_price - list.new_price)* list.quantity).toFixed(2) }}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md col-lg col-sm-12">
-                                  <div class="card-quantity">
-                                    <div class="text-subtitle-1">Quantity:</div>
-                                    <v-text-field class="text-input black--text font-weight-bold text-subtitle-2" variant="plain" hide-details="true" v-model="list.quantity"  readonly></v-text-field>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </v-expansion-panel-content>
+                      <v-alert colored-border  elevation="2" color="green" prominent class="mt-5" width="100%">
+                        <h2>Manage your account</h2>
+                        <p class="fw-bold">Love how much you are saving on Supersavers, Check how much you have saved so far on your account</p>
+          <v-btn color="green" class="white--text mt-3" to="/account">Manage</v-btn>
+        </v-alert>
                     </v-expansion-panel>
                   </v-expansion-panels>
                 </v-tab-item>
@@ -452,16 +393,8 @@
       Unbought_i() {
         return this.unbought.filter(item => item.source === "IGA");
       },
-      bought_c() {
-        return this.bought.filter(item => item.source === "Coles");
-      },
-      bought_w() {
-       
-        return this.bought.filter(item => item.source === "Woolworths");
-        
-      },
-      bought_i() {
-        return this.bought.filter(item => item.source === "IGA");
+      bought_order() {
+        return this.bought.slice().sort((a, b) => new Date(b.time) - new Date(a.time));
       },
     },
     methods: {
@@ -652,9 +585,9 @@
     IGA: [],
   };
 
-  for (let i = 0; i < this.lists.length; i++) {
-    const item = this.lists[i];
-    const quantity = this.quantities[i];
+  for (let i = 0; i < this.unbought.length; i++) {
+    const item = this.unbought[i];
+    const quantity = this.unbought[i].quantity;
 
     // Determine the store for the item
     let storeName = 'Unknown';

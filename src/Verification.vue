@@ -24,7 +24,7 @@
           </v-row>
         </v-container>
       </div>
-      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
             <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
               <v-icon>mdi-check</v-icon>
             </v-avatar>

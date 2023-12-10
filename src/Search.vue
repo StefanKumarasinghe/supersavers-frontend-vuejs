@@ -144,7 +144,8 @@
       <!-- Crazy deals at Woolworths -->
       <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
-          <h2>Deals at <span class="green--text font-weight-bold">Woolworths</span></h2>
+          <h2>Deals at <span class="green--text font-weight-bold">Woolworths <v-icon @click="fetchWoolDeals()" large color="green" >mdi-refresh-circle</v-icon>
+</span></h2>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-row>
@@ -165,7 +166,7 @@
       <!-- Crazy deals at Coles -->
       <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
-          <h2>Deals at <span class="red--text font-weight-bold ">Coles</span></h2>
+          <h2>Deals at <span class="red--text font-weight-bold ">Coles</span>  <v-icon @click="fetchColesDeals()" large color="green" >mdi-refresh-circle</v-icon></h2>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-row>
@@ -186,7 +187,7 @@
       <!-- Crazy deals at IGA -->
       <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA'] && !categoryProduct.length && !combinedProducts.length" class="py-5 my-5">
         <v-toolbar>
-          <h2>Deals at <span class="white--text font-weight-bold iga_logo ">  &nbsp; IGA  &nbsp;</span></h2>
+          <h2>Deals at <span class="white--text font-weight-bold iga_logo ">  &nbsp; IGA  &nbsp;</span>  <v-icon @click="fetchIGADeals()" large color="green" >mdi-refresh-circle</v-icon></h2>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-row>
@@ -236,7 +237,7 @@
         </v-snackbar>
       </div>
       <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
+        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" style="bottom: 0;" >
           <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
           <span class="white--text font-weight-bold">{{ this.error }}!</span>
           <template v-slot:action="{ attrs }">
@@ -583,12 +584,7 @@
         }
         return bestStore;
       },
-      async fetchWeeklyDeals() {
-     
-        this.weeklyDeals_w=this.$store.state.weeklyDealsW;
-        this.weeklyDeals_iga=this.$store.state.weeklyDealsIGA;
-        this.weeklyDeals_coles=this.$store.state.weeklyDealsColes;  
-        this.loading_start = true;
+      async fetchWoolDeals() {
         try{
           const responseWoolies = await fetch(`${this.$GroceryAPI}/half-price-deals_woolies`, {
             method: 'GET', // or 'POST' or other HTTP methods
@@ -609,6 +605,8 @@
           this.error = "Failed to fetch Woolworths weekly deals: " + error;
           this.snackbarError = true;  
         } 
+      },
+      async fetchColesDeals() {
         try {
           const responseColes = await fetch(`${this.$GroceryAPI}/half-price-deals_coles`, {
             method: 'GET', // or 'POST' or other HTTP methods
@@ -627,6 +625,8 @@
           this.error = "Failed to fetch Coles weekly deals: " + error;
           this.snackbarError = true;          
         }
+      },
+      async fetchIGADeals() {
         try {
           const responseIga = await fetch(`${this.$GroceryAPI}/half-price-deals_iga`, {
             method: 'GET', // or 'POST' or other HTTP methods
@@ -642,9 +642,19 @@
           this.$store.commit('setWeeklyDealsIGA', this.weeklyDeals_iga);
         } catch (error) {
           console.error('Failed to get the deals from iga')
-        } finally {
-          this.loading_start= false;
-        }
+        } 
+      },
+      async fetchWeeklyDeals() {
+     
+        this.weeklyDeals_w=this.$store.state.weeklyDealsW;
+        this.weeklyDeals_iga=this.$store.state.weeklyDealsIGA;
+        this.weeklyDeals_coles=this.$store.state.weeklyDealsColes;  
+        this.loading_start = true;
+        await this.fetchWoolDeals()
+        await this.fetchColesDeals()
+        await this.fetchIGADeals()
+        this.loading_start= false;
+        
       },
       getLowestPrice() {
         return this.lowestPricedProduct;

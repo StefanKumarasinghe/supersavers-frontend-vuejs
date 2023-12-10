@@ -51,6 +51,11 @@ class UserModel(BaseModel):
     email: str
     hashed_password:str
 
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+    
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -384,8 +389,30 @@ class PasswordRecoveryManager:
         if user is None:
             raise HTTPException(status_code=404, detail="User not found.")
 
-        user.hashed_password = UserManager.hash_password(new_password)
+        user.hashed_password =  PasswordHashing.hash_password(new_password)
 
         del PasswordRecoveryManager.recovery_tokens[recovery_token]
 
         return {"message": "Password reset successfully."}
+    
+
+    @staticmethod
+    async def change_password(request: ChangePasswordRequest, current_user: str = Depends(UserManager.get_current_user)):
+        try:
+            
+            db = SessionLocal()
+            user = db.query(User).filter(User.username == current_user).first()
+            # Verify the old password
+            if not PasswordHashing.verify_password(request.old_password, user.hashed_password):
+                raise HTTPException(status_code=400, detail="Incorrect old password.")
+            if len(request.new_password)<8:
+                raise HTTPException(status_code=400, detail="Password must be atleast 8 characters")
+            # Change the password
+            user.hashed_password = PasswordHashing.hash_password(request.new_password)
+            db.commit()
+            db.close()
+           
+
+            return {"message": "Password changed successfully."}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")

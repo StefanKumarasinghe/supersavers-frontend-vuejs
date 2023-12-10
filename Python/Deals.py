@@ -4,6 +4,7 @@ from typing import Union, Optional
 from pydantic import BaseModel
 from fastapi import HTTPException
 import Data
+import random
 import FuncTools
 
 Woolies_Cookies = None  # Initialize as None at the module level
@@ -38,6 +39,7 @@ async def half_price_deals_woolies():
                 response_homepage = await client.get('https://www.woolworths.com.au/')
                 Woolies_Cookies = '; '.join([f"{name}={value}" for name, value in response_homepage.cookies.items()])
             woolworths_headers["Cookie"] = Woolies_Cookies
+            woolworths_payload_half_price["pageNumber"] = random.randint(1, 20)
             woolworths_response = await client.post("https://www.woolworths.com.au/apis/ui/browse/category", headers=woolworths_headers, json=woolworths_payload_half_price)
 
         response_data = await handle_http_error(woolworths_response, "Failed to fetch half-price deals from Woolworths")

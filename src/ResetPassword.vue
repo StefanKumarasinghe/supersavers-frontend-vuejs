@@ -55,6 +55,22 @@
           </v-col>
         </v-row>
       </v-container>
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
+          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
+          <span class="white--text font-weight-bold">{{ this.error }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="red"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -64,6 +80,10 @@
     data() {
       return {
         password: '',
+        snackbar:false,
+        snackbarError:false,
+        snackbarTimeout:2500,
+        message:null,
         showPassword: false,
         passwordRules: [
           (value) => {
@@ -94,7 +114,9 @@
 
             // Check if token exists
             if (!token) {
-              alert('Token not found in the URL');
+              this.message = 'No token found, please use the email link provided';
+              this.snackbarError = true;
+              this.snackbar = true;
               return;
             }
             const response = await this.resetPassword(token, this.password);
@@ -116,6 +138,12 @@
           method: 'POST',
           body: formData,
         });
+
+        if (!(response.ok)) {
+          this.message = 'Could not recover your password';
+          this.snackbarError = true;
+          this.snackbar = true;
+        }
 
         return response.json();
       }

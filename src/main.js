@@ -24,7 +24,7 @@ Vue.config.productionTip = false;
 // Use the router
 Vue.use(VueRouter);
 
-Vue.prototype.$GroceryAPI = "http://api.supersavers.au:8000";
+Vue.prototype.$GroceryAPI = "https://api.supersavers.au";
 
 // Define routes
 const routes = [
@@ -35,8 +35,8 @@ const routes = [
   { path: '/search', name: 'search', component: Search },
   { path: '/login', name: 'login', component: Login },
   { path: '/cart', name: 'cart', component: Cart },
-  { path: '/forgotpassword', component: ForgotPassword },
-  { path: '/resetpassword', component: ResetPassword },
+  { path: '/forgot-password', component: ForgotPassword },
+  { path: '/reset-password', component: ResetPassword },
   { path: '/account',name:'account', component: Account },
   { path: '/subscription', name:'subscription', component: Subscription}
 ];
@@ -50,7 +50,7 @@ const router = new VueRouter({
 // Navigation guard to check authentication before navigating to each route
 router.beforeEach((to, from, next) => {
   // These routes do not require login token
-  const requiresAuth = !['/', '/login', '/register', '/forgotpassword', '/resetpassword', '/verify'].includes(to.path);
+  const requiresAuth = !['/', '/login', '/register', '/forgot-password', '/reset-password', '/verify'].includes(to.path);
 
   // If authentication is required and the user is not authenticated, redirect to login
   if (requiresAuth && !store.getters.getToken) {

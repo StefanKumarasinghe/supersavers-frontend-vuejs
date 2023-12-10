@@ -181,6 +181,15 @@ async def iga(request: Request, current_user: str = Depends(AuthGrocery.UserMana
 async def coles(request: Request, current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
     return await Deals.half_price_deals_coles()
 
+
+@app.post("/change-password")
+async def change_password(request: AuthGrocery.ChangePasswordRequest, current_user: str = Depends(AuthGrocery.UserManager.get_current_user)):
+    try:
+        AuthGrocery.PasswordRecoveryManager.change_password(request)
+        return {"message": "Password changed successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

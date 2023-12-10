@@ -23,22 +23,16 @@
               </v-row>
               <v-row class="text-center">
                 <h4 class="green--text font-weight-bold">FREE</h4>
-                      <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="auto">
+                      <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="100%">
           Supersavers will only be free until it is tested. You are using a testing version
         </v-alert>
 
               </v-row>
-              <v-row class="text-center">
-               
-                <p><b>Next Renewal Date:</b> N/A</p>
-                <p><b>Membership Status:</b> BETA</p>
-              </v-row>
-              <v-btn color="success" class="font-weight-bold text-center" to="">Manage</v-btn> 
             </div>
             <div class="text-black box-border my-5 pe-5 pb-5 text-center">
               <v-row class="text-center align-center"> <!-- Added align-center class -->
                 <h5 class="font-weight-bold">Monthly Savings</h5>
-                <h4 class="green--text font-weight-bold">$ AUD {{ saving }}</h4>
+                <h4 class="green--text font-weight-bold" v-if="amount">$ AUD {{ amount }}</h4>
               </v-row>
           
             </div>
@@ -63,6 +57,7 @@
               <v-text-field
                 single-line
                 outlined
+                v-model="oldPassword"
                 type="password"
               ></v-text-field>
             </div>
@@ -72,6 +67,7 @@
             <div class="row">
               <v-text-field
                 single-line
+                v-model="newPassword"
                 outlined
                 type="password"
               ></v-text-field>
@@ -81,13 +77,14 @@
             </div>
             <div class="row">
               <v-text-field
+                v-model="confirmPassword"
                 single-line
                 outlined
                 type="password"
               ></v-text-field>
             </div>
             <div class="row">
-              <v-btn color="green font-weight-bold white--text" height="50">Change password</v-btn>
+              <v-btn color="green font-weight-bold white--text" @click="changePassword()" height="50">Change password</v-btn>
             </div>
           </div>
         </div>
@@ -126,6 +123,24 @@
         </v-row>
       </div>
     </v-container>
+    <div class="text-center ma-2">
+        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;" >
+          <v-avatar :color="snackbarColor" size="30px" class="me-3">
+            <v-icon>{{ snackbarIcon }}</v-icon>
+          </v-avatar>
+          <span class="white--text font-weight-bold">{{ snackbarMessage }}</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="red"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
   </v-app>
 </template>
 <style scoped>
@@ -140,11 +155,20 @@ export default {
 
   data() {
     return {
+      snackbar:false,
+      snackbarError:false,
+      snackbarTimeout:2500,
       authenticated:false,
       AuthToken:null,
+      snackbarMessage: '',
+      snackbarColor: 'red',
+      snackbarIcon: 'mdi-alert-circle',
+      saving_amout:0,
       user: {
         name: null,
-        saving:0,
+        newPassword:'',
+        oldPassword:'',
+        confimPassword:'',
         email: null
         // Add more user details as needed
       },
@@ -169,6 +193,12 @@ export default {
       selectedSubscription: null,
     };
   },
+  computed: {
+  // Check if saving has a valid value
+  amount() {
+    return this.saving_amount
+  },
+},
   async beforeMount() {
       await this.TokenPromise();
       await this.Saving();
@@ -199,6 +229,57 @@ export default {
           resolve(token);
         }
       });
+    },
+    async changePassword() {
+      // Reset snackbar properties
+      this.snackbar = false;
+      this.snackbarMessage = '';
+      this.snackbarColor = 'red';
+      this.snackbarIcon = 'mdi-alert-circle';
+
+      if (this.newPassword !== this.confirmPassword) {
+        this.showSnackbar('New passwords don\'t match.', 'red', 'mdi-alert-circle');
+        return;
+      }
+
+      // Password rules validation
+      if (this.newPassword.length < 8) {
+        this.showSnackbar('Password must be at least 8 characters.', 'red', 'mdi-alert-circle');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/change-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.AuthToken}`
+          },
+          body: JSON.stringify({
+            old_password: this.oldPassword,
+            new_password: this.newPassword,
+          }),
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          this.showSnackbar(responseData.message, 'green', 'mdi-check-circle');
+          // Optionally, you can redirect or perform other actions on success
+        } else {
+          const errorData = await response.json();
+          this.showSnackbar(errorData.detail, 'red', 'mdi-alert-circle');
+          // Handle error, e.g., display an error message to the user
+        }
+      } catch (error) {
+        this.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
+        // Handle error, e.g., display a generic error message to the user
+      }
+    },
+    showSnackbar(message, color, icon) {
+      this.snackbarMessage = message;
+      this.snackbarColor = color;
+      this.snackbarIcon = icon;
+      this.snackbar = true;
     },
       async verifyAuthProcess() {
     
@@ -242,7 +323,7 @@ export default {
 
       if (response.ok) {
           const data = await response.json()
-          this.saving= data
+          this.saving_amount= data.amount
         
       } else {
         console.error('Error:', response.statusText);

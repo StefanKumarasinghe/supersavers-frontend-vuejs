@@ -17,7 +17,7 @@
               <div class="row">
                 <div class="col-12 col-md-12 col-lg-12 col-sm-12"> 
                   <div class="text-overline font-weight-bold">
-                    <h2>{{product.name}}</h2>
+                    <h5>{{product.name}}</h5>
                   </div>
                   <div class="py-5">
                     <div class="mb-3 product-description">
@@ -25,14 +25,20 @@
                     </div>
                   </div>
                   <div>
-                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 " color="green" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
+                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 " color="red" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <v-alert colored-border  elevation="2" color="green" prominent class="mt-5" width="100%">
+                        <h2>Manage your account</h2>
+          <p class="fw-bold">You could manage how you would like to be notified for products. Never miss out on deals and get alerted to your phone or email once that item is on sale</p>
+          <v-btn color="green" class="white--text mt-3" to="/account">Manage</v-btn>
+        </v-alert>
       </v-container>
+
     </v-app>
 </template>
   

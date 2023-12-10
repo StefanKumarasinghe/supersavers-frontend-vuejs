@@ -36,7 +36,7 @@
             </v-card-actions>
         </v-card>
         <div class="text-center ma-2">
-            <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+            <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
             <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
             <span class="white--text font-weight-bold">{{ this.message }}!</span>
             <template v-slot:action="{ attrs }">

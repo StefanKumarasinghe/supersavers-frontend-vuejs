@@ -20,7 +20,7 @@
                   rounded
                   outlined
                 ></v-text-field>
-                <div class="text-end mb-1 me-2"><router-link to="forgotpassword" class="font-weight-bold green--text text-decoration-underline">Forgot password?</router-link></div>
+                <div class="text-end mb-1 me-2"><router-link to="/forgot-password" class="font-weight-bold green--text text-decoration-underline">Forgot password?</router-link></div>
                 <v-text-field 
                   v-model="password" 
                   label="Password" 
@@ -54,7 +54,7 @@
           </v-col>
         </v-row>
         <div class="text-center ma-2">
-          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
             <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
               <v-icon>mdi-check</v-icon>
             </v-avatar>

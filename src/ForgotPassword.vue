@@ -40,6 +40,22 @@
           </v-col>
         </v-row>
       </v-container>
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
+          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
+          <span class="white--text font-weight-bold">{{ this.error }}!</span>
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="red"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <b>Close</b>
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -49,6 +65,9 @@
     data() {
       return {
         email: '',
+        snackbarError:false,
+        snackbarTimeout:2500,
+        message:null,
         emailRules: [
           value => {
             if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
@@ -70,16 +89,20 @@
               body: new URLSearchParams({ email: this.email }),
             });
             if (response.ok) {
-              alert("Reset password link was sent successfully to your email!");
-            } else {
-              alert("Failed to request password reset. Please try again.");
-            }
+              this.error = 'Successfully sent a password recovery email';
+              this.snackbarError = true;
+
+            } 
           } catch (error) {
             console.error('Error:', error);
-            alert("An unexpected error occurred. Please try again.");
+            this.error = 'Could not recover your password';
+            this.snackbarError = true;
+            
           }
         } else {
-          alert("Please enter a valid email address.");
+          this.error = 'Something went wrong...';
+          this.snackbarError = true;
+          
         }
       },
     },
