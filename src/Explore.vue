@@ -4,22 +4,32 @@
   <v-app>
     <div>
       <!-- Header -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-success py-4 fixed-top">
+      <nav class="navbar navbar-expand-lg py-4 px-5 bg-white shadow-sm fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">SuperSavers</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse" aria-controls="nav-collapse" aria-expanded="false" aria-label="Toggle navigation">
+          <a class="navbar-brand" href="#"><h4 class="green--text font-weight-bold">SuperSavers</h4></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse" aria-controls="nav-collapse" aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="nav-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link" href="#about">About</a>
+                <a class="black--text nav-link me-lg-4" href="#about">Product</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#services">Subscriptions</a>
+                <a class="black--text nav-link me-lg-4" href="#about">About</a>
               </li>
-              <li class="nav-item ms-auto">
-                <a class="nav-link btn btn-outline-light" href="/search">Get Started</a>
+              <li class="nav-item">
+                <a class="black--text nav-link" href="#services">Subscriptions</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav">
+              <li class="nav-item my-sm-3 my-3 my-lg-0 my-md-0">
+                <button class="btn btn-outline-success green--text font-weight-bold">
+                  <a class="green--text" href="#services">Login</a>
+                </button>
+                <button class="btn btn-success white--text font-weight-bold ms-4">
+                  <a class="white--text" href="/search">Sign Up</a>
+                </button>
               </li>
             </ul>
           </div>
@@ -27,20 +37,18 @@
       </nav>
 
       <!-- Hero Section -->
-      <div class="bg-success d-flex align-items-center py-5 mt-5">
-        <div class="container">
+      <div class="d-flex align-items-center">
           <div class="row py-5 my-5">
-            <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0" data-aos="fade-up" data-aos-delay="200">
-              <h1 class="text-white">SuperSavers</h1>
-              <p class="text-white">Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
-              <a href="/search" class="btn btn-outline-light w-50  rounded-pill px-3 py-2 ">Get started</a>
-
+            <div class="green--text col-lg-6 col-md-6 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+              <span class="font-weight-bold mx-auto">
+                <h1>SuperSavers </h1><br/> Compare Deals and Save on Groceries At Coles, Woolies & IGA!<br/>
+                <a href="/search" class="white--text btn btn-success w-50 rounded-pill my-5">Get started</a>
+              </span>              
             </div>
-            <div class="col-lg-6 mx-auto d-block hero-img mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="200">
+            <div class="col-lg-6 col-md-6 d-block hero-img" data-aos="zoom-in" data-aos-delay="200">
               <img src="@/assets/hero-img.png" class="animated mx-auto d-block img-fluid" alt="">
             </div>
           </div>
-        </div>
       </div>
 
       <!-- Clients Section -->
@@ -151,17 +159,13 @@
 
 </script>
 
-<style scoped>
+<style>
 
 body {
   font-family: "Quicksand";
   color: #444444;
+  padding-top:60px;
 }
-
-
-
-
-
 
 h1,
 h2,
@@ -272,9 +276,6 @@ h6 {
   max-height: 40px;
 }
 
-.v-application a {
-    color: white;
-}
 .v-application a:hover {
     color: black;
 }
@@ -306,10 +307,10 @@ h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0 10px 30px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
-  color: #fff;
+  color: black;
+  font-weight: bold;
   white-space: nowrap;
   transition: 0.3s;
 }
@@ -325,7 +326,7 @@ h6 {
 .navbar .active,
 .navbar .active:focus,
 .navbar li:hover>a {
-  color: #47b2e4;
+  color: #228B22;
 }
 
 .navbar .getstarted,
@@ -386,16 +387,6 @@ h6 {
 
 .mobile-nav-toggle.bi-x {
   color: #fff;
-}
-
-@media (max-width: 991px) {
-  .mobile-nav-toggle {
-    display: block;
-  }
-
-  .navbar ul {
-    display: none;
-  }
 }
 
 .navbar-mobile {
