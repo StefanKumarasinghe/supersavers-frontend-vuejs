@@ -12,6 +12,7 @@
           <v-text-field
             v-model="searchTerm"
             @change="fetchProducts()"
+            @input="getSearchRecommendations()"
             label="Search"
             filled
             prepend-inner-icon="mdi-magnify"
@@ -22,6 +23,8 @@
             hide-details="true"
           ></v-text-field>
         </v-col>
+
+     
         <v-col cols="2" md="2" lg="2">
           <v-menu rounded="lg" offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
@@ -46,6 +49,18 @@
             </v-list>
           </v-menu>
         </v-col>
+           <!-- Search recommendations container -->
+           <v-container v-if="shownlist">
+          <v-card>
+            <v-list>
+              <v-list-item v-for="recommendation in shownlist" :key="recommendation">
+                <v-list-item-content @click="selectRecommendation(recommendation)">
+                  {{ recommendation }}
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-container>
       </v-row>
 
       <!-- Category bar -->
@@ -272,6 +287,69 @@
           "Deals At IGA": true,
         },
         AuthToken:null,
+        searchRecommendations:{
+  "groceries": [
+    "Milk",
+    "Bread",
+    "Eggs",
+    "Chicken",
+    "Rice",
+    "Pasta",
+    "Fresh fruits (e.g., apples, bananas, oranges)",
+    "Fresh vegetables (e.g., tomatoes, lettuce, carrots)",
+    "Cheese",
+    "Yogurt",
+    "Cereal",
+    "Butter",
+    "Cooking oil",
+    "Frozen vegetables",
+    "Ground beef",
+    "Coffee",
+    "Tea",
+    "Sugar",
+    "Flour",
+    "Snack items (e.g., chips, crackers)",
+    "Canned goods (e.g., beans, tomatoes, soup)",
+    "Peanut butter",
+    "Jam or jelly",
+    "Toilet paper",
+    "Paper towels",
+    "Cleaning supplies (e.g., dish soap, laundry detergent)",
+    "Toothpaste",
+    "Shampoo",
+    "Soap",
+    "Diapers (if applicable)",
+    "Woolworths Select brand items",
+    "Coles Own brand items",
+    "Applesauce",
+    "Almond milk",
+    "Gluten-free products",
+    "Quinoa",
+    "Greek yogurt",
+    "Soy sauce",
+    "Hummus",
+    "Avocado",
+    "Salmon",
+    "Baby formula",
+    "Oatmeal",
+    "Honey",
+    "Maple syrup",
+    "Granola",
+    "Deli meats",
+    "Coconut water",
+    "Sparkling water",
+    "Baby wipes",
+    "Fabric softener",
+    "Dishwasher detergent",
+    "Fresh herbs (e.g., cilantro, parsley, basil)",
+    "Sparkling water",
+    "Gourmet cheese",
+    "Artisanal bread",
+    "Probiotic drinks",
+    "Plant-based milk alternatives"
+  ]
+}
+,
         searchTerm: '',
         postalCode: null,
         searchSuggestions:[],
@@ -285,6 +363,7 @@
         weeklyDeals_iga: [],
         weeklyDeals_coles: [],
         error: null,
+        shownlist:[],
         // searchClosed: true, -> search field open and close
         selection:1,
         tab: null,
@@ -644,7 +723,36 @@
           console.error('Failed to get the deals from iga')
         } 
       },
+      selectRecommendation(recommendation) {
+      // Implement logic when a recommendation is selected
+      console.log(`Selected recommendation: ${recommendation}`);
+      // You can close the recommendations or perform any other action here
+      this.showRecommendations = false;
+    },
+    async getSearchRecommendations() {
+      if (this.searchTerm.length > 3) {
+        try {
+          const response = await fetch(
+            `${this.$GroceryAPI}/get-suggestions/${this.searchTerm}`
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            // Assuming the response structure has an array of suggestions
+            this.shownlist = data.suggestions || [];
+          } else {
+            console.error('Error fetching search suggestions');
+          }
+        } catch (error) {
+          console.error('Error fetching search suggestions', error);
+        }
+      } else {
+        this.shownlist = [];
+      }
+    },
+    
       async fetchWeeklyDeals() {
+
      
         this.weeklyDeals_w=this.$store.state.weeklyDealsW;
         this.weeklyDeals_iga=this.$store.state.weeklyDealsIGA;
