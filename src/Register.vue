@@ -19,7 +19,7 @@
           </v-col>
           <v-col cols="12" md="4" lg="4" align-self="center">
             <div class="py-5">
-              <h4 class="font-weight-bold green--text text--darken-2 text-h4">Register</h4>
+              <h2 class="font-weight-bold green--text text--darken-2 ">Register</h2>
             </div>
             <v-form ref="regForm" v-on:submit.prevent="submitRegistration">
               <div>
@@ -86,6 +86,8 @@
               <div class="d-flex justify-content-center">
                 <v-btn color="green" class="white--text mt-4 font-weight-bold"  height="45" width="100%" @click="submitRegistration">register</v-btn>
               </div>
+              <br>
+              <router-link to="/login" class="font-weight-bold green--text  text-decoration-underline">Login instead?</router-link>
             </v-form>
           </v-col>
         </v-row>

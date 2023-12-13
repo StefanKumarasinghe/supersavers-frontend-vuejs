@@ -10,7 +10,7 @@
             <div class="col-lg-4 col-md-5 col-sm-12 col-12 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
               <span class="mx-auto">
                 <h1 class="font-weight-bold green--text">SuperSavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
-                <a href="/search" class="green--text fw-bold btn btn-outline-success w-50 h-50 rounded-pill">Get started</a>
+                <a href="/search" class="green--text fw-bold btn btn-outline-success w-50 h-50 ">Get started</a>
               </span>              
             </div>
             <div class="col-lg-4 col-md-5 hero-img" data-aos="zoom-in" data-aos-delay="200">
@@ -25,10 +25,10 @@
         <div class="container">
           <div class="row" data-aos="zoom-in">
             <div class="col-lg-3 col-md-0 col-sm-0 col-0"></div>
-            <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-4 col-6 d-flex align-items-center justify-content-center">
               <h3 class="text-success fw-bold">Woolworths</h3>
             </div>
-            <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-4 col-6 d-flex align-items-center justify-content-center">
               <h2 class="text-danger fw-bold">Coles</h2>
             </div>
             <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">

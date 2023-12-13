@@ -2,33 +2,39 @@
 <template>
   <v-app v-if="authenticated">
     <v-container fluid>
-      <div class="mx-3 mt-5">
-        <h1>COMPARE PRICES</h1>
-        <span>A Great Way To Save Money. Please enter the specific product you are looking for to get the most affordable item.</span>
+      <div class="mx-3">
+        <h1 class="fw-bold">What's new?</h1>
+        <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>,<span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span>.</p>
+        <p class="fw-bold text-danger">
+        <v-icon large color="red">
+    mdi-piggy-bank
+  </v-icon> <span class="text-success">{{ saving }}</span> AUD Saved this Month...
+</p>
       </div>
 
-      <v-row align="center" class="my-5">
-        <v-col cols="9" md="10" lg="6">
-          <v-text-field
-            v-model="searchTerm"
-            @change="fetchProducts()"
-            @input="getSearchRecommendations()"
-            label="Search"
-            filled
-            prepend-inner-icon="mdi-magnify"
-            solo
-            flat
-            rounded
-            outlined
-            hide-details="true"
-          ></v-text-field>
-        </v-col>
+      <div style="position: relative;">
+    <v-row align="center" class="my-5">
+      <v-col cols="9" md="10" lg="6">
+        <!-- Your search input code here -->
+        <v-text-field
+          v-model="searchTerm"
+          @change="fetchProducts()"
+          @input="getSearchRecommendations()"
+          label="Search"
+          filled
+          prepend-inner-icon="mdi-magnify"
+          solo
+          flat
+          outlined
+          hide-details="true"
+        ></v-text-field>
+      </v-col>
 
-     
-        <v-col cols="2" md="2" lg="2">
-          <v-menu rounded="lg" offset-y :close-on-content-click="false">
+      <v-col cols="2" md="2" lg="2">
+        <!-- Your filter button code here -->
+        <v-menu  offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
+              <v-btn  fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
                 <v-icon >
                   mdi-filter
                 </v-icon>
@@ -48,20 +54,22 @@
               </v-list-item>
             </v-list>
           </v-menu>
-        </v-col>
-           <!-- Search recommendations container -->
-           <v-container v-if="shownlist">
-          <v-card>
-            <v-list>
-              <v-list-item v-for="recommendation in shownlist" :key="recommendation">
-                <v-list-item-content @click="selectRecommendation(recommendation)">
-                  {{ recommendation }}
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </v-container>
-      </v-row>
+      </v-col>
+
+      <!-- Search recommendations container -->
+      <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="shownlist.length > 1">
+        
+          <v-list class="shadow-lg">
+            <v-list-item v-for="recommendation in shownlist" :key="recommendation">
+              <v-list-item-content class="hover p-3" @click="selectRecommendation(recommendation)">
+                {{ recommendation }}
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        
+      </v-container>
+    </v-row>
+  </div>
 
       <!-- Category bar -->
       <v-app-bar color="transparent" flat class="">
@@ -105,7 +113,7 @@
               </v-card-title>
               <v-card-title>
                 Deal Available At 
-                <strong :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">
+                <strong style="display: inline-block; word-break: break-word;" :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">
  {{ bestStoreForProduct(lowestPricedProduct) }}
 </strong>
 
@@ -278,6 +286,7 @@
   export default {
     data() {
       return {
+        saving:0,
         authenticated:false,
         loading: false,
         loading_start:true,
@@ -287,69 +296,6 @@
           "Deals At IGA": true,
         },
         AuthToken:null,
-        searchRecommendations:{
-  "groceries": [
-    "Milk",
-    "Bread",
-    "Eggs",
-    "Chicken",
-    "Rice",
-    "Pasta",
-    "Fresh fruits (e.g., apples, bananas, oranges)",
-    "Fresh vegetables (e.g., tomatoes, lettuce, carrots)",
-    "Cheese",
-    "Yogurt",
-    "Cereal",
-    "Butter",
-    "Cooking oil",
-    "Frozen vegetables",
-    "Ground beef",
-    "Coffee",
-    "Tea",
-    "Sugar",
-    "Flour",
-    "Snack items (e.g., chips, crackers)",
-    "Canned goods (e.g., beans, tomatoes, soup)",
-    "Peanut butter",
-    "Jam or jelly",
-    "Toilet paper",
-    "Paper towels",
-    "Cleaning supplies (e.g., dish soap, laundry detergent)",
-    "Toothpaste",
-    "Shampoo",
-    "Soap",
-    "Diapers (if applicable)",
-    "Woolworths Select brand items",
-    "Coles Own brand items",
-    "Applesauce",
-    "Almond milk",
-    "Gluten-free products",
-    "Quinoa",
-    "Greek yogurt",
-    "Soy sauce",
-    "Hummus",
-    "Avocado",
-    "Salmon",
-    "Baby formula",
-    "Oatmeal",
-    "Honey",
-    "Maple syrup",
-    "Granola",
-    "Deli meats",
-    "Coconut water",
-    "Sparkling water",
-    "Baby wipes",
-    "Fabric softener",
-    "Dishwasher detergent",
-    "Fresh herbs (e.g., cilantro, parsley, basil)",
-    "Sparkling water",
-    "Gourmet cheese",
-    "Artisanal bread",
-    "Probiotic drinks",
-    "Plant-based milk alternatives"
-  ]
-}
-,
         searchTerm: '',
         postalCode: null,
         searchSuggestions:[],
@@ -479,7 +425,10 @@
       this.retrieveGroceryList();
     },
     async beforeMount() {
-      await this.TokenPromise();
+      
+      await this.TokenPromise(); 
+      await this.Saving()
+      
     },
     methods: {
       async OnCallSuggestion() {
@@ -663,6 +612,27 @@
         }
         return bestStore;
       },
+      async Saving() {
+    
+    try {
+      const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.AuthToken}`,
+        },
+      });
+
+      if (response.ok) {
+          const data = await response.json()
+          this.saving= data.amount
+        
+      } else {
+        console.error('Error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  },
       async fetchWoolDeals() {
         try{
           const responseWoolies = await fetch(`${this.$GroceryAPI}/half-price-deals_woolies`, {
@@ -723,11 +693,11 @@
           console.error('Failed to get the deals from iga')
         } 
       },
-      selectRecommendation(recommendation) {
+      async selectRecommendation(recommendation) {
       // Implement logic when a recommendation is selected
-      console.log(`Selected recommendation: ${recommendation}`);
-      // You can close the recommendations or perform any other action here
-      this.showRecommendations = false;
+      this.searchTerm = recommendation;
+      this.shownlist= [];
+      await this.fetchProducts();
     },
     async getSearchRecommendations() {
       if (this.searchTerm.length > 3) {
@@ -739,7 +709,7 @@
           if (response.ok) {
             const data = await response.json();
             // Assuming the response structure has an array of suggestions
-            this.shownlist = data.suggestions || [];
+            this.shownlist = data.suggestions.suggestions.slice(0,5) || [];
           } else {
             console.error('Error fetching search suggestions');
           }
@@ -835,6 +805,10 @@
     margin-right: auto;
     margin-left: auto;
     padding-right: 50px;
+  
+  }
+  .hover:hover {
+    background-color:#aaaaaa;
   }
 
   @media (max-width: 701px) {
@@ -894,6 +868,7 @@
     padding-top: 5px;
     padding-bottom: 5px;
   }
+  
 
   .v-application .text-subtitle-1 {
     line-height: 1.3rem;

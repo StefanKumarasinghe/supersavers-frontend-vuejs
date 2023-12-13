@@ -7,11 +7,11 @@
           SHOPPING LIST
         </h1>
         <p>With Grocery Planner, you can plan your trip so you can save on the best deals when going for groceries.</p>
-        <button @click="shareShoppingList"  class="font-weight-bold text-start col-6 col-lg-3 text-success">
+        <button @click="shareShoppingList"  class="font-weight-bold text-start col-6 col-lg-2 text-success">
           <span class="mdi  mdi-share-variant"></span>
           Share  List
         </button>
-        <button @click="shareApp"  class="col-6  text-start col-lg-3 font-weight-bold text-danger">
+        <button @click="shareApp"  class="col-6  text-start col-lg-2 font-weight-bold text-danger">
           <span class="mdi  mdi-share-variant"></span>
           Share the love
         </button>
@@ -337,11 +337,6 @@
                           </div>
                         </div>
                       </v-expansion-panel-content>
-                      <v-alert colored-border  elevation="2" color="green" prominent class="mt-5" width="100%">
-                        <h2>Manage your account</h2>
-                        <p class="fw-bold">Love how much you are saving on Supersavers, Check how much you have saved so far on your account</p>
-          <v-btn color="green" class="white--text mt-3" to="/account">Manage</v-btn>
-        </v-alert>
                     </v-expansion-panel>
                   </v-expansion-panels>
                 </v-tab-item>

@@ -1,9 +1,6 @@
 <template>
     <span>
         <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-            <button @click="shareApp(deal)" large class="text-start m-1 font-weight-bold">
-      <span class="mdi  mdi-share-variant"></span>
-    </button>
             <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
             <v-toolbar color="transparent" flat class="py-0">
                 <v-avatar color="yellow" rounded width="100" height="35">
@@ -11,6 +8,9 @@
                         Save ${{ parseFloat(deal.old_price - deal.new_price).toFixed(2) }}
                     </span>
                 </v-avatar>
+                <button @click="shareApp(deal)" large class="w-50 text-end text-danger fw-bold  m-1 font-weight-bold">
+      <v-icon class="mdi text-danger mdi-share-variant">mdi-share-variant</v-icon>
+    </button>
             </v-toolbar>
             <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
                 {{ deal.name }} | {{deal.size}}
@@ -28,7 +28,7 @@
             <v-card-actions class="mx-2"> <!-- Use mt-auto to push the buttons to the bottom -->
                 <div class="row">
                     <div class="col-12">
-                        <v-btn class="text-none text-h6 mb-3 white--text me-1" width="100%" height="45px" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
+                        <v-btn class=" fw-bold mb-3 white--text me-1" width="100%" height="45px" color="green" @click="addItemToCart(deal)" size="small" variant="flat">
                             Add To List
                         </v-btn>
                     </div>

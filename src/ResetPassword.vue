@@ -6,7 +6,7 @@
         <v-row align="center" justify="center" class="mt-5 py-5">
           <v-col cols="12" md="5" lg="5">
             <div class="py-5">
-              <h4 class="font-weight-bold green--text text--darken-2 text-h4">Reset Password</h4>
+              <h2 class="font-weight-bold green--text text--darken-2 ">Reset Password</h2>
               <div class="text-subtitle-1 font-weight-light">Enter new password and confirm password.</div>
             </div>
             <v-form ref="resetForm" v-on:submit.prevent="submitRegistration">

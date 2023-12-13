@@ -201,7 +201,7 @@ export default {
 },
   async beforeMount() {
       await this.TokenPromise();
-      await this.Saving();
+    
     },
   methods : {
     closeNotification(id) {
@@ -296,6 +296,8 @@ export default {
               this.user.name = data.user
               this.user.email = data.email
               this.authenticated=true;
+              await this.Saving()
+              
             
           } else {
             console.error('Error:', response.statusText);

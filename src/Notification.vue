@@ -4,10 +4,10 @@
       <v-container fluid>
         <div class="mx-3 mt-5">
           <h1>NOTIFY DEALS</h1>
-          <p>With the notifications feature, you won't miss out on the item with the best deal!</p>
+          <p class="fw-bold">With the notifications feature, you won't miss out on the item with the best deal!</p>
         </div>
         <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
-          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-8 col-10">
+          <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="col-12 col-md-3 col-lg-3 col-sm-12 py-0">
               <div class="p-1">
                 <v-img :src="product.image" alt="Item Image" contain class="mx-auto" min-width="150" max-width="170"></v-img>
@@ -16,27 +16,22 @@
             <div class="col-12 col-md-9 col-lg-9 col-sm-12 py-0 text-sm-center text-md-start text-lg-start text-center d-flex align-center">
               <div class="row">
                 <div class="col-12 col-md-12 col-lg-12 col-sm-12"> 
-                  <div class="text-overline font-weight-bold">
-                    <h5>{{product.name}}</h5>
+                  <div class="fw-bold">
+                    <h5 class="fw-bold">{{product.name}}</h5>
                   </div>
                   <div class="py-5">
-                    <div class="mb-3 product-description">
-                      {{ product.description }}
+                    <div class="mb-3 fw-bold product-description">
+                      <p>{{ product.description.replace(/<[^>]*>/g, ' ') }}</p>
                     </div>
                   </div>
                   <div>
-                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1 " color="red" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
+                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1  " outlined color="red" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <v-alert colored-border  elevation="2" color="green" prominent class="mt-5" width="100%">
-                        <h2>Manage your account</h2>
-          <p class="fw-bold">You could manage how you would like to be notified for products. Never miss out on deals and get alerted to your phone or email once that item is on sale</p>
-          <v-btn color="green" class="white--text mt-3" to="/account">Manage</v-btn>
-        </v-alert>
       </v-container>
 
     </v-app>
@@ -157,7 +152,7 @@
   }
   
   .product-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   }
   
   .product-image {

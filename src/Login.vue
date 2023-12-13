@@ -18,7 +18,7 @@
           </v-col>
           <v-col cols="12" md="4" lg="4" align-self="center">
             <div class="py-5">
-              <h4 class="font-weight-bold green--text text--darken-2 text-h4">Login</h4>
+              <h2 class="font-weight-bold green--text text--darken-2 ">Login</h2>
             </div>
             <v-form ref="loginForm" v-on:submit.prevent="submitRegistration">
               <div>
@@ -58,6 +58,9 @@
               <div class="d-flex justify-content-center">
                 <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%"  height="45" @click="submitLogin">Login</v-btn>
               </div>
+              <br>
+              <router-link to="/register" class="font-weight-bold green--text  text-decoration-underline">Sign up instead?</router-link>
+                 
             </v-form>
           </v-col>
         </v-row>
