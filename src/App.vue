@@ -1,22 +1,24 @@
 <template>
   <div id="app">
     <!-- Sidebar -->
-    <Sidebar v-if="isDesktop && authToken && this.$route.name !== 'verify'" />
-
+    <Sidebar v-if="isDesktop && authToken && this.$route.name !== 'subscription' && this.$route.name !== 'explore'" />
+    <TopNav v-if="this.$route.name === 'explore' || this.$route.name === 'login' || this.$route.name === 'register'"/>
     <!-- Toolbar with Menu Icon -->
-    <router-view :class="isMobile? 'mb-5' : ''"></router-view>
-    <BottomNav v-if="isMobile && authToken  && this.$route.name !== 'subscription' && this.$route.name !== 'explore'"/>
+    <router-view :class="isMobile? 'mb-5' : ''" :style="checkForTopNav? 'padding-top:25px;' : ''"></router-view>
+    <BottomNav v-if="isMobile && authToken && this.$route.name !== 'subscription' && this.$route.name !== 'explore'"/>
   </div>
 </template>
 
 <script>
 import Sidebar from './components/Sidebar.vue';
 import BottomNav from './components/BottomNav.vue';
+import TopNav from './components/TopNav.vue';
 
 export default {
   components: {
     Sidebar,
     BottomNav,
+    TopNav
   },
   data() {
     return {
@@ -40,6 +42,9 @@ export default {
     document.removeEventListener('click', this.handleDocumentClick);
   },
   methods: {
+    checkForTopNav() {
+      return this.$route.path === 'explore' || this.$route.path === 'login' || this.$route.path === 'register'
+    },
     checkIsDesktop() {
       this.isDesktop = window.innerWidth > 701;
       window.addEventListener('resize', () => {

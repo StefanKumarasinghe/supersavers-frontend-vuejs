@@ -297,9 +297,3 @@ export default {
   },
 };
 </script>
-
-<style>
-  .v-snack:not(.v-snack--centered):not(.v-snack--top) {
-    align-items: flex-start;
-  }
-</style>
