@@ -4,11 +4,14 @@
       <!-- Reset Password Form -->
       <v-container fluid>
         <v-row align="center" justify="center" class="mt-5 py-5">
-          <v-col cols="12" md="6" lg="6">
-            <v-card-title class="font-weight-bold green--text text--darken-2 text-h4">Reset Password</v-card-title>
-            <v-card-text class="text-lg-h6 font-weight-light">Enter new password and confirm password.</v-card-text>
-            <v-card-text class="my-4">
-              <v-form ref="loginForm" v-on:submit.prevent="submitRegistration">
+          <v-col cols="12" md="5" lg="5">
+            <div class="py-5">
+              <h4 class="font-weight-bold green--text text--darken-2 text-h4">Reset Password</h4>
+              <div class="text-subtitle-1 font-weight-light">Enter new password and confirm password.</div>
+            </div>
+            <v-form ref="resetForm" v-on:submit.prevent="submitRegistration">
+              <div>
+                <label for="password" class="font-weight-bold pb-2" >Password:</label>
                 <v-text-field
                   class="mb-3"
                   v-model="password"
@@ -19,10 +22,13 @@
                   :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showPassword ? 'text' : 'password'"
                   @click:append="showPassword = !showPassword"
-                  flat
-                  rounded
+                  dense
                   outlined
-                ></v-text-field>
+                  single-line
+                ></v-text-field>          
+              </div>
+              <div>
+                <label for="password" class="font-weight-bold pb-2" >Confirm Password:</label>
                 <v-text-field
                   v-model="confirmPassword"
                   label="Confirm Password"
@@ -32,17 +38,17 @@
                   :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showConfirmPassword ? 'text' : 'password'"
                   @click:append="showConfirmPassword = !showConfirmPassword"
-                  flat
-                  rounded
+                  dense
                   outlined
+                  single-line
                 ></v-text-field>
-                <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%" rounded height="45" @click="submitRegistration">submit</v-btn>
-              </v-form>
-            </v-card-text>
+              </div>
+              <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%" height="45" @click="submitRegistration">submit</v-btn>
+            </v-form>
           </v-col>
 
           <!-- The image will be hidden on small screens (md and below) -->
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="6" lg="6">
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
             <v-img
               :src="require('@/assets/register.jpg')"
               alt="Login Image"
@@ -88,6 +94,7 @@
         passwordRules: [
           (value) => {
             if (value?.length >= 8) return true;
+            if (value.length < 1) return 'Password is required';
             return 'Password needs to be at least 8 characters.';
           },
         ],
@@ -96,6 +103,7 @@
         confirmPasswordRules: [
           (value) => {
             if (this.password == value) return true;
+            if (value.length < 1) return 'Confirm Password is required';
             return 'Passwords need to match.';
           },
         ],
@@ -103,7 +111,7 @@
     },
     methods: {
       async submitRegistration() {
-        if (this.$refs.loginForm.validate()) {
+        if (this.$refs.resetForm.validate()) {
           if (this.password !== this.confirmPassword) {
             alert("Passwords don't match!");
           } else {

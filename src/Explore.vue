@@ -1,37 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
 
-  <v-app class="vapplication">
+  <v-app class="vapplication" id="explore-page">
     <div>
-      <!-- Header -->
-      <nav class="navbar navbar-expand-lg py-4 px-5 bg-white shadow-sm fixed-top">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#"><h4 class="green--text font-weight-bold">SuperSavers</h4></a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse" aria-controls="nav-collapse" aria-expanded="true" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="nav-collapse">
-            <ul class="navbar-nav mx-auto">
-              <li class="nav-item">
-                <a class="black--text nav-link me-lg-4" href="#product">Product</a>
-              </li>
-              <li class="nav-item">
-                <a class="black--text nav-link me-lg-4" href="#about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="black--text nav-link" href="#services">Subscriptions</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav">
-              <li class="nav-item my-sm-3 my-3 my-lg-0 my-md-0 d-flex">
-                <v-btn elevation="0" color="green" class="font-weight-bold" outlined to="login">Login</v-btn>
-                <v-btn elevation="0" color="green" class="font-weight-bold ms-4 white--text" to="register">Signup</v-btn>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
       <!-- Hero Section -->
       <div id="product">
           <div class="row justify-content-center py-5 my-5">
@@ -99,7 +70,7 @@
       </div>
 
       <!-- Services Section -->
-      <div id="services" class="services section-bg mt-5 pt-5 pb-5" data-aos="fade-up">
+      <div id="services" class="services section-bg mt-5 py-5" data-aos="fade-up">
         <div class="service-container">
           <div class="section-title py-5">
             <h2>Best Deals</h2>
@@ -118,7 +89,7 @@
                   <li class="pt-3">Cancel at any time</li>
                 </ul>
                 <div class="text-center">
-                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Join Now</v-btn>
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold" to="register">Join Now</v-btn>
                 </div>
               </div>
             </div>
@@ -134,7 +105,7 @@
                   <li class="pt-3">Cancel at any time</li>
                 </ul>
                 <div class="text-center">
-                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Subscribe Now</v-btn>
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold" to="register">Subscribe Now</v-btn>
                 </div>
               </div>
             </div>
@@ -150,7 +121,7 @@
                   <li class="pt-3">Cancel at any time</li>
                 </ul>
                 <div class="text-center">
-                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Subscribe Now</v-btn>
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold" to="register">Subscribe Now</v-btn>
                 </div>
               </div>
             </div>
@@ -192,10 +163,10 @@
 
 <style>
 
-body {
+#explore-page {
   font-family: "Quicksand";
   color: #444444;
-  padding-top:60px;
+  padding-top:60px !important;
   font-size: 17px;
 }
 
@@ -280,234 +251,6 @@ h6 {
 .back-to-top.active {
   visibility: visible;
   opacity: 1;
-}
-
-/*--------------------------------------------------------------
-# Header
---------------------------------------------------------------*/
-#header {
-  transition: all 0.5s;
-  z-index: 997;
-  padding: 15px 0;
-}
-
-#header.header-scrolled,
-#header.header-inner-pages {
-  background: rgba(40, 58, 90, 0.9);
-}
-
-#header .logo {
-  font-size: 30px;
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-
-#header .logo img {
-  max-height: 40px;
-}
-
-.v-application a:hover {
-    color: black;
-}
-
-/*--------------------------------------------------------------
-# Navigation Menu
---------------------------------------------------------------*/
-/**
-* Desktop Navigation 
-*/
-.navbar {
-  padding: 0;
-}
-
-.navbar ul {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  list-style: none;
-  align-items: center;
-}
-
-.navbar li {
-  position: relative;
-}
-
-.navbar a,
-.navbar a:focus {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 17px;
-  font-weight: 500;
-  color: black;
-  font-weight: bold;
-  white-space: nowrap;
-  transition: 0.3s;
-}
-
-.navbar a i,
-.navbar a:focus i {
-  font-size: 12px;
-  line-height: 0;
-  margin-left: 5px;
-}
-
-.navbar a:hover,
-.navbar .active,
-.navbar .active:focus,
-.navbar li:hover>a {
-  color: #228B22;
-}
-
-.navbar .getstarted,
-.navbar .getstarted:focus {
-  padding: 8px 20px;
-  margin-left: 30px;
-  border-radius: 50px;
-  color: #fff;
-  font-size: 14px;
-  border: 2px solid #47b2e4;
-  font-weight: 600;
-}
-
-.navbar .getstarted:hover,
-.navbar .getstarted:focus:hover {
-  color: #fff;
-  background: #31a9e1;
-}
-
-.navbar .dropdown ul {
-  display: block;
-  position: absolute;
-  left: 14px;
-  top: calc(100% + 30px);
-  margin: 0;
-  padding: 10px 0;
-  z-index: 99;
-  opacity: 0;
-  visibility: hidden;
-  background: #fff;
-  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
-  transition: 0.3s;
-  border-radius: 4px;
-}
-
-
-@media (max-width: 1366px) {
-  .navbar .dropdown .dropdown ul {
-    left: -90%;
-  }
-
-  .navbar .dropdown .dropdown:hover>ul {
-    left: -100%;
-  }
-}
-
-/**
-* Mobile Navigation 
-*/
-.mobile-nav-toggle {
-  color: #fff;
-  font-size: 28px;
-  cursor: pointer;
-  display: none;
-  line-height: 0;
-  transition: 0.5s;
-}
-
-.mobile-nav-toggle.bi-x {
-  color: #fff;
-}
-
-.navbar-mobile {
-  position: fixed;
-  overflow: hidden;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background: rgba(40, 58, 90, 0.9);
-  transition: 0.3s;
-  z-index: 999;
-}
-
-.navbar-mobile .mobile-nav-toggle {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-}
-
-.navbar-mobile ul {
-  display: block;
-  position: absolute;
-  top: 55px;
-  right: 15px;
-  bottom: 15px;
-  left: 15px;
-  padding: 10px 0;
-  border-radius: 10px;
-  background-color: #fff;
-  overflow-y: auto;
-  transition: 0.3s;
-}
-
-.navbar-mobile a,
-.navbar-mobile a:focus {
-  padding: 10px 20px;
-  font-size: 15px;
-  color: #37517e;
-}
-
-.navbar-mobile a:hover,
-.navbar-mobile .active,
-.navbar-mobile li:hover>a {
-  color: #47b2e4;
-}
-
-.navbar-mobile .getstarted,
-.navbar-mobile .getstarted:focus {
-  margin: 15px;
-  color: #37517e;
-}
-
-.navbar-mobile .dropdown ul {
-  position: static;
-  display: none;
-  margin: 10px 20px;
-  padding: 10px 0;
-  z-index: 99;
-  opacity: 1;
-  visibility: visible;
-  background: #fff;
-  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
-}
-
-.navbar-mobile .dropdown ul li {
-  min-width: 200px;
-}
-
-.navbar-mobile .dropdown ul a {
-  padding: 10px 20px;
-}
-
-.navbar-mobile .dropdown ul a i {
-  font-size: 12px;
-}
-
-.navbar-mobile .dropdown ul a:hover,
-.navbar-mobile .dropdown ul .active:hover,
-.navbar-mobile .dropdown ul li:hover>a {
-  color: #47b2e4;
-}
-
-.navbar-mobile .dropdown>.dropdown-active {
-  display: block;
-  visibility: visible !important;
 }
 
 /*--------------------------------------------------------------
@@ -659,6 +402,7 @@ section {
 --------------------------------------------------------------*/
 
 .about .about-container {
+  margin-top:70px;
   margin-left: 100px;
   margin-right: 100px;
 }
@@ -760,9 +504,7 @@ section {
 
 
 .services .service-container {
-  margin-left: 50px;
-  margin-right: 50px;
-  margin-bottom: 50px;
+  margin: 50px;
 }
 
 .services .icon-box {

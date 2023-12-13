@@ -29,13 +29,13 @@ Vue.prototype.$GroceryAPI = "https://api.supersavers.au";
 // Define routes
 const routes = [
   { path: '/', name:'explore', component: Explore },
-  { path: '/register', component: Register },
+  { path: '/register', name:'register', component: Register },
   { path: '/verify', name: 'verify', component: Verification },
   { path: '/notification', name: 'notification', component: Notification },
   { path: '/search', name: 'search', component: Search },
   { path: '/login', name: 'login', component: Login },
   { path: '/cart', name: 'cart', component: Cart },
-  { path: '/forgot-password', component: ForgotPassword },
+  { path: '/forgot-password', name:'forgotPassword', component: ForgotPassword },
   { path: '/reset-password', component: ResetPassword },
   { path: '/account',name:'account', component: Account },
   { path: '/subscription', name:'subscription', component: Subscription}

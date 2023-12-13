@@ -1,80 +1,92 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app>
+  <v-app id="register-page">
     <v-main>
       <!-- Register Form -->
-      <v-container fluid>
-        <v-row align="center" justify="center" class="mt-5 py-5">
+        <v-row class="mx-auto d-flex align-center justify-center">
+
           <!-- The image will be hidden on small screens (md and below) -->
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="6" lg="6">
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
             <v-img
               :src="require('@/assets/register.jpg')"
               alt="Login Image"
-              width="100%"
-              height="100%"
+              height="90%"
+              max-height="420"
             ></v-img>
             <p style="font-size: 10px; margin-top: 5px;" class="text-center">
               Image by <a href="https://www.freepik.com/free-vector/tiny-family-grocery-bag-with-healthy-food-parents-kids-fresh-vegetables-flat-illustration_12291304.htm#page=2&query=grocery%20cartoon&position=0&from_view=search&track=ais&uuid=3a3d4e0d-173d-46b5-beaf-de16b25ebd7e" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
             </p>        
           </v-col>
-          <v-col cols="12" md="6" lg="6">
-            <v-card-title class="font-weight-bold green--text text--darken-2 text-h4">Register</v-card-title>
-            <v-card-text class="text-lg-h6 font-weight-light">Register to view the best deals and save on groceries.</v-card-text>
-            <v-card-text class="my-4">
-              <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
-                <v-text-field 
-                  class="mb-3" 
-                  v-model="username" 
-                  :rules="nameRules" 
-                  label="Username"
+          <v-col cols="12" md="4" lg="4" align-self="center">
+            <div class="py-5">
+              <h4 class="font-weight-bold green--text text--darken-2 text-h4">Register</h4>
+            </div>
+            <v-form ref="regForm" v-on:submit.prevent="submitRegistration">
+              <div>
+                <label for="username" class="font-weight-bold pb-2" >Username:</label>
+                <v-text-field
+                  single-line
+                  dense
                   required
+                  v-model="username"
+                  outlined
                   prepend-inner-icon="mdi-account"
-                  flat
-                  rounded
+                  label="johndoe123"
+                  :rules="nameRules"
+                ></v-text-field>              
+              </div>
+
+              <div>
+                <label for="email" class="font-weight-bold pb-2" >Email:</label>
+                <v-text-field
+                  single-line
                   outlined
-                ></v-text-field>
-                <v-text-field 
-                  class="mb-3" 
-                  v-model="email" 
-                  :rules="emailRules" 
-                  label="Email"
+                  dense
                   required
+                  v-model="email"
                   prepend-inner-icon="mdi-email"
-                  flat
-                  rounded
+                  label="johndoe@gmail.com"
+                  :rules="emailRules"
+                ></v-text-field>              
+              </div>
+
+              <div>
+                <label for="password" class="font-weight-bold pb-2" >Password:</label>
+                <v-text-field
+                  single-line
                   outlined
-                ></v-text-field>
-                <v-text-field 
-                  class="mb-3" 
-                  v-model="password" 
-                  label="Password" 
-                  :rules="passwordRules" 
+                  dense
                   required
+                  v-model="password"
                   prepend-inner-icon="mdi-lock"
+                  label="Enter your password"
+                  :rules="passwordRules"
                   :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showPassword ? 'text' : 'password'"
                   @click:append="showPassword = !showPassword"
-                  flat
-                  rounded
+                ></v-text-field>              
+              </div>
+
+              <div>
+                <label for="confirmPassword" class="font-weight-bold pb-2" >Confirm Password:</label>
+                <v-text-field
+                  single-line
                   outlined
-                ></v-text-field>
-                <v-text-field 
-                  v-model="confirmPassword" 
-                  label="Confirm Password" 
-                  :rules="confirmPasswordRules" 
+                  dense
                   required
+                  v-model="confirmPassword"
                   prepend-inner-icon="mdi-lock"
+                  label="Enter your password"
+                  :rules="confirmPasswordRules"
                   :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="showConfirmPassword ? 'text' : 'password'"
                   @click:append="showConfirmPassword = !showConfirmPassword"
-                  flat
-                  rounded
-                  outlined
-                ></v-text-field>
-                <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%" rounded height="45" @click="submitRegistration">register</v-btn>
-                <p class="text-center mt-4">Has an account? <router-link to="login" class="font-weight-bold green--text text-decoration-underline">Login</router-link></p>
-              </v-form>
-            </v-card-text>
+                ></v-text-field>              
+              </div>
+              <div class="d-flex justify-content-center">
+                <v-btn color="green" class="white--text mt-4 font-weight-bold"  height="45" width="100%" @click="submitRegistration">register</v-btn>
+              </div>
+            </v-form>
           </v-col>
         </v-row>
         <div class="text-center ma-2">
@@ -94,12 +106,28 @@
             </template>
           </v-snackbar>
         </div>
-      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
 export default {
   async beforeMount() {
     await this.TokenPromise();
@@ -115,6 +143,7 @@ export default {
       nameRules: [
         value => {
           if (value.length > 2) return true;
+          if (value.length < 2) return 'Username is required';
           return 'Username needs to be at least 3 characters';
         }
       ],
@@ -122,6 +151,7 @@ export default {
       emailRules: [
         value => {
           if (/^[0-9a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+          if (value.length < 1) return 'Email is required';
           return 'Must be a valid e-mail.'
         },
       ],
@@ -130,6 +160,7 @@ export default {
       passwordRules: [
         value => { 
           if (value?.length >= 8) return true;
+          if (value.length < 1) return 'Password is required';
           return 'Password needs to be at least 8 characters.';
         }
       ],
@@ -138,6 +169,7 @@ export default {
       confirmPasswordRules: [
         value => {
           if (this.password == value) return true;
+          if (value?.length < 1) return 'Confirm password is required';
           return 'Passwords need to match.';
         }
       ]
@@ -187,61 +219,71 @@ export default {
         }
       }
     },
- async submitRegistration() {
-  try {
-    const response = await fetch(`${this.$GroceryAPI}/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: this.username.toLowerCase(),
-        email: this.email.toLowerCase(),
-        hashed_password: this.password,
-      }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      this.snackbarError = false;
-      this.message = "Successfully created your super savers account";
-      this.snackbar = true;
+    async submitRegistration() {
+      if (this.$refs.regForm.validate()) {
+        try {
+          const response = await fetch(`${this.$GroceryAPI}/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: this.username.toLowerCase(),
+              email: this.email.toLowerCase(),
+              hashed_password: this.password,
+            }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            this.snackbarError = false;
+            this.message = "Successfully created your super savers account";
+            this.snackbar = true;
 
-      const token = data.access_token;
-      // Store the token globally
+            const token = data.access_token;
+            // Store the token globally
 
-      await this.$store.dispatch('setToken', token);
-     
-      window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+            await this.$store.dispatch('setToken', token);
           
-      await new Promise(resolve => setTimeout(resolve , 1000));
-       // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
-      // Redirect to /search
-      this.$nextTick(() => {
-      this.$router.push('/verify');
-      });
-      
-          
-  
-    } else {
-      const data = await response.json();
-      this.snackbarError = true;
-      this.message = "Something is wrong : " + data.detail;
-      this.snackbar = true;
-    }
-  } catch (error) {
-    console.error('Registration failed:', error);
-    this.snackbarError = true;
-    this.message = "Something went wrong";
-    this.snackbar = true;
-  }
-},
+            window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+                
+            await new Promise(resolve => setTimeout(resolve , 1000));
+            // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
+            // Redirect to /search
+            this.$nextTick(() => {
+            this.$router.push('/verify');
+            });
+          } else {
+            const data = await response.json();
+            this.snackbarError = true;
+            this.message = "Something is wrong : " + data.detail;
+            this.snackbar = true;
+          }
+        } catch (error) {
+          console.error('Registration failed:', error);
+          this.snackbarError = true;
+          this.message = "Something went wrong";
+          this.snackbar = true;
+        }
+      }
+    },
   },
 };
 </script>
 
 <style>
+#register-page {
+  font-family: "Quicksand";
+  padding-top:80px !important;
+  font-size: 17px;
+}
+
 .v-application .v-application--wrap {
   min-height: 0vh;
+}
+
+.container {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 
