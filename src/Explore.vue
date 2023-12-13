@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
 
-  <v-app>
+  <v-app class="vapplication">
     <div>
       <!-- Header -->
       <nav class="navbar navbar-expand-lg py-4 px-5 bg-white shadow-sm fixed-top">
@@ -13,7 +13,7 @@
           <div class="collapse navbar-collapse" id="nav-collapse">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="black--text nav-link me-lg-4" href="#about">Product</a>
+                <a class="black--text nav-link me-lg-4" href="#product">Product</a>
               </li>
               <li class="nav-item">
                 <a class="black--text nav-link me-lg-4" href="#about">About</a>
@@ -23,13 +23,9 @@
               </li>
             </ul>
             <ul class="navbar-nav">
-              <li class="nav-item my-sm-3 my-3 my-lg-0 my-md-0">
-                <button class="btn btn-outline-success green--text font-weight-bold">
-                  <a class="green--text" href="#services">Login</a>
-                </button>
-                <button class="btn btn-success white--text font-weight-bold ms-4">
-                  <a class="white--text" href="/search">Sign Up</a>
-                </button>
+              <li class="nav-item my-sm-3 my-3 my-lg-0 my-md-0 d-flex">
+                <v-btn elevation="0" color="green" class="font-weight-bold" outlined to="login">Login</v-btn>
+                <v-btn elevation="0" color="green" class="font-weight-bold ms-4 white--text" to="register">Signup</v-btn>
               </li>
             </ul>
           </div>
@@ -37,90 +33,125 @@
       </nav>
 
       <!-- Hero Section -->
-      <div class="d-flex align-items-center">
-          <div class="row py-5 my-5">
-            <div class="green--text col-lg-6 col-md-6 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-              <span class="font-weight-bold mx-auto">
-                <h1>SuperSavers </h1><br/> Compare Deals and Save on Groceries At Coles, Woolies & IGA!<br/>
-                <a href="/search" class="white--text btn btn-success w-50 rounded-pill my-5">Get started</a>
+      <div id="product">
+          <div class="row justify-content-center py-5 my-5">
+            <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
+            <div class="col-lg-4 col-md-5 col-sm-12 col-12 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+              <span class="mx-auto">
+                <h1 class="font-weight-bold green--text">SuperSavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
+                <a href="/search" class="white--text btn btn-success w-50 h-50 rounded-pill">Get started</a>
               </span>              
             </div>
-            <div class="col-lg-6 col-md-6 d-block hero-img" data-aos="zoom-in" data-aos-delay="200">
+            <div class="col-lg-4 col-md-5 hero-img" data-aos="zoom-in" data-aos-delay="200">
               <img src="@/assets/hero-img.png" class="animated mx-auto d-block img-fluid" alt="">
             </div>
+            <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
           </div>
       </div>
 
       <!-- Clients Section -->
       <div class="clients section-bg py-5">
         <div class="container">
-          <div class="row justify-content-center" data-aos="zoom-in">
-            <div class="col-lg-2 col-md-4 col-6 d-flex align-items-center justify-content-center">
+          <div class="row" data-aos="zoom-in">
+            <div class="col-lg-3 col-md-0 col-sm-0 col-0"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">
               <h3 class="text-success fw-bold">Woolworths</h3>
             </div>
-            <div class="col-lg-2 col-md-4 col-6 d-flex align-items-center justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">
               <h2 class="text-danger fw-bold">Coles</h2>
             </div>
-            <div class="col-lg-2 col-md-4 col-6 d-flex align-items-center justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-4 col-12 d-flex align-items-center justify-content-center">
               <h2 class="bg-danger text-white p-3 fw-bold">IGA</h2>
             </div>
+            <div class="col-lg-3 col-md-0 col-sm-0 col-0"></div>
           </div>
         </div>
       </div>
 
       <!-- About Us Section -->
       <div id="about" class="about py-5" data-aos="fade-up">
-        <div class="container">
-          <div class="section-title py-5 my-5">
+        <div class="about-container">
+          <div class="section-title pt-5 mt-5">
             <h2>Save Big</h2>
           </div>
           <div class="row px-3">
             <div class="col-lg-6">
-              <p>SuperSaver helps you save money on groceries by comparing the best prices between
+              <p style="text-align: justify;">SuperSaver helps you save money on groceries by comparing the best prices between
                 <span class="text-success fw-bold">Woolworths</span>,
                 <span class="text-danger fw-bold">Coles</span>, and
                 <span class="bg-danger text-white fw-bold p-1">IGA</span>.
                 Our platform provides real-time price comparisons, allows you to create a grocery list, and shows your potential savings.
               </p>
-      
-
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6" style="text-align: justify;">
               <p>We understand the value of your money, and with SuperSaver, you can make informed decisions to get the best deals. Subscribe now and start saving!</p>
             </div>
           </div>
           <table class="table text-center">
-  <tbody>
-    <tr v-for="item in ['Compare real-time prices', 'Calculate and manage your grocery list', 'Notfiy you when something is on sale','Direct Comparison of prices', 'Famous deals and products from Woolies, Coles and IGA']" :key="item">
-      <td><i class="bi bi-check2"></i></td>
-      <td>{{ item }}</td>
-    </tr>
-  </tbody>
-</table>
+            <tbody>
+              <tr v-for="item in ['Compare real-time prices', 'Calculate and manage your grocery list', 'Notfiy you when something is on sale','Direct Comparison of prices', 'Famous deals and products from Woolies, Coles and IGA']" :key="item">
+                <td><i class="bi bi-check2"></i></td>
+                <td>{{ item }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+
       <!-- Services Section -->
       <div id="services" class="services section-bg mt-5 pt-5 pb-5" data-aos="fade-up">
-        <div class="container">
+        <div class="service-container">
           <div class="section-title py-5">
             <h2>Best Deals</h2>
             <p>Save more when you get more</p>
           </div>
           <div class="row justify-content-center">
-            <div class="col-xl-3 col-md-3 d-flex align-items-stretch col-sm-12 mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-              <div class="card icon-box">
-                <i class="bi bi-file icon"></i>
-                <h4>Monthly Plan</h4>
-                <h5><sup>AUD </sup>2.99<span> per month</span></h5>
-                <p class="mark p-3">Most Popular for starters</p>
+            <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+              <div class="icon-box">
+                <h3 class="font-weight-medium text-center">Free trial</h3>
+                <div class="text-center"><span class="price">A$ 0.00</span> /7 days</div>
+                <v-divider class="service-divider text-center"></v-divider>
+                <ul>
+                  <li class="pt-3">Register to get a free account</li>
+                  <li class="pt-3">Compare real-time prices</li>
+                  <li class="pt-3">Notifications on sales items</li>
+                  <li class="pt-3">Cancel at any time</li>
+                </ul>
+                <div class="text-center">
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Join Now</v-btn>
+                </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-3 d-flex align-items-stretch col-sm-12 mt-4 mt-xl-0" data-aos="zoom-in" data-aos-delay="300">
-              <div class="card icon-box">
-                <i class="bi bi-tachometer icon"></i>
-                <h4>Yearly Plan</h4>
-                <h5><sup>AUD </sup>19.99<span> per year</span></h5>
-                <p class="mark p-3">Save almost AUD 16.00 for the year</p>
+            <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+              <div class="icon-box">
+                <h3 class="font-weight-medium text-center">Monthly Plan</h3>
+                <div class="text-center"><span class="price">A$ 2.99</span> /month</div>
+                <v-divider class="service-divider text-center"></v-divider>
+                <ul>
+                  <li class="pt-3">Most popular for starters</li>
+                  <li class="pt-3">Compare real-time prices</li>
+                  <li class="pt-3">Notifications on sales items</li>
+                  <li class="pt-3">Cancel at any time</li>
+                </ul>
+                <div class="text-center">
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Subscribe Now</v-btn>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+              <div class="icon-box">
+                <h3 class="font-weight-medium text-center">Yearly Plan</h3>
+                <div class="text-center"><span class="price">A$ 19.99</span> /year</div>
+                <v-divider class="service-divider text-center"></v-divider>
+                <ul>
+                  <li class="pt-3">Save almost A$ 16.00 per year</li>
+                  <li class="pt-3">Compare real-time prices</li>
+                  <li class="pt-3">Notifications on sales items</li>
+                  <li class="pt-3">Cancel at any time</li>
+                </ul>
+                <div class="text-center">
+                  <v-btn elevation="1" color="green" class="white--text w-75 mt-5 font-weight-bold">Subscribe Now</v-btn>
+                </div>
               </div>
             </div>
           </div>
@@ -132,16 +163,16 @@
         <div class="container ">
           <div class="row">
             <div class="col-lg-9 text-center text-lg-start">
-              <h3>Follow us</h3>
+              <h3 class="font-weight-bold">Follow us</h3>
               <p>Never miss an update? Save on deals as soon as SuperSavers is Online</p>
             </div>
-            <div class="col-lg-3 social-links mt-3 col-lg-3 display-5 justify-content-center text-center">
-              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            <div class="col-lg-3 social-links mt-lg-3 mt-md-3 col-lg-3 display-5 justify-content-center text-center">
+              <a href="#" class="mx-2"><v-icon color="white" large>mdi-email-outline</v-icon></a>
+              <a href="#" class="mx-2"><v-icon color="white" large>mdi-linkedin</v-icon></a>
+              <a href="#" class="mx-2"><v-icon color="white" large>mdi-instagram</v-icon></a>
             </div>
           </div>
-          <div class="copyright pb-5 mb-5">
+          <div class="copyright pt-5 text-center">
             &copy; Copyright <strong><span>SuperSavers.au</span></strong>. All Rights Reserved
           </div>
         </div>
@@ -165,6 +196,7 @@ body {
   font-family: "Quicksand";
   color: #444444;
   padding-top:60px;
+  font-size: 17px;
 }
 
 h1,
@@ -176,6 +208,9 @@ h6 {
   font-family: "Quicksand", sans-serif;
 }
 
+.vapplication {
+  margin-bottom: 0rem !important;
+}
 /*--------------------------------------------------------------
 # Preloader
 --------------------------------------------------------------*/
@@ -478,10 +513,6 @@ h6 {
 /*--------------------------------------------------------------
 # Hero Section
 --------------------------------------------------------------*/
-
-
-
-
 .animated {
   animation: up-down 2s ease-in-out infinite alternate-reverse both;
 }
@@ -557,7 +588,7 @@ section {
 
 .section-title {
   text-align: center;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .section-title h2 {
@@ -626,6 +657,12 @@ section {
 /*--------------------------------------------------------------
 # About Us
 --------------------------------------------------------------*/
+
+.about .about-container {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
 .about .content h3 {
   font-weight: 600;
   font-size: 26px;
@@ -683,7 +720,6 @@ section {
 
 
 @media (max-width: 1024px) {
-
   .why-us .content,
   .why-us .accordion-list {
     padding-left: 0;
@@ -709,17 +745,33 @@ section {
   .why-us .img {
     min-height: 200px;
   }
+
+  .about .about-container {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
 
 
 /*--------------------------------------------------------------
 # Services
 --------------------------------------------------------------*/
+
+
+
+.services .service-container {
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-bottom: 50px;
+}
+
 .services .icon-box {
   box-shadow: 0px 0 25px 0 rgba(0, 0, 0, 0.1);
-  padding: 50px 30px;
+  padding: 40px 30px;
   transition: all ease-in-out 0.4s;
   background: #fff;
+  border: 1px solid lightgray;
+  border-radius: 5px;
 }
 
 .services .icon-box .icon {
@@ -755,6 +807,43 @@ section {
 
 .services .icon-box:hover h4 a {
   color: #47b2e4;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.services ul {
+  list-style: none;
+}
+
+.services ul li:before {
+  content: '✓';
+  color: white;
+  padding: 2px 6px;
+  margin: 0px 5px;
+  background-color: green;
+  border-radius: 30px;
+}
+
+.service-divider {
+  border: 2px solid green;
+  background-color: green;
+  border-radius: 20px;
+  width: 50%;
+  margin: 15px auto;
+}
+
+@media (max-width: 600px) {
+  .services .service-container {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .services .icon-box {
+    padding: 40px 10px;
+  }
 }
 
 /*--------------------------------------------------------------
