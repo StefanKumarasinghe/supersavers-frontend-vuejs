@@ -143,13 +143,13 @@
     </v-container>
     <div class="text-center ma-2">
         <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;" >
-          <v-avatar :color="snackbarColor" size="30px" class="me-3">
-            <v-icon>{{ snackbarIcon }}</v-icon>
+          <v-avatar size="30px" class="me-3">
+            <v-icon :color="snackbarColor">{{ snackbarIcon }}</v-icon>
           </v-avatar>
           <span class="white--text font-weight-bold">{{ snackbarMessage }}</span>
           <template v-slot:action="{ attrs }">
             <v-btn
-              color="red"
+              :color="snackbarColor"
               text
               v-bind="attrs"
               @click="snackbar = false"
