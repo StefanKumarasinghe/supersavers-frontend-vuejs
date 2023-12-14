@@ -20,7 +20,7 @@
             <div class="py-5">
               <h2 class="font-weight-bold green--text text--darken-2 ">Login</h2>
             </div>
-            <v-form ref="loginForm" v-on:submit.prevent="submitRegistration">
+            <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
               <div>
                 <label for="username" class="font-weight-bold pb-2" >Username/Email:</label>
                 <v-text-field
@@ -104,7 +104,7 @@ export default {
       usernameRules: [
         (value) => {
           if (value?.length > 2) return true;
-          return 'Must be a valid username/email.';
+          return 'A valid username/email is required';
         },
       ],
       password: '',
@@ -112,6 +112,7 @@ export default {
       passwordRules: [
         (value) => {
           if (value?.length >= 8) return true;
+          if (value.length < 1) return 'Password is required';
           return 'Password needs to be at least 8 characters.';
         },
       ],

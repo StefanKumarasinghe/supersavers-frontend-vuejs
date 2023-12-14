@@ -23,10 +23,9 @@
               </v-row>
               <v-row class="text-center">
                 <h4 class="green--text font-weight-bold">FREE</h4>
-                      <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="100%">
-          Supersavers will only be free until it is tested. You are using a testing version
-        </v-alert>
-
+                <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="100%">
+                  Supersavers will only be free until it is tested. You are using a testing version
+                </v-alert>
               </v-row>
             </div>
             <div class="text-black box-border my-5 pe-5 pb-5 text-center">
@@ -40,8 +39,6 @@
         </v-row>
         <v-divider :thickness="12" color="black"></v-divider>
 
-
-
         <!-- Change password -->
         <div class="row">
           <div class="col-lg-4 col-md-3 col-12">
@@ -50,42 +47,65 @@
             </h5>
           </div>
           <div class="col-lg-8 col-md-9 col-12">
-            <div class="row font-weight-bold">
-              Old Password:
-            </div>
-            <div class="row">
-              <v-text-field
-                single-line
-                outlined
-                v-model="oldPassword"
-                type="password"
-              ></v-text-field>
-            </div>
-            <div class="row font-weight-bold">
-              New Password:
-            </div>
-            <div class="row">
-              <v-text-field
-                single-line
-                v-model="newPassword"
-                outlined
-                type="password"
-              ></v-text-field>
-            </div>
-            <div class="row font-weight-bold">
-              Confirm New Password:
-            </div>
-            <div class="row">
-              <v-text-field
-                v-model="confirmPassword"
-                single-line
-                outlined
-                type="password"
-              ></v-text-field>
-            </div>
-            <div class="row">
-              <v-btn color="green font-weight-bold white--text" @click="changePassword()" height="50">Change password</v-btn>
-            </div>
+            <v-form ref="changePassForm" v-on:submit.prevent="changePassword">
+              <div class="row font-weight-bold">
+                Old Password:
+              </div>
+              <div class="row">
+                <v-text-field
+                  single-line
+                  dense
+                  required
+                  v-model="oldPassword"
+                  outlined
+                  prepend-inner-icon="mdi-lock"
+                  label="Enter your old password"
+                  :rules="oldPasswordRules"
+                  :append-icon="showOldPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showOldPassword ? 'text' : 'password'"
+                  @click:append="showOldPassword = !showOldPassword"
+                ></v-text-field>   
+              </div>
+              <div class="row font-weight-bold">
+                New Password:
+              </div>
+              <div class="row">
+                <v-text-field
+                  single-line
+                  dense
+                  required
+                  v-model="newPassword"
+                  outlined
+                  prepend-inner-icon="mdi-lock"
+                  label="Enter your old password"
+                  :rules="newPasswordRules"
+                  :append-icon="showNewPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showNewPassword ? 'text' : 'password'"
+                  @click:append="showNewPassword = !showNewPassword"
+                ></v-text-field> 
+              </div>
+              <div class="row font-weight-bold">
+                New Confirm Password:
+              </div>
+              <div class="row">
+                <v-text-field
+                  single-line
+                  dense
+                  required
+                  v-model="newConfirmPassword"
+                  outlined
+                  prepend-inner-icon="mdi-lock"
+                  label="Enter your old password"
+                  :rules="newConfirmPasswordRules"
+                  :append-icon="showNewConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showNewConfirmPassword ? 'text' : 'password'"
+                  @click:append="showNewConfirmPassword = !showNewConfirmPassword"
+                ></v-text-field>
+              </div>
+              <div class="row">
+                <v-btn color="green font-weight-bold white--text" @click="changePassword()" height="50">Change password</v-btn>
+              </div>
+            </v-form>
           </div>
         </div>
         <v-divider :thickness="12" color="black"></v-divider>
@@ -110,17 +130,15 @@
           </div>
         </div>
 
-        <v-row class="d-flex justify-center mb-5 align-center">
-   
-          <v-col cols="12" md="6">
-            <!-- Logout Link -->
+        <div class="row">
+          <div class="col-lg-4 col-md-3 col-12"></div>
+          <div class="col-lg-8 col-md-9 col-12">
             <v-btn @click="logout" color="red" class="w-100 mx-auto font-weight-bold"  height="50" outlined>
               Logout
             </v-btn>
-          </v-col>
+          </div>
+        </div>
 
-     
-        </v-row>
       </div>
     </v-container>
     <div class="text-center ma-2">
@@ -143,16 +161,9 @@
       </div>
   </v-app>
 </template>
-<style scoped>
-.notification-container {
-  max-height: 300px; /* Set the maximum height for the container */
-  overflow-y: auto;  /* Enable vertical scrolling */
-}
-</style>
+
 <script>
-
 export default {
-
   data() {
     return {
       snackbar:false,
@@ -191,6 +202,33 @@ export default {
         // Add more subscriptions as needed
       ],
       selectedSubscription: null,
+      oldPassword: '',
+      showOldPassword: false,
+      oldPasswordRules: [
+        (value) => {
+          if (value?.length >= 8) return true;
+          if (value?.length < 1) return 'Old Password is required'
+          return 'Old Password needs to be at least 8 characters.';
+        },
+      ],
+      newPassword: '',
+      showNewPassword: false,
+      newPasswordRules: [
+        (value) => {
+          if (value?.length >= 8) return true;
+          if (value?.length < 1) return 'New Password is required'
+          return 'New Password needs to be at least 8 characters.';
+        },
+      ],
+      newConfirmPassword: '',
+      showNewConfirmPassword: false,
+      newConfirmPasswordRules: [
+        (value) => {
+          if (value?.length < 1) return 'New Confirm Password is required'
+          if (this.newPassword == value) return true;
+          return 'New passwords do not match.';
+        },
+      ]
     };
   },
   computed: {
@@ -231,48 +269,40 @@ export default {
       });
     },
     async changePassword() {
-      // Reset snackbar properties
-      this.snackbar = false;
-      this.snackbarMessage = '';
-      this.snackbarColor = 'red';
-      this.snackbarIcon = 'mdi-alert-circle';
+      if (this.$refs.changePassForm.validate()) {
 
-      if (this.newPassword !== this.confirmPassword) {
-        this.showSnackbar('New passwords don\'t match.', 'red', 'mdi-alert-circle');
-        return;
-      }
+        // Reset snackbar properties
+        this.snackbar = false;
+        this.snackbarMessage = '';
+        this.snackbarColor = 'red';
+        this.snackbarIcon = 'mdi-alert-circle';
 
-      // Password rules validation
-      if (this.newPassword.length < 8) {
-        this.showSnackbar('Password must be at least 8 characters.', 'red', 'mdi-alert-circle');
-        return;
-      }
+        try {
+          const response = await fetch(`${this.$GroceryAPI}/change-password`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.AuthToken}`
+            },
+            body: JSON.stringify({
+              old_password: this.oldPassword,
+              new_password: this.newPassword,
+            }),
+          });
 
-      try {
-        const response = await fetch(`${this.$GroceryAPI}/change-password`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.AuthToken}`
-          },
-          body: JSON.stringify({
-            old_password: this.oldPassword,
-            new_password: this.newPassword,
-          }),
-        });
-
-        if (response.ok) {
-          const responseData = await response.json();
-          this.showSnackbar(responseData.message, 'green', 'mdi-check-circle');
-          // Optionally, you can redirect or perform other actions on success
-        } else {
-          const errorData = await response.json();
-          this.showSnackbar(errorData.detail, 'red', 'mdi-alert-circle');
-          // Handle error, e.g., display an error message to the user
+          if (response.ok) {
+            const responseData = await response.json();
+            this.showSnackbar(responseData.message, 'green', 'mdi-check-circle');
+            // Optionally, you can redirect or perform other actions on success
+          } else {
+            const errorData = await response.json();
+            this.showSnackbar(errorData.detail, 'red', 'mdi-alert-circle');
+            // Handle error, e.g., display an error message to the user
+          }
+        } catch (error) {
+          this.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
+          // Handle error, e.g., display a generic error message to the user
         }
-      } catch (error) {
-        this.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
-        // Handle error, e.g., display a generic error message to the user
       }
     },
     showSnackbar(message, color, icon) {
@@ -339,7 +369,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.notification-container {
+  max-height: 300px; /* Set the maximum height for the container */
+  overflow-y: auto;  /* Enable vertical scrolling */
+}
+
 /* Green Theme Styles */
 .green-theme {
   background-color: #4CAF50; /* Green background color */

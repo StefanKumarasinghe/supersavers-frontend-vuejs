@@ -141,9 +141,9 @@ export default {
       error: null,
       nameRules: [
         value => {
-          if (value.length > 2) return true;
-          if (value.length < 2) return 'Username is required';
-          return 'Username needs to be at least 3 characters';
+          if (value.length >= 3 && !/\s/.test(value)) return true;
+          if (value.length < 3) return 'Username needs to be at least 3 characters';
+          return 'Username should not contain spaces';
         }
       ],
       email: '',
@@ -167,8 +167,8 @@ export default {
       showConfirmPassword: false,
       confirmPasswordRules: [
         value => {
-          if (this.password == value) return true;
           if (value?.length < 1) return 'Confirm password is required';
+          if (this.password == value) return true;
           return 'Passwords need to match.';
         }
       ]
