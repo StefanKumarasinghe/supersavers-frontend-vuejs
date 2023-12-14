@@ -5,12 +5,13 @@
     <div>
       <!-- Hero Section -->
       <div id="product">
+        <div class="product-container">
           <div class="row justify-content-center py-5 my-5">
             <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
             <div class="col-lg-4 col-md-5 col-sm-12 col-12 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
               <span class="mx-auto">
                 <h1 class="font-weight-bold green--text">SuperSavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
-                <a href="/search" class="green--text fw-bold btn btn-outline-success w-50 h-50 ">Get started</a>
+                <v-btn to="search" color="green font-weight-bold white--text w-50">Get Started</v-btn>
               </span>              
             </div>
             <div class="col-lg-4 col-md-5 hero-img" data-aos="zoom-in" data-aos-delay="200">
@@ -18,6 +19,7 @@
             </div>
             <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
           </div>
+        </div>
       </div>
 
       <!-- Clients Section -->
@@ -45,7 +47,7 @@
           <div class="section-title pt-5 mt-5">
             <h2>Save Big</h2>
           </div>
-          <div class="row px-3">
+          <div class="row">
             <div class="col-lg-6">
               <p style="text-align: justify;">SuperSaver helps you save money on groceries by comparing the best prices between
                 <span class="text-success fw-bold">Woolworths</span>,
@@ -109,7 +111,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
               <div class="icon-box">
                 <h3 class="font-weight-medium text-center">Yearly Plan</h3>
                 <div class="text-center"><span class="price">A$ 19.99</span> /year</div>
@@ -130,7 +132,7 @@
       </div>
 
       <!-- Cta Section -->
-      <div class="bg-success text-white py-5" data-aos="zoom-in">
+      <div class="cta-container text-white py-5" data-aos="zoom-in">
         <div class="container ">
           <div class="row">
             <div class="col-lg-9 text-center text-lg-start">
@@ -256,6 +258,12 @@ h6 {
 /*--------------------------------------------------------------
 # Hero Section
 --------------------------------------------------------------*/
+
+#product .product-container {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 .animated {
   animation: up-down 2s ease-in-out infinite alternate-reverse both;
 }
@@ -299,6 +307,11 @@ h6 {
 @media (max-width: 575px) {
   #hero .hero-img img {
     width: 80%;
+  }
+
+  #product .product-container {
+    margin-left: 15px;
+    margin-right: 15px;
   }
 
   #hero .btn-get-started {
@@ -491,8 +504,8 @@ section {
   }
 
   .about .about-container {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
   }
 }
 
@@ -579,8 +592,8 @@ section {
 
 @media (max-width: 600px) {
   .services .service-container {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
   }
 
   .services .icon-box {
@@ -591,8 +604,11 @@ section {
 /*--------------------------------------------------------------
 # Cta
 --------------------------------------------------------------*/
-.cta {
+.cta-container {
+  background-color: #43A047;
+}
 
+.cta {
   background-size: cover;
   padding: 120px 0;
 }
