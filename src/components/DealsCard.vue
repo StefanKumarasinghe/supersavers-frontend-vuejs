@@ -1,16 +1,16 @@
 <template>
     <span>
         <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-            <v-img :src="deal.image" width="70%" contain class="text-center mx-auto py-2"></v-img>
+            <v-img :src="deal.image" width="90%" contain class="text-start mx-auto  py-2">     <button @click="shareApp(deal)" large class="text-start text-danger fw-bold  m-1 font-weight-bold">
+      <v-icon class="mdi text-danger mdi-share-variant">mdi-share-variant</v-icon>
+    </button></v-img>
             <v-toolbar color="transparent" flat class="py-0">
                 <v-avatar color="yellow" rounded width="100" height="35">
                     <span class="black--text font-weight-bold" v-show="deal.new_price != null && deal.old_price != null"> 
                         Save ${{ parseFloat(deal.old_price - deal.new_price).toFixed(2) }}
                     </span>
                 </v-avatar>
-                <button @click="shareApp(deal)" large class="w-50 text-end text-danger fw-bold  m-1 font-weight-bold">
-      <v-icon class="mdi text-danger mdi-share-variant">mdi-share-variant</v-icon>
-    </button>
+           
             </v-toolbar>
             <v-card-title class="black--text font-weight-bold " style="display: inline-block; word-break: break-word;">
                 {{ deal.name }} | {{deal.size}}
@@ -92,16 +92,17 @@ export default {
         shareApp(product) {
   // Check if the Web Share API is supported by the browser
   if (navigator.share) {
-    // Calculate total and savings
+    // Calculate savings
+    const savings = product.old_price - product.new_price;
 
-
-    // Message parts
+    // Message parts with icons and dynamic content
     const messageParts = [
-  `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
-  `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
-  `🛒 Visit SuperSavers.au to snag this awesome deal: https://supersavers.au 🌈`,
-];
-
+      `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
+      `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
+      `💰 Save AUD ${savings} on this deal!`,
+      `🛒 Visit SuperSavers.au to snag this awesome deal: https://supersavers.au 🌈`,
+      `📸 Check out the product image: ${product.image}`
+    ];
 
     // Combine all parts into the final message
     const shareMessage = messageParts.join('\n');
@@ -109,8 +110,9 @@ export default {
     // Use the Web Share API to share the message
     navigator
       .share({
-        title: "SuperSavers",
+        title: 'SuperSavers',
         text: shareMessage,
+        url: 'https://supersavers.au',
       })
       .then(() => console.log('Shared successfully'))
       .catch((error) => console.error('Error sharing:', error));

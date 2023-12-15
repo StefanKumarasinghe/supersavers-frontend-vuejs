@@ -2,7 +2,7 @@
 <template>
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-        <button @click="shareApp(product)" large class="text-start m-1 font-weight-bold">
+        <button @click="shareApp(product)" large class=" m-1 font-weight-bold">
       <span class="mdi  mdi-share-variant"></span>
     </button>
         <v-img :src="product.image" width="70%" contain class="mx-auto">  </v-img>
@@ -120,17 +120,16 @@ export default {
   // Check if the Web Share API is supported by the browser
   if (navigator.share) {
     // Calculate total and savings
+    const totalSavings = product.woolworths_price - product.coles_price;
 
-
-    // Message parts
+    // Message parts with icons and dynamic content
     const messageParts = [
-  `🛒 Hey friend, check out this awesome deal on ${product.name}! 🌟`,
-  `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
-  `🛒 Coles Price: AUD ${product.coles_price}`,
-  `🏪 IGA Price: Find out!`,
-  `🌟 Visit SuperSavers.au to save on groceries: https://supersavers.au 🌈`,
-];
-
+      `🌟 Hey friend, check out this awesome deal on ${product.name}! 🌟`,
+      `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
+      `🛒 Coles Price: AUD ${product.coles_price}`,
+      `💰 You're Saving Atleast: AUD ${totalSavings}`,
+      `🌈 Visit SuperSavers.au to save on groceries: https://supersavers.au`,
+    ];
 
     // Combine all parts into the final message
     const shareMessage = messageParts.join('\n');
@@ -138,16 +137,16 @@ export default {
     // Use the Web Share API to share the message
     navigator
       .share({
-        title: "SuperSavers",
+        title: 'SuperSavers',
         text: shareMessage,
+        url: 'https://supersavers.au',
       })
       .then(() => console.log('Shared successfully'))
       .catch((error) => console.error('Error sharing:', error));
   } else {
     console.error('Error sharing: Web Share API is not supported');
   }
-}
-,
+},
     async getAndSendNotificationToken() {
       try {
         // Request permission to show notifications

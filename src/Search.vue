@@ -4,7 +4,7 @@
     <v-container fluid>
       <div class="mx-3">
         <h1 class="fw-bold">What's new?</h1>
-        <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>,<span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span>.</p>
+        <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span></p>
         <p class="fw-bold text-danger">
         <v-icon large color="red">
     mdi-piggy-bank
@@ -73,12 +73,12 @@
 
       <!-- Category bar -->
       <v-app-bar color="transparent" flat class="">
-        <v-tabs v-model="tab" stacked active-class="active">
-          <v-tabs-slider color="transparent"></v-tabs-slider>
-          <v-tab style="height:auto" @click="handleTabClick(tab.name)" v-for="(tab, index) in tabs" :key="index" class="withoutupercase normalize font-weight-bold" :value="'tab-' + (index + 1)">
-            <v-icon>{{ tab.icon }}</v-icon>{{ tab.name }}
-          </v-tab>                
-        </v-tabs>
+        <v-tabs v-model="tab" stacked style="height:auto" active-class="custom-active-tab">
+    <v-tab  style="height:auto" v-for="(tab, index) in tabs" :key="index" :value="'tab-' + (index + 1)" @click="handleTabClick(tab.name)">
+      <v-img style="max-width:40px" class="mx-auto d-block" :src="require(`@/assets/${tab.icon}`)"></v-img><v-span class="fw-bold" >{{ tab.name }}</v-span>
+    </v-tab>
+    <v-tabs-slider color="transparent"></v-tabs-slider>
+  </v-tabs>
       </v-app-bar>
       <v-divider class="my-5" color="grey" v-if="!loading"></v-divider>
 
@@ -314,18 +314,21 @@
         selection:1,
         tab: null,
         tabs: [
-          { name: 'Deals', icon: 'mdi-currency-usd' },
-          { name: 'All', icon: 'mdi-all-inclusive' },
-          { name: 'Fruits', icon: 'mdi-fruit-watermelon' },
-          { name: 'Vegetables', icon: 'mdi-carrot' },
-          { name: 'Breakfast', icon: 'mdi-baguette' },
-          { name: 'Frozen Foods', icon: 'mdi-snowflake' },
-          { name: 'Dairy', icon: 'mdi-cow' },
-          { name: 'Egg', icon: 'mdi-egg' },
-          { name: 'Meat', icon: 'mdi-food-steak' },
-          { name: 'Seafood', icon: 'mdi-fish' },
-          { name: 'Snacks', icon: 'mdi-french-fries' },
-          { name: 'Personal care', icon: 'mdi-toothbrush' }
+        
+          { name: 'Deals', icon: 'deal.png' },
+          { name: 'All', icon: 'shopping-bag.png' },
+          { name: 'Fruits', icon: 'fruit.png' },
+          { name: 'Vegetables', icon: 'vegetable.png' },
+          { name: 'Breakfast', icon: 'cereal.png' },
+          { name: 'Frozen Foods', icon: 'pizza.png' },
+          { name: 'Dairy', icon: 'milk.png' },
+          { name: 'Egg', icon: 'egg.png' },
+          { name: 'Meat', icon: 'chicken.png' },
+          { name: 'Seafood', icon: 'crab.png' },
+          { name: 'Snacks', icon: 'chips.png' },
+          { name: 'Personal care', icon: 'toothpaste.png' }
+         
+         
         ],
         snackbar: false,
         snackbarError: false,
@@ -574,6 +577,7 @@
       },
       async fetchProducts() {
         this.loading = true;
+        this.shownlist = [];
 
         try {
           const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
@@ -799,6 +803,10 @@
 
 <style>
 
+.custom-active-tab {
+  color: green; /* Change to your desired active tab text color */
+}
+
   .container {
     width: 100%;
     padding-left: 100px;
@@ -852,8 +860,8 @@
   }
 
   .active {
-    color: white !important;
-    background-color: green !important;
+    color: rgb(0, 0, 0) !important;
+    background-color: rgb(151, 151, 151) !important;
     border-radius: 5px;
     padding:5px;
   }
