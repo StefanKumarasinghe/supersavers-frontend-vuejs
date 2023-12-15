@@ -138,42 +138,24 @@
             </v-btn>
           </div>
         </div>
-
+        <Toast ref="Toast" />
       </div>
     </v-container>
-    <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;" >
-          <v-avatar size="30px" class="me-3">
-            <v-icon :color="snackbarColor">{{ snackbarIcon }}</v-icon>
-          </v-avatar>
-          <span class="white--text font-weight-bold">{{ snackbarMessage }}</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              :color="snackbarColor"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+    
   </v-app>
 </template>
 
 <script>
+import Toast from './components/Toast.vue';
+
 export default {
+  components: {
+    Toast
+  },
   data() {
     return {
-      snackbar:false,
-      snackbarError:false,
-      snackbarTimeout:2500,
       authenticated:false,
       AuthToken:null,
-      snackbarMessage: '',
-      snackbarColor: 'red',
-      snackbarIcon: 'mdi-alert-circle',
       saving_amout:0,
       user: {
         name: null,
@@ -232,15 +214,14 @@ export default {
     };
   },
   computed: {
-  // Check if saving has a valid value
-  amount() {
-    return this.saving_amount
-  },
-},
-  async beforeMount() {
-      await this.TokenPromise();
-    
+    // Check if saving has a valid value
+    amount() {
+      return this.saving_amount
     },
+  },
+  async beforeMount() {
+    await this.TokenPromise();
+  },
   methods : {
     closeNotification(id) {
       const index = this.notifications.findIndex((notification) => notification.id === id);
@@ -270,13 +251,6 @@ export default {
     },
     async changePassword() {
       if (this.$refs.changePassForm.validate()) {
-
-        // Reset snackbar properties
-        this.snackbar = false;
-        this.snackbarMessage = '';
-        this.snackbarColor = 'red';
-        this.snackbarIcon = 'mdi-alert-circle';
-
         try {
           const response = await fetch(`${this.$GroceryAPI}/change-password`, {
             method: 'POST',
@@ -292,96 +266,78 @@ export default {
 
           if (response.ok) {
             const responseData = await response.json();
-            this.showSnackbar(responseData.message, 'green', 'mdi-check-circle');
-            // Optionally, you can redirect or perform other actions on success
+            this.$refs.Toast.showSnackbar('Success: '+responseData.message, 'green', 'mdi-check-circle');
           } else {
             const errorData = await response.json();
-            this.showSnackbar(errorData.detail, 'red', 'mdi-alert-circle');
-            // Handle error, e.g., display an error message to the user
+            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-          this.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
-          // Handle error, e.g., display a generic error message to the user
+          this.$refs.Toast.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
         }
       }
     },
-    showSnackbar(message, color, icon) {
-      this.snackbarMessage = message;
-      this.snackbarColor = color;
-      this.snackbarIcon = icon;
-      this.snackbar = true;
-    },
-      async verifyAuthProcess() {
-    
-        try {
-          const response = await fetch(`${this.$GroceryAPI}/protected`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-
-          if (response.ok) {
-              const data = await response.json()
-              this.user.name = data.user
-              this.user.email = data.email
-              this.authenticated=true;
-              await this.Saving()
-              
-            
-          } else {
-            console.error('Error:', response.statusText);
-            this.$store.commit('clearToken');
-            this.$router.push('/login');
-            window.location.reload();
-            
-          }
-        } catch (error) {
-          console.error('Error:', error);
+    async verifyAuthProcess() {
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/protected`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+        if (response.ok) {
+            const data = await response.json()
+            this.user.name = data.user
+            this.user.email = data.email
+            this.authenticated=true;
+            await this.Saving()
+        } else {
+          console.error('Error:', response.statusText);
           this.$store.commit('clearToken');
           this.$router.push('/login');
           window.location.reload();
         }
-      },
-      async Saving() {
-    
-    try {
-      const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.AuthToken}`,
-        },
-      });
-
-      if (response.ok) {
-          const data = await response.json()
-          this.saving_amount= data.amount
-        
-      } else {
-        console.error('Error:', response.statusText);
+      } catch (error) {
+        console.error('Error:', error);
+        this.$store.commit('clearToken');
+        this.$router.push('/login');
+        window.location.reload();
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
+    },
+    async Saving() {   
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
 
+        if (response.ok) {
+            const data = await response.json()
+            this.saving_amount= data.amount
+          
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
   },
 };
 </script>
 
 <style>
 .notification-container {
-  max-height: 300px; /* Set the maximum height for the container */
-  overflow-y: auto;  /* Enable vertical scrolling */
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-/* Green Theme Styles */
 .green-theme {
-  background-color: #4CAF50; /* Green background color */
-  color: white; /* White text color */
+  background-color: #4CAF50;
+  color: white;
 }
 
-/* Profile Image Styles */
 .profile-image {
   border-radius: 50%;
   width: 100%;

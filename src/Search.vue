@@ -4,7 +4,7 @@
     <v-container fluid>
       <div class="mx-3">
         <h1 class="fw-bold">What's new?</h1>
-        <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>,<span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span>.</p>
+        <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span></p>
         <p class="fw-bold text-danger">
         <v-icon large color="red">
     mdi-piggy-bank
@@ -227,8 +227,6 @@
           </v-col>
         </v-row>
       </div>
-
-
        <!-- Skeleton loader -->
       <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
@@ -242,39 +240,7 @@
           </v-col>
         </v-row>
       </div>
-      
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
-          <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" style="bottom: 0;" >
-          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.error }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="red"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+      <Toast ref="Toast" />
     </v-container>
   </v-app>
 </template>
@@ -282,7 +248,8 @@
 <script>
   import DealsCard from './components/DealsCard.vue';
   import SearchCard from './components/SearchCard.vue';
-  
+  import Toast from './components/Toast.vue';
+
   export default {
     data() {
       return {
@@ -326,10 +293,7 @@
           { name: 'Seafood', icon: 'mdi-fish' },
           { name: 'Snacks', icon: 'mdi-french-fries' },
           { name: 'Personal care', icon: 'mdi-toothbrush' }
-        ],
-        snackbar: false,
-        snackbarError: false,
-        snackbarTimeout: 2500
+        ]
       };
     },
     computed: {
@@ -587,12 +551,11 @@
             const data = await response.json();
             this.products = data;
           } else {
-            this.error = response.statusText;
-            this.snackbarError = true;
+            const errorData = await response.json();
+            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-          this.error = "Error in retrieving data..."
-          this.snackbarError = true;
+          this.$refs.Toast.showSnackbar("Error in retrieving data...", 'red', 'mdi-alert-circle');
         }
 
         this.loading = false;
@@ -651,8 +614,8 @@
 
           
         } catch (error) {
-          this.error = "Failed to fetch Woolworths weekly deals: " + error;
-          this.snackbarError = true;  
+           this.$refs.Toast.showSnackbar('Error: Failed to fetch Woolworths weekly deals', 'red', 'mdi-alert-circle');
+
         } 
       },
       async fetchColesDeals() {
@@ -670,9 +633,8 @@
           this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 6);
           this.$store.commit('setWeeklyDealsColes',  this.weeklyDeals_coles);
          
-        } catch (error) {
-          this.error = "Failed to fetch Coles weekly deals: " + error;
-          this.snackbarError = true;          
+        } catch (error) {      
+          this.$refs.Toast.showSnackbar('Error: Failed to fetch Coles weekly deals', 'red', 'mdi-alert-circle');
         }
       },
       async fetchIGADeals() {
@@ -792,7 +754,8 @@
     },
     components: {
       SearchCard,
-      DealsCard
+      DealsCard,
+      Toast
     }
   };
 </script>
@@ -816,8 +779,8 @@
   margin-bottom: 76px; /* Adjust the margin to fit the height of the browser's controls */
 }
     .container {
-      padding-left: 25px;
-      padding-right: 25px;
+      padding-left: 15px;
+      padding-right: 15px;
     }
   }
 

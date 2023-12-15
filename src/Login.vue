@@ -62,45 +62,26 @@
             </v-form>
           </v-col>
         </v-row>
-        <div class="text-center ma-2">
-          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
-            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
-              <v-icon>mdi-check</v-icon>
-            </v-avatar>
-            <v-avatar v-else color="red" size="30px" class="me-3">
-              <v-icon>mdi-alert-circle-outline</v-icon>
-            </v-avatar>
-
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-        </div>
+        <Toast ref="Toast" />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Toast from './components/Toast.vue';
+
 export default {
+  components: {
+    Toast
+  },
   async beforeMount() {
     await this.TokenPromise();
   },
   data() {
     return {
       AuthToken: null,
-      username: '',
-      snackbar:false,
-      snackbarError: false,
-      snackbarTimeout: 2500,
       error: null,
+      username: '',
       usernameRules: [
         (value) => {
           if (value?.length > 2) return true;
@@ -146,17 +127,14 @@ export default {
           });
 
           if (response.ok) {
-              this.snackbarError = false;
-              this.error = "You are already logged in ...";
-              this.snackbar = true;
-              this.$router.push('/search');
-         
+            this.$refs.Toast.showSnackbar("You are already logged in", 'red', 'mdi-alert-circle');
+            this.$router.push('/search');
           } else {
-            console.error('Error:', response.statusText);
-            
+            const errorData = await response.json();
+            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-          console.error('Error:', error);
+          this.$refs.Toast.showSnackbar('An unexpected error occurred: ' + error, 'red', 'mdi-alert-circle');
         }
       }
     },
@@ -176,32 +154,23 @@ export default {
 
           if (response.ok) {
             const data = await response.json();
-            this.snackbarError= false,
-            this.message = 'Successfully signed in';
-            this.snackbar = true;
-           
+            this.$refs.Toast.showSnackbar('You have successfully signed in!', 'green', 'mdi-check-circle');
+
             const token = data.access_token;
 
             // Store the token globally
             await this.$store.dispatch('setToken', token);
-
-            
             // Redirect to /search
             this.$nextTick(() => {
-            this.$router.push('/search');
+              this.$router.push('/search');
             });
             window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
-          
           }else {
-            const data = await response.json();
-            this.snackbarError= true,
-            this.message = "Something is wrong : "+data.detail;
-            this.snackbar = true;
+            const errorData = await response.json();
+            this.$refs.Toast.showSnackbar('Error: '+ errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-        this.snackbarError= true,
-        this.message = 'Something went wrong with loggin in';
-        this.snackbar = true;
+          this.$refs.Toast.showSnackbar('Something went wrong with loggin in', 'red', 'mdi-alert-circle');
         }
       }
     },
