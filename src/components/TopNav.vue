@@ -1,8 +1,8 @@
 <template>
     <v-app>
         <nav class="navbar navbar-expand-lg py-4 shadow-sm mb-5 bg-white rounded fixed-top">
-            <div class="container-fluid">
-            <router-link class="navbar-brand" to="/"><h6 class="green--text font-weight-bold">SuperSavers</h6></router-link>
+          <div class="container-fluid mx-3">
+            <router-link class="navbar-brand" to="/"><h4 class="green--text font-weight-bold">SuperSavers</h4></router-link>
             <button class="navbar-toggler"  data-bs-toggle="collapse" data-bs-target="#nav-collapse" aria-controls="nav-collapse" aria-expanded="true" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>

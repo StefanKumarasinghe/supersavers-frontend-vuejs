@@ -3,7 +3,7 @@
   <v-app id="login-page">
     <v-main>
       <!-- Login Form -->
-      <v-row class="mx-auto d-flex align-center justify-center">
+      <v-row class="d-flex align-center justify-center login-container">
           <!-- The image will be hidden on small screens (md and below) -->
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
             <v-img
@@ -20,7 +20,7 @@
             <div class="py-5">
               <h2 class="font-weight-bold green--text text--darken-2 ">Login</h2>
             </div>
-            <v-form ref="loginForm" v-on:submit.prevent="submitRegistration">
+            <v-form ref="loginForm" v-on:submit.prevent="submitLogin">
               <div>
                 <label for="username" class="font-weight-bold pb-2" >Username/Email:</label>
                 <v-text-field
@@ -58,9 +58,7 @@
               <div class="d-flex justify-content-center">
                 <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%"  height="45" @click="submitLogin">Login</v-btn>
               </div>
-              <br>
-              <router-link to="/register" class="font-weight-bold green--text  text-decoration-underline">Sign up instead?</router-link>
-                 
+              <p class="text-center mt-3">Don't have an account? <router-link to="register" class="font-weight-bold green--text text-decoration-underline">Register</router-link></p>
             </v-form>
           </v-col>
         </v-row>
@@ -106,7 +104,7 @@ export default {
       usernameRules: [
         (value) => {
           if (value?.length > 2) return true;
-          return 'Must be a valid username/email.';
+          return 'A valid username/email is required';
         },
       ],
       password: '',
@@ -114,6 +112,7 @@ export default {
       passwordRules: [
         (value) => {
           if (value?.length >= 8) return true;
+          if (value.length < 1) return 'Password is required';
           return 'Password needs to be at least 8 characters.';
         },
       ],
@@ -216,8 +215,21 @@ export default {
   padding-top:80px !important;
   font-size: 17px;
 }
+
 .v-application .v-application--wrap {
   min-height: 0vh;
+}
+
+#login-page .login-container {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+@media (max-width: 952px) {
+  #login-page .login-container {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 }
 
 </style>

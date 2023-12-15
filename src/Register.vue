@@ -3,8 +3,7 @@
   <v-app id="register-page">
     <v-main>
       <!-- Register Form -->
-        <v-row class="mx-auto d-flex align-center justify-center">
-
+        <v-row class="d-flex align-center justify-center register-container">
           <!-- The image will be hidden on small screens (md and below) -->
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
             <v-img
@@ -86,9 +85,7 @@
               <div class="d-flex justify-content-center">
                 <v-btn color="green" class="white--text mt-4 font-weight-bold"  height="45" width="100%" @click="submitRegistration">register</v-btn>
               </div>
-              <br>
-              <router-link to="/login" class="font-weight-bold green--text  text-decoration-underline">Login instead?</router-link>
-            </v-form>
+              <p class="text-center mt-3">Has an account? <router-link to="login" class="font-weight-bold green--text text-decoration-underline">Login</router-link></p>            </v-form>
           </v-col>
         </v-row>
         <div class="text-center ma-2">
@@ -144,9 +141,9 @@ export default {
       error: null,
       nameRules: [
         value => {
-          if (value.length > 2) return true;
-          if (value.length < 2) return 'Username is required';
-          return 'Username needs to be at least 3 characters';
+          if (value.length >= 3 && !/\s/.test(value)) return true;
+          if (value.length < 3) return 'Username needs to be at least 3 characters';
+          return 'Username should not contain spaces';
         }
       ],
       email: '',
@@ -170,8 +167,8 @@ export default {
       showConfirmPassword: false,
       confirmPasswordRules: [
         value => {
-          if (this.password == value) return true;
           if (value?.length < 1) return 'Confirm password is required';
+          if (this.password == value) return true;
           return 'Passwords need to match.';
         }
       ]
@@ -283,10 +280,16 @@ export default {
   min-height: 0vh;
 }
 
-.container {
-  padding-left: 10px;
-  padding-right: 10px;
+#register-page .register-container {
+  margin-left: 0px;
+  margin-right: 0px;
 }
 
+@media (max-width: 952px) {
+  #register-page .register-container {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+}
 
 </style>
