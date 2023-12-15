@@ -2,10 +2,9 @@
 <template>
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-        <button @click="shareApp(product)" large class=" m-1 font-weight-bold">
-      <span class="mdi  mdi-share-variant"></span>
-    </button>
-        <v-img :src="product.image" width="70%" contain class="mx-auto">  </v-img>
+        <v-img :src="product.image" width="90%" contain class="mx-auto"><button @click="shareApp(deal)" large class="text-start text-danger fw-bold  font-weight-bold">
+      <v-icon class="mdi text-danger mdi-share-variant">mdi-share-variant</v-icon>
+    </button>  </v-img>
         <v-card-title class="black--text font-weight-bold px-4" style="display: inline-block; word-break: break-word;">
           {{ product.name }} | {{product.size}}
           <v-card v-if="product.woolworths_price" :style="isSelected === 'Woolworths' ? 'border: 1px solid green;': ''" :outlined="isSelected!='Woolworths'" @click="selectStore('Woolworths')">
@@ -120,7 +119,7 @@ export default {
   // Check if the Web Share API is supported by the browser
   if (navigator.share) {
     // Calculate total and savings
-    const totalSavings = product.woolworths_price - product.coles_price;
+    const totalSavings = Math.abs(parseFloat((product.woolworths_price - product.coles_price).toFixed(2)));
 
     // Message parts with icons and dynamic content
     const messageParts = [
@@ -128,7 +127,7 @@ export default {
       `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
       `🛒 Coles Price: AUD ${product.coles_price}`,
       `💰 You're Saving Atleast: AUD ${totalSavings}`,
-      `🌈 Visit SuperSavers.au to save on groceries: https://supersavers.au`,
+      `🌈 Visit supersavers.au to save on groceries`,
     ];
 
     // Combine all parts into the final message

@@ -8,7 +8,8 @@
         <p class="fw-bold text-danger">
         <v-icon large color="red">
     mdi-piggy-bank
-  </v-icon> <span class="text-success">{{ saving }}</span> AUD Saved this Month...
+  </v-icon> <span class="text-success" v-if="savingload">{{ saving }}</span>
+<span class="spinner-border spinner-border-sm text-danger" v-else></span> AUD Saved this Month...
 </p>
       </div>
 
@@ -286,6 +287,7 @@
   export default {
     data() {
       return {
+        savingload: false,
         saving:0,
         authenticated:false,
         loading: false,
@@ -629,6 +631,7 @@
       if (response.ok) {
           const data = await response.json()
           this.saving= data.amount
+          this.savingload = true;
         
       } else {
         console.error('Error:', response.statusText);

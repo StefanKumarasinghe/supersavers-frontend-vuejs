@@ -100,8 +100,7 @@ export default {
       `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
       `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
       `💰 Save AUD ${savings} on this deal!`,
-      `🛒 Visit SuperSavers.au to snag this awesome deal: https://supersavers.au 🌈`,
-      `📸 Check out the product image: ${product.image}`
+      `🛒 Visit supersavers.au to snag this awesome deal 🌈`,
     ];
 
     // Combine all parts into the final message
