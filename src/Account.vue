@@ -3,10 +3,10 @@
   <v-app v-if="authenticated">
     <v-container fluid>
       <!-- User Information Section -->
-      <div class="mx-3 mt-5">
-        <h2>
-          SETTINGS
-        </h2>
+      <div class="mx-3 ">
+        <h1 class="fw-bold">
+          Account
+        </h1>
         <v-alert border="left" colored-border type="info" elevation="2" color="green" prominent class="mt-5" width="auto">
           <h3>Hey, {{ user.name }}</h3>
           This is your profile page, you can manage notifications, subscriptions and even account details.
@@ -23,15 +23,14 @@
               </v-row>
               <v-row class="text-center">
                 <h4 class="green--text font-weight-bold">FREE</h4>
-                <v-alert colored-border type="info" elevation="2" color="red" prominent class="mt-5" width="100%">
-                  Supersavers will only be free until it is tested. You are using a testing version
-                </v-alert>
+                <p class=" fw-bold" >Only free for a limited time...</p>
               </v-row>
             </div>
             <div class="text-black box-border my-5 pe-5 pb-5 text-center">
               <v-row class="text-center align-center"> <!-- Added align-center class -->
                 <h5 class="font-weight-bold">Monthly Savings</h5>
-                <h4 class="green--text font-weight-bold" v-if="amount">$ AUD {{ amount }}</h4>
+                <h2 class="green--text display-5" v-if="amount_saved">${{ amount_saved }}</h2>
+                <v-btn color="fw-bold success mt-4" @click="shareApp()" height="60">Share this to your friends</v-btn>
               </v-row>
           
             </div>
@@ -138,43 +137,25 @@
             </v-btn>
           </div>
         </div>
-
+        <Toast ref="Toast" />
       </div>
     </v-container>
-    <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;" >
-          <v-avatar size="30px" class="me-3">
-            <v-icon :color="snackbarColor">{{ snackbarIcon }}</v-icon>
-          </v-avatar>
-          <span class="white--text font-weight-bold">{{ snackbarMessage }}</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              :color="snackbarColor"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+    
   </v-app>
 </template>
 
 <script>
+import Toast from './components/Toast.vue';
+
 export default {
+  components: {
+    Toast
+  },
   data() {
     return {
-      snackbar:false,
-      snackbarError:false,
-      snackbarTimeout:2500,
       authenticated:false,
       AuthToken:null,
-      snackbarMessage: '',
-      snackbarColor: 'red',
-      snackbarIcon: 'mdi-alert-circle',
-      saving_amout:0,
+      amount_saved:0,
       user: {
         name: null,
         newPassword:'',
@@ -231,16 +212,9 @@ export default {
       ]
     };
   },
-  computed: {
-  // Check if saving has a valid value
-  amount() {
-    return this.saving_amount
-  },
-},
   async beforeMount() {
-      await this.TokenPromise();
-    
-    },
+    await this.TokenPromise();
+  },
   methods : {
     closeNotification(id) {
       const index = this.notifications.findIndex((notification) => notification.id === id);
@@ -270,13 +244,6 @@ export default {
     },
     async changePassword() {
       if (this.$refs.changePassForm.validate()) {
-
-        // Reset snackbar properties
-        this.snackbar = false;
-        this.snackbarMessage = '';
-        this.snackbarColor = 'red';
-        this.snackbarIcon = 'mdi-alert-circle';
-
         try {
           const response = await fetch(`${this.$GroceryAPI}/change-password`, {
             method: 'POST',
@@ -292,96 +259,93 @@ export default {
 
           if (response.ok) {
             const responseData = await response.json();
-            this.showSnackbar(responseData.message, 'green', 'mdi-check-circle');
-            // Optionally, you can redirect or perform other actions on success
+            this.$refs.Toast.showSnackbar('Success: '+responseData.message, 'green', 'mdi-check-circle');
           } else {
             const errorData = await response.json();
-            this.showSnackbar(errorData.detail, 'red', 'mdi-alert-circle');
-            // Handle error, e.g., display an error message to the user
+            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-          this.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
-          // Handle error, e.g., display a generic error message to the user
+          this.$refs.Toast.showSnackbar('An unexpected error occurred.', 'red', 'mdi-alert-circle');
         }
       }
     },
-    showSnackbar(message, color, icon) {
-      this.snackbarMessage = message;
-      this.snackbarColor = color;
-      this.snackbarIcon = icon;
-      this.snackbar = true;
-    },
-      async verifyAuthProcess() {
-    
-        try {
-          const response = await fetch(`${this.$GroceryAPI}/protected`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-
-          if (response.ok) {
-              const data = await response.json()
-              this.user.name = data.user
-              this.user.email = data.email
-              this.authenticated=true;
-              await this.Saving()
-              
-            
-          } else {
-            console.error('Error:', response.statusText);
-            this.$store.commit('clearToken');
-            this.$router.push('/login');
-            window.location.reload();
-            
-          }
-        } catch (error) {
-          console.error('Error:', error);
+    async verifyAuthProcess() {
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/protected`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+        if (response.ok) {
+            const data = await response.json()
+            this.user.name = data.user
+            this.user.email = data.email
+            this.authenticated=true;
+            await this.Saving()
+        } else {
+          console.error('Error:', response.statusText);
           this.$store.commit('clearToken');
           this.$router.push('/login');
           window.location.reload();
         }
-      },
-      async Saving() {
-    
-    try {
-      const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.AuthToken}`,
-        },
-      });
-
-      if (response.ok) {
-          const data = await response.json()
-          this.saving_amount= data.amount
-        
-      } else {
-        console.error('Error:', response.statusText);
+      } catch (error) {
+        console.error('Error:', error);
+        this.$store.commit('clearToken');
+        this.$router.push('/login');
+        window.location.reload();
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    },
+    shareApp() {
+  // Check if the Web Share API is supported by the browser
+  if (navigator.share) {
+    navigator
+      .share({
+        title: `🌟 Hey, I've saved $${this.amount_saved} using supersavers! 💰`,
+        text: `🚀 You too can save heaps at Coles, Woolies, and IGA with supersavers by never missing out on deals. Visit (https://supersavers.au) 🌐`,
+      })
+      .then(() => console.log('🎉 Shared successfully'))
+      .catch((error) => console.error('❌ Error sharing:', error));
+  } else {
+    console.error('❌ Error sharing: Web Share API is not supported');
   }
+},
 
+    async Saving() {   
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+
+        if (response.ok) {
+            const data = await response.json()
+            this.amount_saved= data.amount
+          
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
   },
 };
 </script>
 
 <style>
 .notification-container {
-  max-height: 300px; /* Set the maximum height for the container */
-  overflow-y: auto;  /* Enable vertical scrolling */
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-/* Green Theme Styles */
 .green-theme {
-  background-color: #4CAF50; /* Green background color */
-  color: white; /* White text color */
+  background-color: #4CAF50;
+  color: white;
 }
 
-/* Profile Image Styles */
 .profile-image {
   border-radius: 50%;
   width: 100%;

@@ -15,10 +15,10 @@
           'black--text': selectedItem !== item.route
         }"
       >
-        <span class="label font-weight-bold">
+        <span class="label fw-bold ">
           {{ item.label }}
         </span>       
-        <v-icon class="icon">
+        <v-icon class="fw-bold icon">
           {{ item.icon }}
         </v-icon>
       </v-btn>

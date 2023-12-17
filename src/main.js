@@ -75,7 +75,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 getAnalytics(firebaseApp);
-console.log(firebaseApp)
+
 
 new Vue({
   vuetify,

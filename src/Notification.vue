@@ -2,9 +2,10 @@
 <template>
     <v-app>
       <v-container fluid>
-        <div class="mx-3 mt-5">
-          <h1>NOTIFY DEALS</h1>
+        <div class="mx-3">
+          <h1 class="fw-bold">Never Miss a Deal</h1>
           <p class="fw-bold">With the notifications feature, you won't miss out on the item with the best deal!</p>
+          <p class=" fw-bold text-white p-3 bg-success">You can manage your your notiification setting at <a class="text-white text-decoration-underline" href="/account">Accounts</a></p>
         </div>
         <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -25,7 +26,7 @@
                     </div>
                   </div>
                   <div>
-                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1  " outlined color="red" height="40" width="150" @click="removeProduct(product)">Remove</v-btn>
+                    <v-btn rounded class="font-weight-bold white--text text-subtitle-1  " outlined color="red" height="40" width="150" style="border-radius:0" @click="removeProduct(product)">Remove</v-btn>
                   </div>
                 </div>
               </div>

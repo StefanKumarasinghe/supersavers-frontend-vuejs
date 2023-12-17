@@ -57,7 +57,6 @@ export default new Vuex.Store({
       if (index !== -1) {
         state.cart[index] = item;
       }
-      
       localStorage.setItem('cart', JSON.stringify(state.cart));
     }
   },

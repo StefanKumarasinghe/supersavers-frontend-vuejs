@@ -7,7 +7,7 @@
     </button>  </v-img>
         <v-card-title class="black--text font-weight-bold px-4" style="display: inline-block; word-break: break-word;">
           {{ product.name }} | {{product.size}}
-          <v-card v-if="product.woolworths_price" :style="isSelected === 'Woolworths' ? 'border: 1px solid green;': ''" :outlined="isSelected!='Woolworths'" @click="selectStore('Woolworths')">
+          <v-card class="mt-5" v-if="product.woolworths_price" :style="isSelected === 'Woolworths' ? 'border: 1px solid green;': ''" :outlined="isSelected!='Woolworths'" @click="selectStore('Woolworths')">
             <v-row>
               <v-col class="green--text font-weight-bold " style="display: inline-block; word-break: break-word; white-space: nowrap;">
                 Woolworths
@@ -44,14 +44,14 @@
         <v-spacer></v-spacer> 
         <v-card-actions class="mx-2 mt-auto"> 
           <div class="row">
-            <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3 white--text me-1" dark width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected)" size="small" variant="flat">
-                Add To List
+            <div class="col-6">
+              <v-btn class="fw-bold mb-3 white--text me-1" dark width="100%" height="45px" color="green" @click="addItemToCart(product, isSelected)" size="small" variant="flat">
+                ADD TO LIST
               </v-btn>
             </div>
-            <div class="col-12">
-              <v-btn class="text-none text-h6 mb-3" width="100%" height="45px" size="small" variant="flat" @click="Notify(product)">
-                Listen
+            <div class="col-6">
+              <v-btn class="mb-3 mx-auto fw-bold mb-3 white--text btn btn-danger" color="red" height="45px" size="small" variant="flat" @click="Notify(product)">
+                NOTIFY
               </v-btn>
             </div>
           </div>

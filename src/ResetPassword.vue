@@ -61,35 +61,21 @@
           </v-col>
         </v-row>
       </v-container>
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
-          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.error }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="red"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+      <Toast ref="Toast" />
     </v-main>
   </v-app>
 </template>
   
 <script>
+  import Toast from './components/Toast.vue';
+
   export default {
+    components: {
+      Toast
+    },
     data() {
       return {
         password: '',
-        snackbar:false,
-        snackbarError:false,
-        snackbarTimeout:2500,
-        message:null,
         showPassword: false,
         passwordRules: [
           (value) => {
@@ -102,8 +88,8 @@
         showConfirmPassword: false,
         confirmPasswordRules: [
           (value) => {
-            if (this.password == value) return true;
             if (value.length < 1) return 'Confirm Password is required';
+            if (this.password == value) return true;
             return 'Passwords need to match.';
           },
         ],
@@ -112,27 +98,16 @@
     methods: {
       async submitRegistration() {
         if (this.$refs.resetForm.validate()) {
-          if (this.password !== this.confirmPassword) {
-            alert("Passwords don't match!");
-          } else {
-            // Retrieve the token from the URL
-            const urlSearchParams = new URLSearchParams(window.location.search);
-            const params = Object.fromEntries(urlSearchParams.entries());
-            const token = params.token;
+          // Retrieve the token from the URL
+          const urlSearchParams = new URLSearchParams(window.location.search);
+          const params = Object.fromEntries(urlSearchParams.entries());
+          const token = params.token;
 
-            // Check if token exists
-            if (!token) {
-              this.message = 'No token found, please use the email link provided';
-              this.snackbarError = true;
-              this.snackbar = true;
-              return;
-            }
-            const response = await this.resetPassword(token, this.password);
-            // Handle the response as needed
-            console.log(response);
-
-            this.$router.push('/login');
+          // Check if token exists
+          if (!token) {
+            this.$refs.Toast.showSnackbar('No token found, please use the email link provided', 'red', 'mdi-alert-circle');
           }
+          this.$router.push('/login');
         }
       },
       async resetPassword(token, password) {
@@ -148,9 +123,9 @@
         });
 
         if (!(response.ok)) {
-          this.message = 'Could not recover your password';
-          this.snackbarError = true;
-          this.snackbar = true;
+          this.$refs.Toast.showSnackbar('Error in recovering your password', 'red', 'mdi-alert-circle');
+        } else {
+          this.$refs.Toast.showSnackbar('Successfully reset your password', 'green', 'mdi-check-circle');
         }
 
         return response.json();

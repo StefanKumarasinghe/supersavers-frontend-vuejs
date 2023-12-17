@@ -42,34 +42,21 @@
           </v-col>
         </v-row>
       </v-container>
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" >
-          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.error }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="red"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+      <Toast ref="Toast" />
     </v-main>
   </v-app>
 </template>
   
 <script>
+import Toast from './components/Toast.vue';
+
   export default {
+    components: {
+      Toast
+    },
     data() {
       return {
         email: '',
-        snackbarError:false,
-        snackbarTimeout:2500,
-        message:null,
         emailRules: [
           value => {
             if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
@@ -92,15 +79,13 @@
               body: new URLSearchParams({ email: this.email }),
             });
             if (response.ok) {
-              this.error = 'Successfully sent a password recovery email';
-              this.snackbarError = true;
-
-            } 
+              this.$refs.Toast.showSnackbar('Successfully sent a password recovery email', 'green', 'mdi-check-circle');
+            } else {
+              const errorData = await response.json();
+              this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
+            }
           } catch (error) {
-            console.error('Error:', error);
-            this.error = 'Could not recover your password';
-            this.snackbarError = true;
-            
+            this.$refs.Toast.showSnackbar('Error: Error in recovering your password', 'red', 'mdi-alert-circle');
           }
         } 
       },

@@ -14,32 +14,32 @@
       </div>
 
       <div style="position: relative;">
-    <v-row align="center" class="my-5">
+    <v-row align="center" class="my-5 align-item-center">
       <v-col cols="9" md="10" lg="6">
         <!-- Your search input code here -->
         <v-text-field
-          v-model="searchTerm"
-          @change="fetchProducts()"
-          @input="getSearchRecommendations()"
-          label="Search"
-          filled
-          prepend-inner-icon="mdi-magnify"
-          solo
-          flat
-          outlined
-          hide-details="true"
-        ></v-text-field>
+  v-model="searchTerm"
+  @keydown.enter="fetchProducts"
+  @input="getSearchRecommendations"
+  label="Search your grocery item"
+  class="fw-bold"
+  filled
+  prepend-inner-icon="mdi-magnify"
+  solo
+  flat
+  outlined
+  hide-details="true"
+></v-text-field>
       </v-col>
 
       <v-col cols="2" md="2" lg="2">
         <!-- Your filter button code here -->
         <v-menu  offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn  fab v-on="on" v-bind="attrs" outlined color="grey darken-1">
-                <v-icon >
-                  mdi-filter
-                </v-icon>
-              </v-btn>              
+              <v-span fab v-on="on" v-bind="attrs"  >
+    <!-- Replace v-icon with img tag for the PNG icon -->
+    <img src="@/assets/filter.png" style="width:30px" alt="Filter Icon" />
+  </v-span>            
             </template>
             <v-list>
               <v-list-item v-for="(value, key) in storeFilters" :key="key">
@@ -58,7 +58,7 @@
       </v-col>
 
       <!-- Search recommendations container -->
-      <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="shownlist.length > 1">
+      <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="(shownlist.length > 1 && savingload==false)">
         
           <v-list class="shadow-lg">
             <v-list-item v-for="recommendation in shownlist" :key="recommendation">
@@ -91,8 +91,9 @@
       ></v-progress-linear>
 
       <!-- Lowest price product -->
+     
       <div fluid v-if="lowestPricedProduct" class="my-5 py-3 text-center-sm text-left-md">
-        <h2 class="my-2">Lowest product found</h2>
+        <h2 class="my-2 fw-bold bg-success text-white p-3">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
             <v-col cols="12" md="4" class="text-center-sm text-left-md">
               <v-img
@@ -105,14 +106,14 @@
               <v-card-title class="display-1" style="display: inline-block; word-break: break-word;">
                 <strong>{{ lowestPricedProduct.name }}</strong>
               </v-card-title>
-              <v-card-title class="display-6" style="display: inline-block; word-break: break-word;">
-               <p>{{ lowestPricedProduct.description.replace(/<[^>]*>/g, ' ') }}</p>
+              <v-card-title class="display-6 py-0" style="display: inline-block; word-break: break-word;">
+               <p class="fw-bold">{{ lowestPricedProduct.description.replace(/<[^>]*>/g, ' ') }}</p>
               </v-card-title>
-              <v-card-title class="display-6 font-weight-bold green--text">
+              <v-card-title class="display-6 font-weight-bold green--text py-0]">
                 ${{ smallestPrice(lowestPricedProduct) }} /
                 {{ lowestPricedProduct.size }}
               </v-card-title>
-              <v-card-title>
+              <v-card-title class="fw-bold">
                 Deal Available At 
                 <strong style="display: inline-block; word-break: break-word;" :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">
  {{ bestStoreForProduct(lowestPricedProduct) }}
@@ -127,9 +128,11 @@
 
       <!-- Best deal at Woolworths and Coles -->
       <div v-if="combinedProducts.length" class="my-4">
+        
         <v-row>
           <v-col cols="12">
-            <h2>Best Prices Across Stores</h2>
+            <p class="bg-dark p-3 text-white fw-bold">Note that supersavers can make mistakes</p>
+            <h2 class="bg-success p-3 text-white fw-bold" >Best Prices Across Stores</h2>
           </v-col>
           <v-col
             cols="12"
@@ -228,8 +231,6 @@
           </v-col>
         </v-row>
       </div>
-
-
        <!-- Skeleton loader -->
       <div v-if="loading_start" class="mt-5 pt-5 text-center">
         <v-row>
@@ -243,39 +244,7 @@
           </v-col>
         </v-row>
       </div>
-      
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
-          <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbarError" :timeout="snackbarTimeout" style="bottom: 0;" >
-          <v-avatar color="red" size="30px" class="me-3"><v-icon>mdi-alert-circle</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.error }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="red"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div>
+      <Toast ref="Toast" />
     </v-container>
   </v-app>
 </template>
@@ -283,7 +252,8 @@
 <script>
   import DealsCard from './components/DealsCard.vue';
   import SearchCard from './components/SearchCard.vue';
-  
+  import Toast from './components/Toast.vue';
+
   export default {
     data() {
       return {
@@ -579,6 +549,7 @@
       },
       async fetchProducts() {
         this.loading = true;
+        this.savingload = true
         this.shownlist = [];
 
         try {
@@ -593,14 +564,14 @@
             const data = await response.json();
             this.products = data;
           } else {
-            this.error = response.statusText;
-            this.snackbarError = true;
+            const errorData = await response.json();
+            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
-          this.error = "Error in retrieving data..."
-          this.snackbarError = true;
+          this.$refs.Toast.showSnackbar("Error in retrieving data...", 'red', 'mdi-alert-circle');
         }
 
+        this.savingload = false
         this.loading = false;
       },
       bestStoreForProduct(product) {
@@ -658,8 +629,8 @@
 
           
         } catch (error) {
-          this.error = "Failed to fetch Woolworths weekly deals: " + error;
-          this.snackbarError = true;  
+           this.$refs.Toast.showSnackbar('Error: Failed to fetch Woolworths weekly deals', 'red', 'mdi-alert-circle');
+
         } 
       },
       async fetchColesDeals() {
@@ -677,9 +648,8 @@
           this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 6);
           this.$store.commit('setWeeklyDealsColes',  this.weeklyDeals_coles);
          
-        } catch (error) {
-          this.error = "Failed to fetch Coles weekly deals: " + error;
-          this.snackbarError = true;          
+        } catch (error) {      
+          this.$refs.Toast.showSnackbar('Error: Failed to fetch Coles weekly deals', 'red', 'mdi-alert-circle');
         }
       },
       async fetchIGADeals() {
@@ -707,7 +677,7 @@
       await this.fetchProducts();
     },
     async getSearchRecommendations() {
-      if (this.searchTerm.length > 3) {
+      if (this.searchTerm.length > 3 && !(this.savingload) ) {
         try {
           const response = await fetch(
             `${this.$GroceryAPI}/get-suggestions/${this.searchTerm}`
@@ -799,7 +769,8 @@
     },
     components: {
       SearchCard,
-      DealsCard
+      DealsCard,
+      Toast
     }
   };
 </script>
@@ -827,8 +798,8 @@
   margin-bottom: 76px; /* Adjust the margin to fit the height of the browser's controls */
 }
     .container {
-      padding-left: 25px;
-      padding-right: 25px;
+      padding-left: 15px;
+      padding-right: 15px;
     }
   }
 
