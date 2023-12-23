@@ -30,15 +30,20 @@
 
           <!-- The image will be hidden on small screens (md and below) -->
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
-            <v-img
-              :src="require('@/assets/register.jpg')"
-              alt="Login Image"
-              width="100%"
+            <v-row class="align-items-center">
+            <v-col cols="6">
+              <v-img
+              :src="require('@/assets/forgot-image.png')"
+              alt="Take a visit to the products you bought in the past at Woolworths, Coles and IGA with Supersavers"
               height="100%"
-            ></v-img>
-            <p style="font-size: 10px; margin-top: 5px;" class="text-center">
-              Image by <a href="https://www.freepik.com/free-vector/tiny-family-grocery-bag-with-healthy-food-parents-kids-fresh-vegetables-flat-illustration_12291304.htm#page=2&query=grocery%20cartoon&position=0&from_view=search&track=ais&uuid=3a3d4e0d-173d-46b5-beaf-de16b25ebd7e" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
-            </p>
+              max-width="400"
+              max-height="500"
+            ></v-img>   
+          </v-col>
+          <v-col cols="4"> <p class=" fw-bold ">Take a visit to the products you bought in the past at <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span> </p>
+         </v-col>
+        </v-row>
+        <p class=" fw-bold text-success text-center">Save Heaps with Supersavers.au</p>
           </v-col>
         </v-row>
       </v-container>
@@ -49,7 +54,6 @@
   
 <script>
 import Toast from './components/Toast.vue';
-
   export default {
     components: {
       Toast
@@ -59,7 +63,7 @@ import Toast from './components/Toast.vue';
         email: '',
         emailRules: [
           value => {
-            if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
+            if (/^[0-9a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
             if (value.length < 1) return 'Email is required'
             return 'Must be a valid e-mail.'
           },
@@ -69,7 +73,6 @@ import Toast from './components/Toast.vue';
     methods: {
       async submitRegistration() {
         if (this.$refs.forgotForm.validate()) {
-          // Send a POST request to the FastAPI endpoint
           try {
             const response = await fetch(`${this.$GroceryAPI}/forgot-password`, {
               method: 'POST',
@@ -82,10 +85,10 @@ import Toast from './components/Toast.vue';
               this.$refs.Toast.showSnackbar('Successfully sent a password recovery email', 'green', 'mdi-check-circle');
             } else {
               const errorData = await response.json();
-              this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
+              this.$refs.Toast.showSnackbar('Oops: '+errorData.detail, 'red', 'mdi-alert-circle');
             }
           } catch (error) {
-            this.$refs.Toast.showSnackbar('Error: Error in recovering your password', 'red', 'mdi-alert-circle');
+            this.$refs.Toast.showSnackbar('Something went wrong in recovering your password', 'red', 'mdi-alert-circle');
           }
         } 
       },

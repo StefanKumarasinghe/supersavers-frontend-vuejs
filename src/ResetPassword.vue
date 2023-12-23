@@ -46,18 +46,22 @@
               <v-btn color="green" class="white--text mt-4 font-weight-bold" width="100%" height="45" @click="submitRegistration">submit</v-btn>
             </v-form>
           </v-col>
-
           <!-- The image will be hidden on small screens (md and below) -->
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
-            <v-img
-              :src="require('@/assets/register.jpg')"
-              alt="Login Image"
-              width="100%"
+            <v-row class="align-items-center">
+            <v-col cols="6">
+              <v-img
+              :src="require('@/assets/reset-image.png')"
+              alt="Track your spendings and savings at Woolworths, Coles and IGA with Supersavers"
               height="100%"
-            ></v-img>
-            <p style="font-size: 10px; margin-top: 5px;" class="text-center">
-              Image by <a href="https://www.freepik.com/free-vector/tiny-family-grocery-bag-with-healthy-food-parents-kids-fresh-vegetables-flat-illustration_12291304.htm#page=2&query=grocery%20cartoon&position=0&from_view=search&track=ais&uuid=3a3d4e0d-173d-46b5-beaf-de16b25ebd7e" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
-            </p>
+              max-width="400"
+              max-height="500"
+            ></v-img>   
+          </v-col>
+          <v-col cols="4"> <p class=" fw-bold ">Track your spendings and savings at <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span> </p>
+         </v-col>
+        </v-row>
+        <p class=" fw-bold text-success text-center">Save Heaps with Supersavers.au</p>
           </v-col>
         </v-row>
       </v-container>
@@ -96,40 +100,48 @@
       };
     },
     methods: {
-      async submitRegistration() {
-        if (this.$refs.resetForm.validate()) {
-          // Retrieve the token from the URL
-          const urlSearchParams = new URLSearchParams(window.location.search);
-          const params = Object.fromEntries(urlSearchParams.entries());
-          const token = params.token;
+    async submitRegistration() {
+      if (this.$refs.resetForm.validate()) {
+        // Retrieve the token from the URL
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        const token = params.token;
 
-          // Check if token exists
-          if (!token) {
-            this.$refs.Toast.showSnackbar('No token found, please use the email link provided', 'red', 'mdi-alert-circle');
-          }
-          this.$router.push('/login');
+        // Check if token exists
+        if (!token) {
+          this.$refs.Toast.showSnackbar('No token found, please use the email link provided', 'red', 'mdi-alert-circle');
+        } else {
+          await this.resetPassword(token, this.password);
         }
-      },
-      async resetPassword(token, password) {
-        // Create a FormData object and append both token and password
+      }
+    },
+    async resetPassword(token, password) {
+      try {
         const formData = new FormData();
         formData.append('token', token);
         formData.append('password', password);
-
-        // Use the FormData object in the fetch request
         const response = await fetch(`${this.$GroceryAPI}/reset-password`, {
           method: 'POST',
           body: formData,
         });
 
-        if (!(response.ok)) {
-          this.$refs.Toast.showSnackbar('Error in recovering your password', 'red', 'mdi-alert-circle');
+        if (!response.ok) {
+          // Handle different HTTP error codes with appropriate messages
+          const errorMessage = response.status === 401 ? 'Invalid token or expired link' : 'Error in recovering your password';
+          this.$refs.Toast.showSnackbar(errorMessage, 'red', 'mdi-alert-circle');
         } else {
           this.$refs.Toast.showSnackbar('Successfully reset your password', 'green', 'mdi-check-circle');
+          this.$store.commit('clearToken');
+          window.location.reload();
+          this.$router.push('/login');
         }
-
         return response.json();
+      } catch (error) {
+        console.error('Error resetting password:', error);
+        this.$refs.Toast.showSnackbar('An unexpected error occurred', 'red', 'mdi-alert-circle');
       }
-    },
+    }
+}
+
   };
 </script>

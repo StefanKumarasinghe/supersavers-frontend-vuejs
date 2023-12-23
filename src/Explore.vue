@@ -10,7 +10,7 @@
             <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
             <div class="col-lg-4 col-md-5 col-sm-12 col-12 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
               <span class="mx-auto">
-                <h1 class="font-weight-bold green--text">SuperSavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
+                <h1 class="font-weight-bold green--text">Supersavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
                 <v-btn to="search" color="green font-weight-bold white--text w-50">Get Started</v-btn>
               </span>              
             </div>
@@ -21,7 +21,6 @@
           </div>
         </div>
       </div>
-
       <!-- Clients Section -->
       <div class="clients section-bg py-5">
         <div class="container">
@@ -49,7 +48,7 @@
           </div>
           <div class="row">
             <div class="col-lg-6">
-              <p style="text-align: justify;">SuperSaver helps you save money on groceries by comparing the best prices between
+              <p style="text-align: justify;">Supersaver helps you save money on groceries by comparing the best prices between
                 <span class="text-success fw-bold">Woolworths</span>,
                 <span class="text-danger fw-bold">Coles</span>, and
                 <span class="bg-danger text-white fw-bold p-1">IGA</span>.
@@ -57,7 +56,7 @@
               </p>
             </div>
             <div class="col-lg-6" style="text-align: justify;">
-              <p>We understand the value of your money, and with SuperSaver, you can make informed decisions to get the best deals. Subscribe now and start saving!</p>
+              <p>We understand the value of your money, and with Supersaver, you can make informed decisions to get the best deals. Subscribe now and start saving!</p>
             </div>
           </div>
           <table class="table text-center">
@@ -137,11 +136,11 @@
           <div class="row">
             <div class="col-lg-9 text-center text-lg-start">
               <h3 class="font-weight-bold">Follow us</h3>
-              <p>Never miss an update? Save on deals as soon as SuperSavers is Online</p>
+              <p>Never miss an update? Save on deals as soon as Supersavers is Online</p>
             </div>
             <div class="col-lg-3 social-links mt-lg-3 mt-md-3 col-lg-3 display-5 justify-content-center text-center">
-              <a href="#" class="mx-2"><v-icon color="white" large>mdi-email-outline</v-icon></a>
-              <a href="#" class="mx-2"><v-icon color="white" large>mdi-linkedin</v-icon></a>
+              <a href="mailto:contact@supersavers.au" class="mx-2"><v-icon color="white" large>mdi-email-outline</v-icon></a>
+              <a href="https://www.linkedin.com/company/supersavers" class="mx-2"><v-icon color="white" large>mdi-linkedin</v-icon></a>
               <a href="#" class="mx-2"><v-icon color="white" large>mdi-instagram</v-icon></a>
             </div>
           </div>
@@ -154,17 +153,69 @@
       <b-back-top class="d-flex align-items-center justify-content-center"></b-back-top>
     </div>
   </v-app>
-
 </template>
-
-
-
 <script>
-
+export default {
+  head() {
+    return {
+      title: 'Supersavers | Save Heaps on Groceries',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Save Heaps with Supersavers by finding the best prices across Woolworths, Coles and IGA' },
+      ],
+      script: [
+        {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Supersavers | Save Heaps on Groceries",
+        "description": "Supersavers | Save Heaps at Woolworths, Coles and IGA",
+        "url": "https://supersavers.au",
+        "inLanguage": "en-US",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://supersavers.au"
+        },
+        "about": {
+          "@type": "Organization",
+          "name": "Supersavers",
+          "description": "Supersavers  | Save Heaps on Groceries at Coles, Woolworths and IGA",
+          "url": "https://supersavers.au",
+          "logo": "https://supersavers.au/favicon.ico",
+          "sameAs": [
+            "https://www.facebook.com/supersavers",
+            "https://twitter.com/supersavers",
+            "https://www.linkedin.com/company/supersavers"
+          ]
+        },
+        "datePublished": "2023-01-01T00:00:00Z",
+        "dateModified": "2023-01-02T12:30:00Z",
+        "image": "https://supersavers.au/banner.png",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Supersavers",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://supersavers.au/favicon.ico",
+            "width": 600,
+            "height": 60
+          }
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://supersavers.au"
+            }
+          ]
+        }
+      }
+    ]}
+  },
+}
 </script>
-
 <style>
-
 #explore-page {
   font-family: "Quicksand";
   color: #444444;
@@ -184,80 +235,7 @@ h6 {
 .vapplication {
   margin-bottom: 0rem !important;
 }
-/*--------------------------------------------------------------
-# Preloader
---------------------------------------------------------------*/
-#preloader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-  overflow: hidden;
-  background: #37517e;
-}
 
-#preloader:before {
-  content: "";
-  position: fixed;
-  top: calc(50% - 30px);
-  left: calc(50% - 30px);
-  border: 6px solid #37517e;
-  border-top-color: #fff;
-  border-bottom-color: #fff;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: animate-preloader 1s linear infinite;
-}
-
-@keyframes animate-preloader {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/*--------------------------------------------------------------
-# Back to top button
---------------------------------------------------------------*/
-.back-to-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: 15px;
-  z-index: 996;
-  background: #47b2e4;
-  width: 40px;
-  height: 40px;
-  border-radius: 50px;
-  transition: all 0.4s;
-}
-
-.back-to-top i {
-  font-size: 24px;
-  color: #fff;
-  line-height: 0;
-}
-
-.back-to-top:hover {
-  background: #6bc1e9;
-  color: #fff;
-}
-
-.back-to-top.active {
-  visibility: visible;
-  opacity: 1;
-}
-
-/*--------------------------------------------------------------
-# Hero Section
---------------------------------------------------------------*/
 
 #product .product-container {
   margin-left: 0px;
@@ -278,13 +256,13 @@ h6 {
     animation: none;
   }
 
-  #hero .hero-img {
+#hero .hero-img {
     text-align: center;
-  }
+}
 
-  #hero .hero-img img {
+#hero .hero-img img {
     width: 50%;
-  }
+}
 }
 
 @media (max-width: 768px) {
@@ -383,32 +361,6 @@ section {
   margin-bottom: 0;
 }
 
-/*--------------------------------------------------------------
-# Clients
---------------------------------------------------------------*/
-.clients {
-  padding: 12px 0;
-  text-align: center;
-}
-
-.clients img {
-  max-width: 45%;
-  transition: all 0.4s ease-in-out;
-  display: inline-block;
-  padding: 15px 0;
-  filter: grayscale(100);
-}
-
-.clients img:hover {
-  filter: none;
-  transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-  .clients img {
-    max-width: 40%;
-  }
-}
 
 /*--------------------------------------------------------------
 # About Us

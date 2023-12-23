@@ -36,29 +36,18 @@
             </v-card-actions>
         </v-card>
         <div class="text-center ma-2">
-            <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
-            <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
-            <span class="white--text font-weight-bold">{{ this.message }}!</span>
-            <template v-slot:action="{ attrs }">
-                <v-btn
-                color="green"
-                text
-                v-bind="attrs"
-                @click="snackbar = false"
-                >
-                <b>Close</b>
-                </v-btn>
-            </template>
-            </v-snackbar>
+            <Toast ref="Toast" />
         </div>
     </span>
 </template>
 
 <script>
-import { getMessaging, getToken } from 'firebase/messaging';
-import firebase from 'firebase/app';
+import Toast from './Toast.vue';
 
 export default {
+    components: {
+     Toast
+    },
     props: {
         deal: {
             type: Object,
@@ -90,58 +79,35 @@ export default {
             }
         },
         shareApp(product) {
-  // Check if the Web Share API is supported by the browser
-  if (navigator.share) {
-    // Calculate savings
-    const savings = product.old_price - product.new_price;
+        // Check if the Web Share API is supported by the browser
+        if (navigator.share) {
+            // Calculate savings
+            const savings = product.old_price - product.new_price;
 
-    // Message parts with icons and dynamic content
-    const messageParts = [
-      `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
-      `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
-      `💰 Save AUD ${savings} on this deal!`,
-      `🛒 Visit supersavers.au to snag this awesome deal 🌈`,
-    ];
+            // Message parts with icons and dynamic content
+            const messageParts = [
+            `🌟 Hey there! Quick heads up: ${product.name} is on sale right now at ${product.source}! 🎉`,
+            `💸 It was originally AUD ${product.old_price}, but now it's only AUD ${product.new_price}.`,
+            `💰 Save AUD ${savings} on this deal!`,
+            `🛒 Visit supersavers.au to snag this awesome deal 🌈`,
+            ];
 
-    // Combine all parts into the final message
-    const shareMessage = messageParts.join('\n');
+            // Combine all parts into the final message
+            const shareMessage = messageParts.join('\n');
 
-    // Use the Web Share API to share the message
-    navigator
-      .share({
-        title: 'SuperSavers',
-        text: shareMessage,
-        url: 'https://supersavers.au',
-      })
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.error('Error sharing:', error));
-  } else {
-    console.error('Error sharing: Web Share API is not supported');
-  }
-},
-        async getAndSendNotificationToken() {
-            try {
-                // Request permission to show notifications
-                const permission = await Notification.requestPermission();
-
-                if (permission === 'granted') {
-                // Get the messaging instance
-                const messaging = getMessaging(firebase);
-                
-                // Get the current registration token
-                const currentToken = await getToken(messaging);
-                console.log(currentToken);
-
-                // Assign the registration token to the component data
-                this.registrationToken = currentToken;
-
-                // Send the registration token to your server
-                // You may want to call your server-side function here to handle the token
-                // e.g., this.sendTokenToServer(currentToken);
-                }
-            } catch (error) {
-                console.error('Error getting notification token:', error);
-            }
+            // Use the Web Share API to share the message
+            navigator
+            .share({
+                title: 'SuperSavers',
+                text: shareMessage,
+                url: 'https://supersavers.au',
+            })
+            .then(() => this.$refs.Toast.showSnackbar('Shared successfully', 'green', 'mdi-check-circle'))
+            .catch(() => this.$refs.Toast.showSnackbar('Something went wrong sharing the message', 'red', 'mdi-alert-circle'));
+        } else {
+            console.error('Error sharing: Web Share API is not supported');
+            this.$refs.Toast.showSnackbar('You have not enabled the sharing feature', 'red', 'mdi-alert-circle');
+        }
         },
         async TokenPromise() {
             this.AuthToken = await this.getToken();
@@ -158,33 +124,38 @@ export default {
             });
         },
         async addItemToCart(product) {
-    try {
-        console.log(product);
-        product.quantity = this.quantity;
-        product.bought = false;
-        await fetch(`${this.$GroceryAPI}/add_item_cart`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${this.AuthToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: String(product.name),
-                old_price: parseFloat(product.old_price),
-                new_price: parseFloat(product.new_price),
-                source: String(product.source),
-                quantity: parseInt(product.quantity, 10),
-                image: String(product.image),
-                description: String(product.description),
-            }),
-        });
-        this.message = 'Item is added successfully to the list';
-        this.snackbar = true;
-    } catch (error) {
-        console.error('Error adding item to cart:', error);
+        try {
+            product.quantity = this.quantity;
+            if (product.quantity<1) {
+                throw ("Product quantity must be positive")
+            }
+            product.bought = false;
+            const response = await fetch(`${this.$GroceryAPI}/add_item_cart`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.AuthToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: String(product.name),
+                    old_price: parseFloat(product.old_price),
+                    new_price: parseFloat(product.new_price),
+                    source: String(product.source),
+                    quantity: parseInt(product.quantity, 10),
+                    image: String(product.image),
+                    description: String(product.description),
+                }),
+            });
+            if (response.ok) {
+            this.$refs.Toast.showSnackbar('Added to your grocery list successfully', 'green', 'mdi-check-circle');
+            }else{
+            this.$refs.Toast.showSnackbar('Server refused to accept your key', 'red', 'mdi-alert-circle');  
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+            this.$refs.Toast.showSnackbar('Something went wrong when adding to your list', 'red', 'mdi-alert-circle')
+        }
     }
-}
-
     },
 };
 </script>

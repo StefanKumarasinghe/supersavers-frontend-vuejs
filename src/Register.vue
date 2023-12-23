@@ -1,20 +1,41 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app id="register-page">
-    <v-main>
+    <v-container v-if="!(authenticated)" fill-height>
+      <v-row align="center" justify="center">
+        <v-col>
+          <div class="text-center">
+            <!-- Vuetify Progress Circular -->
+            <v-progress-circular
+              :size="64"
+              color="green"
+              :width="7"
+              indeterminate
+            ></v-progress-circular>
+            <h2 class="text-success fw-bold mt-3">Signing you in...</h2>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-main v-if="authenticated">
       <!-- Register Form -->
         <v-row class="d-flex align-center justify-center register-container">
           <!-- The image will be hidden on small screens (md and below) -->
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
-            <v-img
-              :src="require('@/assets/register.jpg')"
-              alt="Login Image"
-              height="90%"
-              max-height="420"
-            ></v-img>
-            <p style="font-size: 10px; margin-top: 5px;" class="text-center">
-              Image by <a href="https://www.freepik.com/free-vector/tiny-family-grocery-bag-with-healthy-food-parents-kids-fresh-vegetables-flat-illustration_12291304.htm#page=2&query=grocery%20cartoon&position=0&from_view=search&track=ais&uuid=3a3d4e0d-173d-46b5-beaf-de16b25ebd7e" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
-            </p>        
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="6" lg="6">
+            <v-row class="align-items-center">
+            <v-col cols="6">
+              <v-img
+              :src="require('@/assets/register-image.png')"
+              alt="Choose what items you want to be notified when they are on Sale at Woolworths, Coles and IGA with Supersavers"
+              height="100%"
+              max-width="400"
+              max-height="500"
+            ></v-img>   
+          </v-col>
+          <v-col cols="4"> <p class=" fw-bold ">Choose what items you want to be notified when they are on Sale at <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span> </p>
+         </v-col>
+        </v-row>
+        <p class=" fw-bold text-success text-center">Save Heaps with Supersavers.au</p>
           </v-col>
           <v-col cols="12" md="4" lg="4" align-self="center">
             <div class="py-5">
@@ -97,6 +118,59 @@
 import Toast from './components/Toast.vue';
 
 export default {
+  head() {
+    return {
+      script: [
+        {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Supersavers - Join Supersavers for free today and  Start Saving Heaps on Groceries",
+        "description": "Join Supersavers and start your free 7-day trial and start comparing prices from Woolworths, Coles and IGA",
+        "url": "https://supersavers.au/register",
+        "inLanguage": "en-US",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://supersavers.au/register"
+        },
+        "about": {
+          "@type": "Organization",
+          "name": "Supersavers",
+          "description": "Supersavers saves heaps on Groceries at Aussie Stores",
+          "url": "https://supersavers.au",
+          "logo": "https://supersavers.au/favicon.ico",
+          "sameAs": [
+            "https://www.facebook.com/supersavers",
+            "https://twitter.com/supersavers",
+            "https://www.instagram.com/supersavers"
+          ]
+        },
+        "datePublished": "2023-01-01T00:00:00Z",
+        "dateModified": "2023-01-02T12:30:00Z",
+        "image": "https://supersavers.au/banner.png",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Supersavers",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://supersavers.au/favicon.ico",
+            "width": 600,
+            "height": 60
+          }
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 0.9,
+              "name": "Home",
+              "item": "https://supersavers.au/register"
+            }
+          ]
+        }
+  }
+    ]}
+  },
   components: {
     Toast
   },
@@ -106,6 +180,7 @@ export default {
   data() {
     return {
       AuthToken: null,
+      authenticated:false,
       username: '',
       error: null,
       nameRules: [
@@ -144,6 +219,7 @@ export default {
     };
   },
   methods: {
+    
     async TokenPromise() {
       this.AuthToken = await this.getToken();
       this.verifyAuthProcess();
@@ -151,7 +227,6 @@ export default {
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
-
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
@@ -161,28 +236,23 @@ export default {
       });
     },
     async verifyAuthProcess() {
-      if (this.AuthToken != null) {
+      if (this.AuthToken !== null) {
         try {
           const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
+              Authorization: `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
-            const data = await response.json();
-            if (data.user != null) {
-              this.$refs.Toast.showSnackbar("You are already logged in", 'red', 'mdi-alert-circle');
               this.$router.push('/search');
-            }
-          } else {
-            const errorData = await response.json();
-            this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
+          this.authenticated = true;
         } catch (error) {
-          this.$refs.Toast.showSnackbar('An unexpected error occurred: ' + error, 'red', 'mdi-alert-circle');
+          this.$refs.Toast.showSnackbar('Something went wrong with authentication', 'red', 'mdi-alert-circle')
         }
+      }else {
+        this.authenticated = true;
       }
     },
     async submitRegistration() {
@@ -194,7 +264,7 @@ export default {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              username: this.username.toLowerCase(),
+              username: this.username.toLowerCase().trim(),
               email: this.email.toLowerCase(),
               hashed_password: this.password,
             }),
@@ -202,19 +272,12 @@ export default {
           if (response.ok) {
             const data = await response.json();
             this.$refs.Toast.showSnackbar('You have successfully created your account!', 'green', 'mdi-check-circle');
-
             const token = data.access_token;
-            // Store the token globally
-
             await this.$store.dispatch('setToken', token);
-          
             window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN
-                
-            await new Promise(resolve => setTimeout(resolve , 1000));
-
             this.$nextTick(() => {
               this.$router.push('/verify');
-            });
+          });
           }else {
             const errorData = await response.json();
             this.$refs.Toast.showSnackbar('Error: '+ errorData.detail, 'red', 'mdi-alert-circle');
@@ -227,7 +290,6 @@ export default {
   },
 };
 </script>
-
 <style>
 #register-page {
   font-family: "Quicksand";

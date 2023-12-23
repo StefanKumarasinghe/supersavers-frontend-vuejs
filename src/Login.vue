@@ -1,21 +1,42 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-app id="login-page">
-    <v-main>
+  <v-app  id="login-page">
+    <v-container v-if="!(authenticated)" fill-height>
+      <v-row align="center" justify="center">
+        <v-col>
+          <div class="text-center">
+            <!-- Vuetify Progress Circular -->
+            <v-progress-circular
+              :size="64"
+              color="green"
+              :width="7"
+              indeterminate
+            ></v-progress-circular>
+            <h2 class="text-success fw-bold mt-3">Signing you in...</h2>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-main v-if="authenticated" >
       <!-- Login Form -->
-      <v-row class="mx-auto d-flex align-center justify-center">
+      <v-row class="mx-auto h-100 d-flex align-center align-items-center justify-center">
           <!-- The image will be hidden on small screens (md and below) -->
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6" md="7" lg="7">
-            <v-img
-              :src="require('@/assets/banner.png')"
-              alt="Login Image"
-              height="80%"
-              max-height="440"
-            ></v-img>
-            <p style="font-size: 10px; margin-top: 5px;" class="text-center">
-              Image by <a href="https://www.freepik.com/free-vector/people-keeping-healthy-diet_8610283.htm#query=grocery&position=14&from_view=search&track=sph&uuid=eac254f5-c45a-4e03-9939-58c50c521fae" target="_blank" rel="noopener noreferrer">pch.vector</a> on Freepik
-            </p>        
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" class="" cols="6" md="6" lg="6">
+            <v-row class="align-items-center">
+            <v-col cols="6">
+              <v-img
+              :src="require('@/assets/login-image.png')"
+              alt="Plan ahead before your next visit to your grocery store to save as much as you can on deals at Woolworths, Coles and IGA with Supersavers"
+              height="100%"
+              max-width="400"
+              max-height="500"
+            ></v-img>   
           </v-col>
+          <v-col cols="4"> <p class=" fw-bold ">Plan ahead before your next visit to your grocery store to save as much as you can on deals at <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span> </p>
+         </v-col>
+        </v-row>
+        <p class=" fw-bold text-success text-center">Save Heaps with Supersavers.au</p>
+        </v-col>
           <v-col cols="12" md="4" lg="4" align-self="center">
             <div class="py-5">
               <h2 class="font-weight-bold green--text text--darken-2 ">Login</h2>
@@ -64,38 +85,78 @@
           </v-col>
         </v-row>
         <div class="text-center ma-2">
-          <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
-            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
-              <v-icon>mdi-check</v-icon>
-            </v-avatar>
-            <v-avatar v-else color="red" size="30px" class="me-3">
-              <v-icon>mdi-alert-circle-outline</v-icon>
-            </v-avatar>
-
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
+          <Toast ref="Toast" />
         </div>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Toast from './components/Toast.vue';
+
 export default {
+    components: {
+     Toast
+    },
+  head() {
+    return {
+      script: [
+    {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Supersavers - Login to Supersavers and Save Heaps",
+    "description": "Login in to your supersavers and start comparing prices from Woolworths, Coles and IGA",
+    "url": "https://supersavers.au/login",
+    "inLanguage": "en-US",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://supersavers.au/login"
+    },
+    "about": {
+      "@type": "Organization",
+      "name": "Supersavers",
+      "description": "Supersavers saves heaps on Groceries at Aussie Stores",
+      "url": "https://supersavers.au",
+      "logo": "https://supersavers.au/favicon.ico",
+      "sameAs": [
+        "https://www.facebook.com/supersavers",
+        "https://twitter.com/supersavers",
+        "https://www.instagram.com/supersavers"
+      ]
+    },
+    "datePublished": "2023-01-01T00:00:00Z",
+    "dateModified": "2023-01-02T12:30:00Z",
+    "image": "https://supersavers.au/banner.png",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Supersavers",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://supersavers.au/favicon.ico",
+        "width": 600,
+        "height": 60
+      }
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 0.9,
+          "name": "Home",
+          "item": "https://supersavers.au/login"
+        }
+      ]
+    }
+  }
+  ]}
+  },   
   async beforeMount() {
     await this.TokenPromise();
   },
   data() {
     return {
+      authenticated:false,
       AuthToken: null,
       username: '',
       snackbar:false,
@@ -119,14 +180,13 @@ export default {
     };
   },
   methods: {
-    async TokenPromise() {
+      async TokenPromise() {
       this.AuthToken = await this.getToken();
       this.verifyAuthProcess();
     },
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
-
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
@@ -144,20 +204,15 @@ export default {
               Authorization: `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
-              this.snackbarError = false;
-              this.error = "You are already logged in ...";
-              this.snackbar = true;
               this.$router.push('/search');
-         
-          } else {
-            console.error('Error:', response.statusText);
-            
           }
+          this.authenticated = true;
         } catch (error) {
-          console.error('Error:', error);
+          this.$refs.Toast.showSnackbar('Something went wrong with authentication', 'red', 'mdi-alert-circle')
         }
+      }else {
+        this.authenticated = true;
       }
     },
     async submitLogin() {
@@ -169,23 +224,15 @@ export default {
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-              username: this.username.toLowerCase(), // Convert username to lowercase
+              username: this.username.toLowerCase().trim(), // Convert username to lowercase
               password: this.password,
             }),
           });
-
           if (response.ok) {
             const data = await response.json();
-            this.snackbarError= false,
-            this.message = 'Successfully signed in';
-            this.snackbar = true;
-           
+            this.$refs.Toast.showSnackbar('Successfully signed in', 'green', 'mdi-check-circle')
             const token = data.access_token;
-
-            // Store the token globally
             await this.$store.dispatch('setToken', token);
-
-            
             // Redirect to /search
             this.$nextTick(() => {
             this.$router.push('/search');
@@ -194,21 +241,16 @@ export default {
           
           }else {
             const data = await response.json();
-            this.snackbarError= true,
-            this.message = "Something is wrong : "+data.detail;
-            this.snackbar = true;
+            this.$refs.Toast.showSnackbar(data.detail, 'red', 'mdi-alert-circle')
           }
         } catch (error) {
-        this.snackbarError= true,
-        this.message = 'Something went wrong with loggin in';
-        this.snackbar = true;
+          this.$refs.Toast.showSnackbar('Something went wrong signing in ...', 'red', 'mdi-alert-circle');
         }
       }
     },
   },
 };
 </script>
-
 <style>
 #login-page {
   font-family: "Quicksand";

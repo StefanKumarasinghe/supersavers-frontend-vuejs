@@ -2,7 +2,7 @@
 <template>
     <span>
       <v-card class="mx-auto rounded-lg d-flex flex-column" max-width="500" height="100%" >
-        <v-img :src="product.image" width="90%" contain class="mx-auto"><button @click="shareApp(deal)" large class="text-start text-danger fw-bold  font-weight-bold">
+        <v-img :src="product.image" width="90%" contain class="mx-auto"><button @click="shareApp(product)" large class="text-start text-danger fw-bold  font-weight-bold">
       <v-icon class="mdi text-danger mdi-share-variant">mdi-share-variant</v-icon>
     </button>  </v-img>
         <v-card-title class="black--text font-weight-bold px-4" style="display: inline-block; word-break: break-word;">
@@ -59,20 +59,7 @@
 
       </v-card>
       <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
-          <v-avatar color="green" size="30px" class="me-3"><v-icon>mdi-check</v-icon></v-avatar>
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
+        <Toast ref="Toast" />
       </div>
     </span>
 </template>
@@ -80,23 +67,25 @@
 <script>
 import { getMessaging, getToken } from 'firebase/messaging';
 import firebase from 'firebase/app';
+import Toast from './Toast.vue';
 
 export default {
-  props: {
+    components: {
+     Toast
+    },
+    props: {
     product: {
       type: Object,
       required: true,
     },
-
     data: {
       AuthToken: null,
       registrationToken: null,
-     
     },
   },
-
   async beforeMount() {
     await this.TokenPromise();
+    this.isSelected = this.pickLowest();
     await this.getAndSendNotificationToken();
   },
   data() {
@@ -108,76 +97,68 @@ export default {
     }
   },
   methods: {
+    pickLowest() {
+    // Initialize with the price of the first product
+    let lowestPrice = this.product.woolworths_price;
+    let lowestStore = 'Woolworths';
+    // Check Coles and update if its price is lower
+    if (this.product.coles_price !== null && this.product.coles_price < lowestPrice) {
+      lowestPrice = this.product.coles_price;
+      lowestStore = 'Coles';
+    }
+    // Check IGA and update if its price is lower
+    if (this.product.iga_price !== null && this.product.iga_price < lowestPrice) {
+      lowestStore = 'IGA';
+    }
+    return lowestStore;
+    },
     selectStore(store) {
-      // Toggle the isSelected value based on the current state
       this.isSelected = store;
-
-      // You can use the store variable to identify which store is selected
-      console.log(`Selected store: ${store}`);
     },
     shareApp(product) {
-  // Check if the Web Share API is supported by the browser
-  if (navigator.share) {
-    // Calculate total and savings
-    const totalSavings = Math.abs(parseFloat((product.woolworths_price - product.coles_price).toFixed(2)));
-
-    // Message parts with icons and dynamic content
-    const messageParts = [
-      `🌟 Hey friend, check out this awesome deal on ${product.name}! 🌟`,
-      `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
-      `🛒 Coles Price: AUD ${product.coles_price}`,
-      `💰 You're Saving Atleast: AUD ${totalSavings}`,
-      `🌈 Visit supersavers.au to save on groceries`,
-    ];
-
-    // Combine all parts into the final message
-    const shareMessage = messageParts.join('\n');
-
-    // Use the Web Share API to share the message
-    navigator
-      .share({
-        title: 'SuperSavers',
-        text: shareMessage,
-        url: 'https://supersavers.au',
-      })
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.error('Error sharing:', error));
-  } else {
-    console.error('Error sharing: Web Share API is not supported');
-  }
-},
+      if (navigator.share) {
+        const totalSavings = Math.abs(parseFloat((product.woolworths_price - product.coles_price).toFixed(2)));
+        const messageParts = [
+          `🌟 Hey friend, check out this awesome deal on ${product.name}! 🌟`,
+          `🛍 Woolworths Price: AUD ${product.woolworths_price}`,
+          `🛒 Coles Price: AUD ${product.coles_price}`,
+          `💰 You're Saving Atleast: AUD ${totalSavings}`,
+          `🌈 Visit supersavers.au to save on groceries`,
+        ];
+        const shareMessage = messageParts.join('\n');
+        navigator
+          .share({
+            title: 'SuperSavers',
+            text: shareMessage,
+            url: 'https://supersavers.au',
+          })
+          .then(() => this.$refs.Toast.showSnackbar('Shared successfully', 'green', 'mdi-check-circle') )
+          .catch(() => this.$refs.Toast.showSnackbar('Something went wrong sharing the message', 'red', 'mdi-alert-circle'));
+      } else {
+        this.$refs.Toast.showSnackbar('You have not enabled the sharing feature', 'red', 'mdi-alert-circle');
+      }
+    },
     async getAndSendNotificationToken() {
       try {
-        // Request permission to show notifications
         const permission = await Notification.requestPermission();
-
         if (permission === 'granted') {
-          // Get the messaging instance
           const messaging = getMessaging(firebase);
-          
-          // Get the current registration token
           const currentToken = await getToken(messaging);
-
-          // Assign the registration token to the component data
           this.registrationToken = currentToken;
-
-          // Send the registration token to your server
-          // You may want to call your server-side function here to handle the token
-          // e.g., this.sendTokenToServer(currentToken);
+        }else {
+          this.$refs.Toast.showSnackbar('You have not enabled notifications. You can always manage settings in Accounts', 'red', 'mdi-alert-circle')
         }
       } catch (error) {
         console.error('Error getting notification token:', error);
+        this.$refs.Toast.showSnackbar('You have not enabled notifications. You can always manage settings in Accounts', 'red', 'mdi-alert-circle')
       }
     },
-
     async TokenPromise() {
       this.AuthToken = await this.getToken();
     },
-
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
-
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
@@ -186,16 +167,17 @@ export default {
         }
       });
     },
-
     async Notify(product) {
       try {
-        // Use the messaging instance from Firebase
         const messaging = getMessaging(firebase);
-
-        // Get the current registration token
+        
+        // Get the current FCM token
         const currentToken = await getToken(messaging);
 
-        await fetch(`${this.$GroceryAPI}/add_item_notify`, {
+        if (!currentToken) {
+          throw new Error('Unable to retrieve FCM token.');
+        }
+        const response = await fetch(`${this.$GroceryAPI}/add_item_notify`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.AuthToken}`,
@@ -211,49 +193,43 @@ export default {
             description: String(product.description),
           }),
         });
-        this.message = 'Item is added successfully to notify list';
-        this.snackbar = true;
+
+        if (response.ok) {
+          this.$refs.Toast.showSnackbar('Successfully added to your wishlist', 'green', 'mdi-check-circle');
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Unknown error');
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    },
-    increment () {
-      this.quantity += 1;
-    },
-    decrement () {
-      if (this.quantity > 1) {
-        this.quantity -= 1;
+        console.error('Error adding to wishlist:', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when adding to your wishlist', 'red', 'mdi-alert-circle');
       }
     },
     async addItemToCart(product, selectedStore) {
+      try {
       if (product) {
         var x = { ...product }; // Create a copy to avoid modifying the original object
         x.quantity = this.quantity;
         x.bought = false;
-
         const storePrices = {
           'Woolworths': product.woolworths_price,
           'Coles': product.coles_price,
           'IGA': product.iga_price,
         };
-
         // Filter out null or undefined prices
         const validPrices = Object.values(storePrices).filter(price => price !== null && price !== undefined);
-
         // Check if there are valid prices
         if (validPrices.length > 0) {
           // Calculate the old and new prices based on valid prices
           x.old_price = Math.max(...validPrices);
           x.new_price = storePrices[selectedStore];
-
           // Set the lowest price store as the source
           x.source = selectedStore;
         } else {
           // No valid prices, set source to null
           x.source = null;
         }
-
-        await fetch(`${this.$GroceryAPI}/add_item_cart`, {
+        const response = await fetch(`${this.$GroceryAPI}/add_item_cart`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${this.AuthToken}`,
@@ -269,29 +245,21 @@ export default {
                 description: String(x.description),
             }),
         })
-        this.message = 'Item is added successfully to grocery list';
-        this.snackbar = true;
+        if (response.ok) {
+          this.$refs.Toast.showSnackbar('Successfully added to your grocery list', 'green', 'mdi-check-circle');
+        } else {
+          this.$refs.Toast.showSnackbar('Unexpected error occurred', 'red', 'mdi-alert-circle');
+        }
         
       } else {
         console.error('Invalid product:', x);
+        this.$refs.Toast.showSnackbar('There is no such product that you can add to the list', 'red', 'mdi-alert-circle');
       }
-    },
-    bestStoreForProduct(product) {
-      const storePrices = {
-        'Woolworths': product.woolworths_price,
-        'Coles': product.coles_price,
-        'IGA': product.iga_price,
-      };
-      let bestStore = '';
-      let lowestPrice = Infinity;
-      for (const [store, price] of Object.entries(storePrices)) {
-        if (price && parseFloat(price) < lowestPrice) {
-          bestStore = store;
-          lowestPrice = parseFloat(price);
-        }
-      }
-      return bestStore;
-    },
+    } catch (error) {
+        console.error('Error adding to wishlist:', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when adding to your list', 'red', 'mdi-alert-circle');
+    }
+   }
   },
 };
 </script>

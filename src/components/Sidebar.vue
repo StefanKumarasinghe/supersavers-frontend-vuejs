@@ -14,7 +14,7 @@
         <v-icon color="black" @click="$router.push('/')" x-large>mdi-basket</v-icon>
       </v-avatar>
 
-      <v-card flat class="rounded-xl mx-4 mx-auto text-center">
+      <v-card flat class=" mx-4 mx-auto text-center">
         <v-list flat>
           <v-list-item-group v-model="selectedItem">
             <v-list-item
@@ -26,7 +26,7 @@
               :value="item.route"
               :to="item.route"
             >
-              <v-list-item-content>
+              <v-list-item-content style="position:relative">
                 <v-icon :color="active ? 'white' : 'black'">
                   {{ item.icon }}
                 </v-icon>
@@ -35,22 +35,23 @@
           </v-list-item-group>
         </v-list>
       </v-card>
-
       <div
-        style="
-          position: absolute;
-          bottom: 20px;
-          margin-left: auto;
-          margin-right: auto;
-          left: 0;
-          right: 0;
-          text-align: center;
-        "
-      >
-        <v-avatar>
-          <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout black--text"></v-icon>
-        </v-avatar>
-      </div>
+  class="d-none d-md-block" 
+  style="
+    position: absolute;
+    bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+  "
+>
+  <v-avatar>
+    <v-icon v-if="this.AuthToken" @click="logout()" class="mdi mdi-logout black--text"></v-icon>
+  </v-avatar>
+</div>
+
     </v-navigation-drawer>
   </v-app>
 </template>
@@ -59,7 +60,6 @@
 export default {
   async beforeMount() {
     await this.TokenPromise();
-    // Get the initial route from the $route object
     this.selectedItem = this.$route.name;
   },
 
@@ -68,14 +68,13 @@ export default {
       this.selectedItem = to.name;
     },
   },
-
   methods: {
     async logout() {
-      await this.$store.commit('clearToken');
-      location.href = "/";
+      this.$store.commit('clearToken');
+      this.$router.push('/');
     },
     async login() {
-      location.href = "/login";
+      this.$router.push('/login');
     },
     async TokenPromise() {
       this.AuthToken = await this.getToken();

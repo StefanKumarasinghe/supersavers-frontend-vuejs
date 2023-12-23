@@ -6,40 +6,31 @@
         <h1 class="fw-bold">What's new?</h1>
         <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span></p>
         <p class="fw-bold text-danger">
-        <v-icon large color="red">
-    mdi-piggy-bank
-  </v-icon> <span class="text-success" v-if="savingload">{{ saving }}</span>
-<span class="spinner-border spinner-border-sm text-danger" v-else></span> AUD Saved this Month...
-</p>
+        <v-icon large color="red">mdi-piggy-bank</v-icon> <span class="text-success" v-if="savingload">{{ saving }}</span>
+        <span class="spinner-border spinner-border-sm text-danger" v-else></span> AUD Saved this Month...</p>
       </div>
-
       <div style="position: relative;">
-    <v-row align="center" class="my-5 align-item-center">
+      <v-row align="center" class="my-5 align-item-center">
       <v-col cols="9" md="10" lg="6">
-        <!-- Your search input code here -->
         <v-text-field
-  v-model="searchTerm"
-  @keydown.enter="fetchProducts"
-  @input="getSearchRecommendations"
-  label="Search your grocery item"
-  class="fw-bold"
-  filled
-  prepend-inner-icon="mdi-magnify"
-  solo
-  flat
-  outlined
-  hide-details="true"
-></v-text-field>
+          v-model="searchTerm"
+          @keydown.enter="fetchProducts"
+          @input="getSearchRecommendations"
+          @focus="savingload =true"
+          label="Search your grocery item"
+          class="fw-bold"
+          filled
+          prepend-inner-icon="mdi-magnify"
+          solo
+          flat
+          outlined
+          hide-details="true"
+        ></v-text-field>
       </v-col>
-
       <v-col cols="2" md="2" lg="2">
-        <!-- Your filter button code here -->
         <v-menu  offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
-              <v-span fab v-on="on" v-bind="attrs"  >
-    <!-- Replace v-icon with img tag for the PNG icon -->
-    <img src="@/assets/filter.png" style="width:30px" alt="Filter Icon" />
-  </v-span>            
+              <v-span fab v-on="on" v-bind="attrs"  ><img src="@/assets/filter.png" style="width:30px" alt="Filter Icon" /> </v-span>            
             </template>
             <v-list>
               <v-list-item v-for="(value, key) in storeFilters" :key="key">
@@ -56,10 +47,7 @@
             </v-list>
           </v-menu>
       </v-col>
-
-      <!-- Search recommendations container -->
-      <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="(shownlist.length > 1 && savingload==false)">
-        
+      <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="(shownlist.length > 1) && savingload">
           <v-list class="shadow-lg">
             <v-list-item v-for="recommendation in shownlist" :key="recommendation">
               <v-list-item-content class="hover p-3" @click="selectRecommendation(recommendation)">
@@ -67,12 +55,9 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-        
       </v-container>
     </v-row>
   </div>
-
-      <!-- Category bar -->
       <v-app-bar color="transparent" flat class="">
         <v-tabs v-model="tab" stacked style="height:auto" active-class="custom-active-tab">
     <v-tab  style="height:auto" v-for="(tab, index) in tabs" :key="index" :value="'tab-' + (index + 1)" @click="handleTabClick(tab.name)">
@@ -82,16 +67,12 @@
   </v-tabs>
       </v-app-bar>
       <v-divider class="my-5" color="grey" v-if="!loading"></v-divider>
-
       <!-- Progress linear -->
       <v-progress-linear class="my-2"  v-if="loading"
         :height="4"
         color="green"
         indeterminate
       ></v-progress-linear>
-
-      <!-- Lowest price product -->
-     
       <div fluid v-if="lowestPricedProduct" class="my-5 py-3 text-center-sm text-left-md">
         <h2 class="my-2 fw-bold bg-success text-white p-3">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
@@ -115,20 +96,13 @@
               </v-card-title>
               <v-card-title class="fw-bold">
                 Deal Available At 
-                <strong style="display: inline-block; word-break: break-word;" :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">
- {{ bestStoreForProduct(lowestPricedProduct) }}
-</strong>
-
+                <strong style="display: inline-block; word-break: break-word;" :class="{ 'text-success': bestStoreForProduct(lowestPricedProduct).includes('Woolworths'), 'text-danger': bestStoreForProduct(lowestPricedProduct).includes('Coles') , 'bg-danger p-3 text-white': bestStoreForProduct(lowestPricedProduct).includes('IGA') }">{{ bestStoreForProduct(lowestPricedProduct) }}</strong>
               </v-card-title>
             </v-col>
           </v-row>
       </div>
-
-     
-
       <!-- Best deal at Woolworths and Coles -->
-      <div v-if="combinedProducts.length" class="my-4">
-        
+      <div v-if="combinedProducts.length" class="my-4"> 
         <v-row>
           <v-col cols="12">
             <p class="bg-dark p-3 text-white fw-bold">Note that supersavers can make mistakes</p>
@@ -141,13 +115,11 @@
             md="4"
             lg="4"
             v-for="product in combinedProducts" 
-            :key="product.name"
-          >
+            :key="product.name">
             <SearchCard :product="product" />
           </v-col>
         </v-row>
       </div>
-
       <!-- Best deal at Category -->
       <div v-if="categoryProduct.length" class="my-4">
         <v-row>
@@ -167,7 +139,6 @@
           </v-col>
         </v-row>
       </div>
-
       <!-- Crazy deals at Woolworths -->
       <div v-if="weeklyDeals_w.length && storeFilters['Deals At Woolies'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
@@ -189,7 +160,6 @@
           </v-col>
         </v-row>
       </div>
-      
       <!-- Crazy deals at Coles -->
       <div v-if="weeklyDeals_coles.length && storeFilters['Deals At Coles'] && !categoryProduct.length && !combinedProducts.length" class="my-5 py-5">
         <v-toolbar>
@@ -210,7 +180,6 @@
           </v-col>
         </v-row>
       </div>
-
       <!-- Crazy deals at IGA -->
       <div v-if="weeklyDeals_iga.length && storeFilters['Deals At IGA'] && !categoryProduct.length && !combinedProducts.length" class="py-5 my-5">
         <v-toolbar>
@@ -320,21 +289,6 @@
           return smallest === Infinity ? null : smallest;
         };
       },
-      woolworthsProducts() {
-        return this.products.filter(p => p.source === 'Woolworths');
-      },
-      colesProducts() {
-        return this.products.filter(p => p.source === 'Coles');
-      },
-      colesGroceryList() {
-        return this.groceryList.filter(item => item.bestStore === 'Coles');
-      },
-      IGAGroceryList() {
-        return this.groceryList.filter(item => item.bestStore === 'IGA');
-      },
-      woolworthsGroceryList() {
-        return this.groceryList.filter(item => item.bestStore === 'Woolworths');
-      },
       bestStore(product) {
         return this.bestStoreForProduct(product)
       },
@@ -353,10 +307,8 @@
       },
       lowestPricedProduct() {
         if (!this.products.length || !this.searchTerm) return null;
-
         let lowest = null;
         let minPrice = 0;
-
         for (const product of this.products) {
           const prices = [
             parseFloat(product.woolworths_price) || null,
@@ -366,12 +318,10 @@
             parseFloat(product.chemist_price) || null,
           ];
           const filteredPrices = prices.filter(price => price !== null);
-
           if (filteredPrices.length === 0) {
             continue;
           }
           const currentMinPrice = Math.min(...filteredPrices);
-
           if ((lowest === null) || (minPrice > currentMinPrice) || (minPrice === currentMinPrice)) {
             minPrice = currentMinPrice;
             lowest = product;
@@ -379,10 +329,6 @@
         }
         return lowest;
       },
-    },
-    async created() {
-      this.getUserLocation();
-
     },
     watch: {
       products: function(newProducts) {
@@ -395,60 +341,62 @@
         });
       }
     },
-    mounted() {
-      // Retrieve the groceryList from local storage when the component is mounted
-      this.retrieveGroceryList();
-    },
     async beforeMount() {
-      
-      await this.TokenPromise(); 
-      await this.Saving()
-      
+      try {
+        await Promise.all([
+            this.getUserLocation(),
+            this.TokenPromise(),
+        ]);
+        } catch (error) {
+            console.error('Error:', error);
+            // Handle errors as needed
+        }
     },
     methods: {
-      async OnCallSuggestion() {
+    async OnCallSuggestion() {
         try {
           const response = await fetch(`${this.$GroceryAPI}/search_suggestions`);
-          // Assuming the API returns a list of suggestions
           this.searchSuggestions = response.data.suggestions;
         } catch (error) {
           console.error("Error fetching suggestions:", error);
         }
-      },
-      async TokenPromise() {
+    },
+    async TokenPromise() {
       this.AuthToken = await this.getToken();
       await this.verifyAuthProcess();
-    },
+    },  
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
- 
           const token = this.$store.getters.getToken;
           resolve(token);
         }
       });
     },
     async VerifyAuth() {
-      const response = await fetch(`${this.$GroceryAPI}/verified`, {
-             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-          if (!(response.ok)) {
-            console.error('Error:', response.statusText);
-            this.$router.push('/verify');
-          }else {
-            this.authenticated = true
-            await this.fetchWeeklyDeals()
-            
-          }
+      try {
+          const response = await fetch(`${this.$GroceryAPI}/verified`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+              },
+            });
+            if (!(response.ok)) {
+              console.error('Error:', response.statusText);
+              this.$router.push('/verify');
+            }else {
+              this.authenticated=true
+              await this.Saving()
+            }
+          } catch (error) {
+          console.error('Something went wrong with verification', error);
+          this.$refs.Toast.showSnackbar('Something went wrong', 'red', 'mdi-alert-circle');
+        }
     },
-      async verifyAuthProcess() {
-    
+    async verifyAuthProcess() {
         try {
           const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
@@ -456,11 +404,9 @@
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
               await this.VerifyAuth();
-             
-            
+              await this.fetchWeeklyDeals()
           } else {
             console.error('Error:', response.statusText);
             this.$store.commit('clearToken');
@@ -468,14 +414,16 @@
             window.location.reload();
           }
         } catch (error) {
+          this.$refs.Toast.showSnackbar('Session was invalidated', 'red', 'mdi-alert-circle');
           console.error('Error:', error);
           this.$store.commit('clearToken');
           this.$router.push('/login');
           window.location.reload();
         }
-    },
+      },
       async handleTabClick(category) {
         this.loading=true;
+        
         this.combinedProducts=[]
         switch (category) {
           case 'Deals':
@@ -524,60 +472,75 @@
             break;
         }
       },
-      async fetchProductsCat(productNames) {  
-        const products = [];
-        try {
-          for (const productName of productNames) {
-            const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
-              method: 'GET', // or 'POST' or other HTTP methods
-              headers: {
-                'Authorization': `Bearer ${this.AuthToken}`,
-                'Content-Type': 'application/json', // Adjust the content type if needed
-              },
-            });    
-            products.push(...(await response.json()));
+      async fetchProductsCat(productNames) {
+          const products = [];
+          let responses;
+          try {
+              // Use Promise.all to run the promises concurrently
+              responses = await Promise.all(
+                  productNames.map(async (productName) => {
+                      const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(productName)}/${encodeURIComponent(this.postalCode)}`, {
+                          method: 'GET',
+                          headers: {
+                              'Authorization': `Bearer ${this.AuthToken}`,
+                              'Content-Type': 'application/json',
+                          },
+                      });
+
+                      return response;
+                  })
+              );
+
+              // Process the responses
+              for (const response of responses) {
+                  if (response.ok) {
+                      products.push(...(await response.json()));
+                  } else {
+                      this.$refs.Toast.showSnackbar('The server rejected your request. Perhaps try reloading the site', 'red', 'mdi-alert-circle');
+                  }
+              }
+          } catch (error) {
+              console.error("Couldn't retrieve the items from that specific category:", error);
+              this.$refs.Toast.showSnackbar('Something went wrong retrieving the products. Try again later', 'red', 'mdi-alert-circle');
           }
-          this.products=[]
-          this.storeFilters['Deals At Woolies']=false;
-          this.storeFilters['Deals At Coles']=false;
-          this.storeFilters['Deals At IGA']=false;
-        }catch {
-          console.log("Couldn't retrieve the items from the specific category");
-        }
-        this.loading=false;
-        return products;
+
+          this.loading = false;
+          this.products = products; // Set the products after all responses have been processed
+          this.storeFilters['Deals At Woolies'] = false;
+          this.storeFilters['Deals At Coles'] = false;
+          this.storeFilters['Deals At IGA'] = false;
+
+          return products;
       },
       async fetchProducts() {
-        this.loading = true;
-        this.savingload = true
-        this.shownlist = [];
-
         try {
+          this.loading = true;
+          this.savingload = false;
+          this.shownlist = [];
           const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
             const data = await response.json();
             this.products = data;
+            this.loading = false;
+           
           } else {
             const errorData = await response.json();
             this.$refs.Toast.showSnackbar('Error: '+errorData.detail, 'red', 'mdi-alert-circle');
           }
         } catch (error) {
           this.$refs.Toast.showSnackbar("Error in retrieving data...", 'red', 'mdi-alert-circle');
-        }
-
-        this.savingload = false
-        this.loading = false;
+        } 
       },
       bestStoreForProduct(product) {
         const storePrices = {
           'Woolworths': product.woolworths_price,
           'Coles': product.coles_price,
+          'IGA': product.iga_price,
         };
         let bestStore = '';
         let lowestPrice = Infinity;
@@ -590,27 +553,26 @@
         return bestStore;
       },
       async Saving() {
-    
-    try {
-      const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.AuthToken}`,
-        },
-      });
-
-      if (response.ok) {
-          const data = await response.json()
-          this.saving= data.amount
-          this.savingload = true;
-        
-      } else {
-        console.error('Error:', response.statusText);
+        try {
+          const response = await fetch(`${this.$GroceryAPI}/retrieve_saving_user`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+        if (response.ok) {
+            const data = await response.json()
+            this.saving= data.amount
+            this.savingload = true; 
+        } else {
+            console.error('Error:', response.statusText);
+            this.$refs.Toast.showSnackbar("Server rejected your request. Please reload the site", 'red', 'mdi-alert-circle');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.$refs.Toast.showSnackbar("Something went wrong when retrieving the savings", 'red', 'mdi-alert-circle');
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  },
+      },
       async fetchWoolDeals() {
         try{
           const responseWoolies = await fetch(`${this.$GroceryAPI}/half-price-deals_woolies`, {
@@ -621,16 +583,15 @@
               // Add other headers as needed
             },
           }); 
-          
+          if (responseWoolies.ok) {
           this.weeklyDeals_w = await responseWoolies.json();
-  
           this.weeklyDeals_w = this.weeklyDeals_w.slice(0, 6);
           this.$store.commit('setWeeklyDealsW', this.weeklyDeals_w);
-
-          
+          }else {
+            console.log(responseWoolies);
+          }
         } catch (error) {
-           this.$refs.Toast.showSnackbar('Error: Failed to fetch Woolworths weekly deals', 'red', 'mdi-alert-circle');
-
+           this.$refs.Toast.showSnackbar('Something went wrong fetching deals from Woolworths', 'red', 'mdi-alert-circle');
         } 
       },
       async fetchColesDeals() {
@@ -643,13 +604,15 @@
               // Add other headers as needed
             },
           }); 
-          
+          if (responseColes.ok) {
           this.weeklyDeals_coles= await responseColes.json();
           this.weeklyDeals_coles = this.weeklyDeals_coles.slice(0, 6);
           this.$store.commit('setWeeklyDealsColes',  this.weeklyDeals_coles);
-         
+          }else {
+            console.log(responseColes);
+          }
         } catch (error) {      
-          this.$refs.Toast.showSnackbar('Error: Failed to fetch Coles weekly deals', 'red', 'mdi-alert-circle');
+          this.$refs.Toast.showSnackbar('Something went wrong when fetching deals from Coles', 'red', 'mdi-alert-circle');
         }
       },
       async fetchIGADeals() {
@@ -662,30 +625,32 @@
               // Add other headers as needed
             },
           }); 
-          
+          if (responseIga.ok) {
           this.weeklyDeals_iga =  await responseIga.json();
           this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 6); 
           this.$store.commit('setWeeklyDealsIGA', this.weeklyDeals_iga);
+          } else {
+            console.log(responseIga);
+          }
         } catch (error) {
-          console.error('Failed to get the deals from iga')
+          this.$refs.Toast.showSnackbar('Something went wrong when fetching deals from IGA', 'red', 'mdi-alert-circle');
         } 
       },
       async selectRecommendation(recommendation) {
-      // Implement logic when a recommendation is selected
+      this.savingload=false
       this.searchTerm = recommendation;
-      this.shownlist= [];
       await this.fetchProducts();
-    },
-    async getSearchRecommendations() {
-      if (this.searchTerm.length > 3 && !(this.savingload) ) {
+      },
+      async getSearchRecommendations() {
+     
+      if (this.searchTerm.length > 0) {
+        this.savingload = true
         try {
           const response = await fetch(
             `${this.$GroceryAPI}/get-suggestions/${this.searchTerm}`
           );
-
           if (response.ok) {
             const data = await response.json();
-            // Assuming the response structure has an array of suggestions
             this.shownlist = data.suggestions.suggestions.slice(0,5) || [];
           } else {
             console.error('Error fetching search suggestions');
@@ -695,21 +660,27 @@
         }
       } else {
         this.shownlist = [];
+        this.savingload = false
       }
-    },
-    
+      },
       async fetchWeeklyDeals() {
-
-     
         this.weeklyDeals_w=this.$store.state.weeklyDealsW;
         this.weeklyDeals_iga=this.$store.state.weeklyDealsIGA;
         this.weeklyDeals_coles=this.$store.state.weeklyDealsColes;  
         this.loading_start = true;
-        await this.fetchWoolDeals()
-        await this.fetchColesDeals()
-        await this.fetchIGADeals()
-        this.loading_start= false;
-        
+        try {
+        // Use Promise.all to execute the promises concurrently
+        await Promise.all([
+            this.fetchWoolDeals(),
+            this.fetchColesDeals(),
+            this.fetchIGADeals()
+        ]);
+        } catch (error) {
+            console.error('Error fetching weekly deals:', error);
+            // Handle error as needed
+        } finally {
+            this.loading_start = false;
+        } 
       },
       getLowestPrice() {
         return this.lowestPricedProduct;
@@ -717,10 +688,7 @@
       async getUserLocation() {
         try {
           if ('geolocation' in navigator) {
-            // Request the user's location
             const position = await this.getCurrentPosition();
-
-            // Use Nominatim for reverse geocoding to get the postal code
             this.retrievePostalCode(position.coords.latitude, position.coords.longitude);
           } else {
             console.error('Geolocation is not available in this browser.');
@@ -736,34 +704,13 @@
       },
       async retrievePostalCode(latitude, longitude) {
         try {
-          // Use Nominatim reverse geocoding API
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await response.json();
-
           if (data.address && data.address.postcode) {
             this.postalCode = data.address.postcode;
           }
         } catch (error) {
           console.error('Error retrieving postal code:', error);
-        }
-      },
-      async fetchDataForCategory(category) {
-        try {
-          const response = await fetch(`${this.$GroceryAPI}/search/${category}/${encodeURIComponent(this.postalCode)}`, {
-            method: 'GET', // or 'POST' or other HTTP methods
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-              'Content-Type': 'application/json', // Adjust the content type if needed
-              // Add other headers as needed
-            },
-          }); 
-          
-          this.weeklyDeals_iga = await response.json();
-          this.weeklyDeals_iga = this.weeklyDeals_iga.slice(0, 6); 
-          this.products = await response.json();
-          // Process and use the data as needed
-        } catch (error) {
-          console.error('Error fetching data:', error);
         }
       },
     },
@@ -794,10 +741,10 @@
   }
 
   @media (max-width: 701px) {
-    .snackbar-custom-style {
+  .snackbar-custom-style {
   margin-bottom: 76px; /* Adjust the margin to fit the height of the browser's controls */
-}
-    .container {
+  }
+  .container {
       padding-left: 15px;
       padding-right: 15px;
     }
@@ -808,7 +755,6 @@
     margin-left: 0px;
     margin-right: 0px;
   }
-
   .truncate-text {
     white-space: nowrap;
     overflow: hidden;

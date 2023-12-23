@@ -10,7 +10,6 @@ export default new Vuex.Store({
     weeklyDealsW: [],
     weeklyDealsIGA: [],
     weeklyDealsColes: [],
-    cart: [],
   },
   mutations: {
     setToken(state, token) {
@@ -36,63 +35,22 @@ export default new Vuex.Store({
     setWeeklyDealsColes(state, deals) {
       state.weeklyDealsColes = deals;
     },
-    addItem(state, item) {
-      // Check if the item already exists in the cart
-      const existingItem = state.cart.find((cartItem) => cartItem.name === item.name && cartItem.bought === false && cartItem.source === item.source);
-      // Item doesn't exist in the cart, add it
-      if (!existingItem) {
-        state.cart.push(item);
-        localStorage.setItem('cart', JSON.stringify(state.cart));
-      }
-    },
-    removeItem(state, item) {
-      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name && cartItem.source === item.source);
-      if (index !== -1) {
-        state.cart.splice(index, 1);
-        localStorage.setItem('cart', JSON.stringify(state.cart));
-      }
-    },
-    updateItem(state, item) {
-      const index = state.cart.findIndex((cartItem) => cartItem.name === item.name && cartItem.source === item.source);
-      if (index !== -1) {
-        state.cart[index] = item;
-      }
-      localStorage.setItem('cart', JSON.stringify(state.cart));
-    }
   },
   actions: {
-    // Example action to set the token
     setToken({ commit }, token) {
       commit('setToken', token);
     },
-    
-    // Example action to clear the token
     clearToken({ commit }) {
       commit('clearToken');
     },
     clearTokenSimple({ commit }) {
       commit('clearTokenSimple');
     },
-    addItem({ commit }, item) {
-      commit('addItem', item);
-    },
-    removeItem({ commit }, item) {
-      commit('removeItem', item);
-    },
-    updateItem({ commit }, item) {
-      commit('updateItem', item);
-    },
   },
   getters: {
     // Example getter to retrieve the token
     getTokenSimple: (state) => {
       return state.token;
-    },
-    // Getter to retrieve the cart list
-    getList: (state) => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      Vue.set(state, 'cart', cart);
-      return cart;
     },
     getToken: () => {
       // Retrieve token from localStorage and check expiration

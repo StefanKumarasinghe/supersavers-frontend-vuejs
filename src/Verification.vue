@@ -1,10 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app v-if="notAuthenticated">
-    <v-main>
-         
+    <v-main>   
       <div v-if="showSplashScreen" class="splash-screen" @animationend="onAnimationEnd">
-          
         <v-row align="center" justify="center">
           <v-col cols="12" md="6" lg="6" class="splash-card">
               <v-card-text class=""><h2>Supersaver</h2></v-card-text>
@@ -24,32 +22,18 @@
           </v-row>
         </v-container>
       </div>
-      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" style="bottom: 0;">
-            <v-avatar v-if="snackbarError !== true" color="green" size="30px" class="me-3">
-              <v-icon>mdi-check</v-icon>
-            </v-avatar>
-            <v-avatar v-else color="red" size="30px" class="me-3">
-              <v-icon>mdi-alert-circle-outline</v-icon>
-            </v-avatar>
-
-          <span class="white--text font-weight-bold">{{ this.message }}!</span>
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="green"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
-              <b>Close</b>
-            </v-btn>
-          </template>
-        </v-snackbar>
+      <Toast ref="Toast" />
     </v-main>
   </v-app>
 </template>
   
 <script>
-  export default {
+import Toast from './components/Toast.vue';
+
+export default {
+    components: {
+     Toast
+    },
     data() {
       return {
         notAuthenticated:false,
@@ -78,14 +62,22 @@
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
         const token = params.token;
-        if (!token) {
-          return null;
-        } else {
+        if (this.isValidToken(token)) {
           return token;
+        } else {
+          return null;
+        }
+      },
+      isValidToken(token) {
+        const minLength = 10; // Minimum length required for a valid toke
+        if (token && token.length >= minLength) {
+          return true;
+        } else {
+          console.error('Invalid token:', token);
+          return false;
         }
       },
       async CheckToken() {
-        if (this.token) {
           try {
             const response = await fetch(`${this.$GroceryAPI}/verify-email?token=${this.token}`);
             if (response.ok) {
@@ -93,16 +85,15 @@
             } else {
               const data = await response.json();
               console.error('Error:', data.error || 'Unknown error');
-              this.snackbarError= true;
-              this.message = "The token is not correct. Could not verify email";
-               this.snackbar = true;
+              this.$refs.Toast.showSnackbar('The token was invalid', 'red', 'mdi-alert-circle');
             }
           } catch (error) {
             console.error('Error:', error);
+            this.$refs.Toast.showSnackbar('Something went wrong when validating the token', 'red', 'mdi-alert-circle');
           }
-        }
       },
       async VerifyAuth() {
+      try { 
         const response = await fetch(`${this.$GroceryAPI}/verified`, {
           method: 'GET',
           headers: {
@@ -110,27 +101,26 @@
           },
         });
         if (response.ok) {
-          this.snackbarError= false;
-          this.message = "Seems like you are verified...";
-          this.snackbar = true;
-          this.$nextTick(() => {
-          this.$router.push('/search');
-          });
+           this.$router.push('/search');
         }else{
            this.notAuthenticated=true;
         }
+      }
+      catch (error) {
+            console.error('Error:', error);
+            this.$refs.Toast.showSnackbar('Something went wrong when validating verification', 'red', 'mdi-alert-circle');
+      }
       },
       getToken() {
-     return new Promise((resolve) => {
-        const tokenSimple = this.$store.getters.getTokenSimple;
-        if (tokenSimple) {
-          resolve(tokenSimple);
-        } else {
- 
-          const token = this.$store.getters.getToken;
-          resolve(token);
-        }
-      });
+      return new Promise((resolve) => {
+          const tokenSimple = this.$store.getters.getTokenSimple;
+          if (tokenSimple) {
+            resolve(tokenSimple);
+          } else {
+            const token = this.$store.getters.getToken;
+            resolve(token);
+          }
+        });
       },
       async TokenPromise() {
         this.AuthToken = await this.getToken();
@@ -145,7 +135,7 @@
             },
           });
           if (response.ok) {
-            await this.VerifyAuth();
+              await this.VerifyAuth();
           } else {
             console.error('Error:', response.statusText);
             this.$store.commit('clearToken');
@@ -153,6 +143,7 @@
             window.location.reload();
           }
         } catch (error) {
+          this.$refs.Toast.showSnackbar('Session was invalidated', 'red', 'mdi-alert-circle');
           console.error('Error:', error);
           this.$store.commit('clearToken');
           this.$router.push('/login');
@@ -168,28 +159,17 @@
             },
           });
           if (response.ok) {
-            this.snackbarError= false;
-            this.message = "Successfully resent your email. Only valid for 1 hour...";
-            this.snackbar = await true;
+            this.$refs.Toast.showSnackbar('A new verification email was sent successfully', 'green', 'mdi-check-circle');
           } else {
-            this.snackbarError= true;
-            this.message = "Error sending that email. Try again later";
-            this.snackbar = await true;
+            this.$refs.Toast.showSnackbar('The credentials were rejected by our server', 'red', 'mdi-alert-circle');
           }
         } catch (error) {
           console.error('Error:', error);
-          this.snackbarError= true;
-          this.message = "Something went wrong";
-          this.snackbar = await true;
+          this.$refs.Toast.showSnackbar('Something went wrong when resending your email', 'red', 'mdi-alert-circle');
         }
       },
-      
-
       async CheckAuthenticationStatus() {
-        this.TokenPromise();
-        if (!this.AuthToken) {
-          this.$router.push('/search');
-        }
+        this.VerifyAuth();
       }
     },
   };

@@ -1,12 +1,29 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-app>
+    <v-app v-if="authenticated">
+
       <v-container fluid>
         <div class="mx-3">
           <h1 class="fw-bold">Never Miss a Deal</h1>
           <p class="fw-bold">With the notifications feature, you won't miss out on the item with the best deal!</p>
           <p class=" fw-bold text-white p-3 bg-success">You can manage your your notiification setting at <a class="text-white text-decoration-underline" href="/account">Accounts</a></p>
         </div>
+        <v-container v-if="loading" fill-height>
+        <v-row align="center" justify="center">
+          <v-col>
+            <div class="text-center">
+              <!-- Vuetify Progress Circular -->
+              <v-progress-circular
+                :size="64"
+                color="green"
+                :width="7"
+                indeterminate
+              ></v-progress-circular>
+              <h2 class="text-success fw-bold mt-3">Fetching your wishlist...</h2>
+            </div>
+          </v-col>
+        </v-row>
+        </v-container>
         <div v-for="(product, i) in products" :key="i" class="d-flex justify-center">
           <div class="row box my-4 py-5 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="col-12 col-md-3 col-lg-3 col-sm-12 py-0">
@@ -34,14 +51,23 @@
           </div>
         </div>
       </v-container>
-
+      <div class="text-center ma-2">
+          <Toast ref="Toast" />
+        </div>
     </v-app>
 </template>
   
 <script>
-  export default {
+import Toast from './components/Toast.vue';
+
+export default {
+    components: {
+     Toast
+    },
     data() {
       return {
+        loading:true,
+        authenticated:false,
         products: [],
         AuthToken: null,
         quantities: []
@@ -51,7 +77,7 @@
       await this.TokenPromise();
     },
     methods: {
-        async TokenPromise() {
+      async TokenPromise() {
       this.AuthToken = await this.getToken();
       this.verifyAuthProcess();
     },
@@ -61,26 +87,31 @@
         if (tokenSimple) {
           resolve(tokenSimple);
         } else {
- 
           const token = this.$store.getters.getToken;
           resolve(token);
         }
       });
     },
     async VerifyAuth() {
-      const response = await fetch(`${this.$GroceryAPI}/verified`, {
-             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
-          if (!(response.ok)) {
-            console.error('Error:', response.statusText);
-            this.$router.push('/verify');
-          }
+      try {
+          const response = await fetch(`${this.$GroceryAPI}/verified`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${this.AuthToken}`,
+              },
+            });
+            if (!(response.ok)) {
+              console.error('Error:', response.statusText);
+              this.$router.push('/verify');
+            }else {
+              this.authenticated=true
+            }
+          } catch (error) {
+          console.error('Something went wrong with verification', error);
+          this.$refs.Toast.showSnackbar('Something went wrong', 'red', 'mdi-alert-circle');
+        }
     },
-      async verifyAuthProcess() {
-    
+    async verifyAuthProcess() {
         try {
           const response = await fetch(`${this.$GroceryAPI}/protected`, {
             method: 'GET',
@@ -88,56 +119,72 @@
               'Authorization': `Bearer ${this.AuthToken}`,
             },
           });
-
           if (response.ok) {
               await this.VerifyAuth();
-              this.fetchProducts()
-            
+              await this.fetchProducts()
           } else {
             console.error('Error:', response.statusText);
+            this.$store.commit('clearToken');
             this.$router.push('/login');
+            window.location.reload();
           }
         } catch (error) {
+          this.$refs.Toast.showSnackbar('Session was invalidated', 'red', 'mdi-alert-circle');
           console.error('Error:', error);
+          this.$store.commit('clearToken');
           this.$router.push('/login');
+          window.location.reload();
         }
     },
-      async fetchProducts() {
-        try {
-          const response = await fetch(`${this.$GroceryAPI}/retrieve_notify`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-            },
-          });
+    async fetchProducts() {
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/retrieve_notify`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+
+        if (response.ok) {
           const data = await response.json();
           this.products = data; // Update with your actual data structure
-        } catch (error) {
-          console.error('Error fetching products:', error);
+          this.loading = false;
+        } else {
+          console.error('Error fetching products:', response.statusText);
+          this.$refs.Toast.showSnackbar('Something went wrong fetching your wishlist', 'red', 'mdi-alert-circle');
         }
-      },
-      async removeProduct(product) {
-        try {
-         await fetch(`${this.$GroceryAPI}/remove_item_notify`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${this.AuthToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              woolworths_code: String(product.woolworths_code),
-              coles_code: String(product.coles_code),
-              iga_code: String(product.iga_code),
-            }),
-          });
-  
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        this.$refs.Toast.showSnackbar('Something went wrong fetching your wishlist', 'red', 'mdi-alert-circle');
+      }
+    },
 
+    async removeProduct(product) {
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/remove_item_notify`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            woolworths_code: String(product.woolworths_code),
+            coles_code: String(product.coles_code),
+            iga_code: String(product.iga_code),
+          }),
+        });
+        if (response.ok) {
           this.products = this.products.filter((prod) => prod.woolworths_code !== product.woolworths_code);
-  
-        } catch (error) {
-          console.error('Error removing product:', error);
+          this.$refs.Toast.showSnackbar('Successfully removed the item', 'green', 'mdi-check-circle');
+        } else {
+          console.error('Error removing product:', response.statusText);
+          this.$refs.Toast.showSnackbar('Could not find the item to be removed', 'red', 'mdi-alert-circle');
         }
-      },
+      } catch (error) {
+        this.$refs.Toast.showSnackbar('Something went wrong removing your item', 'red', 'mdi-alert-circle');
+      }
+    },
+
     },
   };
   </script>
