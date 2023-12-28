@@ -1,6 +1,5 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-
   <v-app class="vapplication" id="explore-page">
     <div>
       <!-- Hero Section -->
@@ -10,9 +9,15 @@
             <div class="col-lg-2 col-md-1 col-sm-0 col-0"></div>
             <div class="col-lg-4 col-md-5 col-sm-12 col-12 mx-auto d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
               <span class="mx-auto">
-                <h1 class="font-weight-bold green--text">Supersavers </h1><p class="py-3"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
-                <v-btn to="search" color="green font-weight-bold white--text w-50">Get Started</v-btn>
-              </span>              
+                <h1 class="font-weight-bold green--text">Supersavers </h1><p class="py-3 fw-bold"> Compare Deals and Save on Groceries At Coles, Woolies & IGA!</p>
+                <v-btn to="search" color="green fw-bold white--text ">Get Started</v-btn>
+  <v-btn to="/login" class="btn-outline-success" color="black fw-bold  white--text mx-1 ">
+    <v-icon left>mdi-android</v-icon>
+     Download
+  </v-btn>
+
+
+              </span>
             </div>
             <div class="col-lg-4 col-md-5 hero-img" data-aos="zoom-in" data-aos-delay="200">
               <img src="@/assets/hero-img.png" class="animated mx-auto d-block img-fluid" alt="">
@@ -97,7 +102,7 @@
             <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
               <div class="icon-box">
                 <h3 class="font-weight-medium text-center">Monthly Plan</h3>
-                <div class="text-center"><span class="price">A$ 2.99</span> /month</div>
+                <div class="text-center"><span class="price">A$ 4</span> /month</div>
                 <v-divider class="service-divider text-center"></v-divider>
                 <ul>
                   <li class="pt-3">Most popular for starters</li>
@@ -113,10 +118,10 @@
             <div class="col-xl-4 col-md-4 col-sm-12 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
               <div class="icon-box">
                 <h3 class="font-weight-medium text-center">Yearly Plan</h3>
-                <div class="text-center"><span class="price">A$ 19.99</span> /year</div>
+                <div class="text-center"><span class="price">A$ 35</span> /year</div>
                 <v-divider class="service-divider text-center"></v-divider>
                 <ul>
-                  <li class="pt-3">Save almost A$ 16.00 per year</li>
+                  <li class="pt-3">Save almost A$ 13.00 per year</li>
                   <li class="pt-3">Compare real-time prices</li>
                   <li class="pt-3">Notifications on sales items</li>
                   <li class="pt-3">Cancel at any time</li>
@@ -156,63 +161,33 @@
 </template>
 <script>
 export default {
-  head() {
-    return {
-      title: 'Supersavers | Save Heaps on Groceries',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Save Heaps with Supersavers by finding the best prices across Woolworths, Coles and IGA' },
-      ],
-      script: [
-        {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "Supersavers | Save Heaps on Groceries",
-        "description": "Supersavers | Save Heaps at Woolworths, Coles and IGA",
-        "url": "https://supersavers.au",
-        "inLanguage": "en-US",
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": "https://supersavers.au"
-        },
-        "about": {
-          "@type": "Organization",
-          "name": "Supersavers",
-          "description": "Supersavers  | Save Heaps on Groceries at Coles, Woolworths and IGA",
-          "url": "https://supersavers.au",
-          "logo": "https://supersavers.au/favicon.ico",
-          "sameAs": [
-            "https://www.facebook.com/supersavers",
-            "https://twitter.com/supersavers",
-            "https://www.linkedin.com/company/supersavers"
-          ]
-        },
-        "datePublished": "2023-01-01T00:00:00Z",
-        "dateModified": "2023-01-02T12:30:00Z",
-        "image": "https://supersavers.au/banner.png",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Supersavers",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://supersavers.au/favicon.ico",
-            "width": 600,
-            "height": 60
-          }
-        },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "https://supersavers.au"
-            }
-          ]
-        }
-      }
-    ]}
-  },
+  metaInfo: {
+  // Page Title
+  title: 'Supersavers | Save Heaps on Groceries ',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Welcome to Supersavers, your go-to platform for maximizing savings on groceries. Explore exclusive discounts, compare prices across Woolworths, Coles, and IGA, and start saving today.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, welcome, savings, exclusive discounts, groceries, compare prices, Woolworths, Coles, IGA, online grocery shopping, best prices, money-saving' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Welcome to Supersavers | Maximize Your Grocery Savings' }, // Open Graph title
+    { property: 'og:description', content: 'Welcome to Supersavers, your go-to platform for maximizing savings on groceries. Explore exclusive discounts, compare prices across Woolworths, Coles, and IGA, and start saving today.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Welcome to Supersavers | Maximize Your Grocery Savings' }, // Twitter title
+    { name: 'twitter:description', content: 'Welcome to Supersavers, your go-to platform for maximizing savings on groceries. Explore exclusive discounts, compare prices across Woolworths, Coles, and IGA, and start saving today.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+}
 }
 </script>
 <style>

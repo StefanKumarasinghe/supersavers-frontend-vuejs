@@ -657,6 +657,34 @@
 import Toast from './components/Toast.vue';
 
 export default {
+  metaInfo: {
+  // Page Title
+  title: 'Supersavers | Plan Ahead and Save Heaps',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Explore and manage your shopping cart with Supersavers. Plan ahead, track your spending, view savings, and keep a record of your previous purchases. Maximize your grocery shopping experience!' }, // Page description
+    { name: 'keywords', content: 'Supersavers, shopping cart, groceries, plan ahead, track spending, savings, previous purchases, maximize shopping experience' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | My Shopping Cart' }, // Open Graph title
+    { property: 'og:description', content: 'Explore and manage your shopping cart with Supersavers. Plan ahead, track your spending, view savings, and keep a record of your previous purchases. Maximize your grocery shopping experience!' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/cart' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | My Shopping Cart' }, // Twitter title
+    { name: 'twitter:description', content: 'Explore and manage your shopping cart with Supersavers. Plan ahead, track your spending, view savings, and keep a record of your previous purchases. Maximize your grocery shopping experience!' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
     components: {
      Toast
     },
@@ -726,11 +754,29 @@ export default {
     },
     },
     methods: {
+    async SubscriptionCheck() {
+        try {
+        const response = await fetch(`${this.$GroceryAPI}/valid_subscription`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+        },
+        });
+        if (!response.ok) {
+        this.$router.push('/subscription')
+        }else{
+        this.authenticated=true
+        }
+    } catch (error) {
+        console.error('Something went wrong with verifying your subscription', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when accessing our server', 'red', 'mdi-alert-circle');
+    }
+    },
     shouldShowWarning(time) {
       if (time) {
           const currentTime = new Date();
           // Calculate the difference in days between the current day and Wednesday (considering Sunday as the first day of the week)
-          const daysUntilWednesday = (3 - currentTime.getDay() + 7) % 7;
+          const daysUntilWednesday = (3 - currentTime.getDay() + 7);
           // Create a new Date object for the nearest Wednesday at 1 am
           const nearestWednesday = new Date(currentTime);
           nearestWednesday.setDate(currentTime.getDate() - daysUntilWednesday +1);
@@ -766,33 +812,46 @@ export default {
       this.verifyAuthProcess();
     },
     setTargetTime() {
-      const now = new Date();
-      const targetDay = 3; // Wednesday (0 is Sunday, 1 is Monday, ..., 6 is Saturday)
-      const targetHour = 0; // 12:00 AM
-      const targetMinute = 0;
-      const targetSecond = 0;
-      this.targetTime = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + ((targetDay - now.getDay() + 7) % 7),
-        targetHour,
-        targetMinute,
-        targetSecond
-      );
-    },
-    updateCountdown() {
-      const now = new Date();
-      const difference = this.targetTime - now;
-      if (difference > 0) {
-        const seconds = Math.floor((difference / 1000) % 60);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        this.countdown = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-      } else {
-        this.countdown = 'Deals have finished!';
-      }
-    },
+  const now = new Date();
+  const targetDay = 3; // Wednesday (0 is Sunday, 1 is Monday, ..., 6 is Saturday)
+  const targetHour = 0; // 12:00 AM
+  const targetMinute = 0;
+  const targetSecond = 0;
+
+  // Calculate the time until the next target day
+  const timeUntilTargetDay = (targetDay - now.getDay() + 7);
+
+  // Set the target date to the next Wednesday
+  this.targetTime = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + timeUntilTargetDay,
+    targetHour,
+    targetMinute,
+    targetSecond
+  );
+},
+
+updateCountdown() {
+  // Set the target date to the next Wednesday using setTargetTime
+  this.setTargetTime();
+
+  // Get the current date
+  const now = new Date();
+
+  // Calculate the time difference between now and the target date
+  const timeDifference = this.targetTime - now;
+
+  // Convert the time difference to days, hours, minutes, and seconds
+  const seconds = Math.floor((timeDifference / 1000) % 60);
+  const minutes = Math.floor((timeDifference / 1000 / 60) % 60);
+  const hours = Math.floor((timeDifference / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+  // Update the countdown
+  this.countdown = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+},
+
     getToken() {
       return new Promise((resolve) => {
         const tokenSimple = this.$store.getters.getTokenSimple;
@@ -816,7 +875,7 @@ export default {
               console.error('Error:', response.statusText);
               this.$router.push('/verify');
             }else {
-              this.authenticated=true
+              this.SubscriptionCheck()
             }
           } catch (error) {
           console.error('Something went wrong with verification', error);

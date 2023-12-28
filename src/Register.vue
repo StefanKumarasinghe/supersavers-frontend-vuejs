@@ -103,6 +103,13 @@
                   @click:append="showConfirmPassword = !showConfirmPassword"
                 ></v-text-field>              
               </div>
+              <div>
+      <v-checkbox
+        class="fw-bold"
+        label="I agree to all terms and conditions"
+        required
+      ></v-checkbox>
+    </div>
               <div class="d-flex justify-content-center">
                 <v-btn color="green" class="white--text mt-4 font-weight-bold"  height="45" width="100%" @click="submitRegistration">register</v-btn>
               </div>
@@ -118,59 +125,34 @@
 import Toast from './components/Toast.vue';
 
 export default {
-  head() {
-    return {
-      script: [
-        {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "Supersavers - Join Supersavers for free today and  Start Saving Heaps on Groceries",
-        "description": "Join Supersavers and start your free 7-day trial and start comparing prices from Woolworths, Coles and IGA",
-        "url": "https://supersavers.au/register",
-        "inLanguage": "en-US",
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": "https://supersavers.au/register"
-        },
-        "about": {
-          "@type": "Organization",
-          "name": "Supersavers",
-          "description": "Supersavers saves heaps on Groceries at Aussie Stores",
-          "url": "https://supersavers.au",
-          "logo": "https://supersavers.au/favicon.ico",
-          "sameAs": [
-            "https://www.facebook.com/supersavers",
-            "https://twitter.com/supersavers",
-            "https://www.instagram.com/supersavers"
-          ]
-        },
-        "datePublished": "2023-01-01T00:00:00Z",
-        "dateModified": "2023-01-02T12:30:00Z",
-        "image": "https://supersavers.au/banner.png",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Supersavers",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://supersavers.au/favicon.ico",
-            "width": 600,
-            "height": 60
-          }
-        },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 0.9,
-              "name": "Home",
-              "item": "https://supersavers.au/register"
-            }
-          ]
-        }
-  }
-    ]}
-  },
+  metaInfo: {
+  // Page Title
+  title: 'Supersavers | Sign up  ',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Create a Supersavers account and access exclusive discounts on groceries. Register today to start saving on your favorite items. Compare prices across Woolworths, Coles, and IGA.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, register, sign up, create account, groceries, discounts, savings, exclusive deals, compare prices, Woolworths, Coles, IGA, online grocery shopping, best prices, money-saving' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Unlock Exclusive Discounts by Registering Today' }, // Open Graph title
+    { property: 'og:description', content: 'Create a Supersavers account and access exclusive discounts on groceries. Register today to start saving on your favorite items. Compare prices across Woolworths, Coles, and IGA.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/register' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Unlock Exclusive Discounts by Registering Today' }, // Twitter title
+    { name: 'twitter:description', content: 'Create a Supersavers account and access exclusive discounts on groceries. Register today to start saving on your favorite items. Compare prices across Woolworths, Coles, and IGA.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
   components: {
     Toast
   },
@@ -272,6 +254,7 @@ export default {
           if (response.ok) {
             const data = await response.json();
             this.$refs.Toast.showSnackbar('You have successfully created your account!', 'green', 'mdi-check-circle');
+            new Promise(resolve => setTimeout(resolve, 1000));
             const token = data.access_token;
             await this.$store.dispatch('setToken', token);
             window.location.reload(); // IMPORTANT!!!!: to ensure the sidebar is displayed AFTER SIGNING IN

@@ -35,13 +35,19 @@
           </v-col>
           <v-col cols="12" md="8" lg="9">
             <!-- Keep Saving -->
-            <div class="black--text box-border my-5 text-center">
+            <div class="black--text p-3 my-5 mx-auto w-100 text-center">
               <v-row class="text-center">
                 <h5 class="font-weight-bold">Monthly Subscription</h5>
               </v-row>
-              <v-row class="text-center">
-                <h4 class="green--text font-weight-bold">FREE</h4>
-                <p class="fw-bold">Only free for a limited time...</p>
+              <v-row class="text-center" v-if="active || submessage =='Free Trial'">
+                <h4 class="green--text font-weight-bold"><v-span v-if="submessage =='Free Trial'">7 Day </v-span>{{ submessage }}</h4>
+
+                <a href="/subscription" class="btn text-white py-2 my-2 btn-success fw-bold">Manage</a>
+              </v-row>
+              <v-row class="text-center" v-else>
+                <h4 class="red--text font-weight-bold">Inactive</h4>
+
+                <a href="/subscription" class="btn text-white py-2 my-2 btn-success fw-bold">Manage</a>
               </v-row>
             </div>
             <div class="text-black box-border my-5 pe-5 pb-5 text-center">
@@ -186,6 +192,34 @@
 import Toast from './components/Toast.vue';
 
 export default {
+  metaInfo: {
+  // Page Title
+  title: 'Supersavers | My Supersavers',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Manage your Supersavers account. Update subscriptions, change passwords, and customize notifications to enhance your grocery savings experience. Compare prices across Woolworths, Coles, and IGA.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, my account, manage subscriptions, change password, customize notifications, grocery savings, Woolworths, Coles, IGA' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | My Account' }, // Open Graph title
+    { property: 'og:description', content: 'Manage your Supersavers account. Update subscriptions, change passwords, and customize notifications to enhance your grocery savings experience. Compare prices across Woolworths, Coles, and IGA.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/my-account' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | My Account' }, // Twitter title
+    { name: 'twitter:description', content: 'Manage your Supersavers account. Update subscriptions, change passwords, and customize notifications to enhance your grocery savings experience. Compare prices across Woolworths, Coles, and IGA.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
   components: {
     Toast
   },
@@ -195,6 +229,8 @@ export default {
       AuthToken:null,
       amount_saved:0,
       mobile: false,
+      active:null,
+      submessage:"FREE TRIAL",
       user: {
         name: null,
         newPassword:'',
@@ -245,6 +281,42 @@ export default {
     await this.enableMobileAlerts();
   },
   methods : {
+    async SubscriptionCheck() {
+        try {
+        const response = await fetch(`${this.$GroceryAPI}/valid_subscription`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+        },
+        });
+        
+        if (response.ok) {
+        const r = await response.json();
+        const startTrialDate = new Date(r.start_trial);
+        const currentDate = new Date();
+
+        // Calculate the difference in milliseconds between the current date and start_trial date
+        const timeDifference = currentDate - startTrialDate;
+
+        // Calculate the difference in days
+        const daysDifference = timeDifference / (1000 * 3600 * 24);
+
+        if (daysDifference <= 7) {
+            // If current date is within 7 days after start_trial, display free trial message
+            this.submessage = "Free Trial";
+        } else {
+            // If not, display active subscription message
+            this.submessage = "Active Subscription";
+        }
+
+        this.active = r.active;
+    }
+
+    } catch (error) {
+        console.error('Something went wrong with verifying your subscription', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when accessing our server', 'red', 'mdi-alert-circle');
+    }
+    },
     async enableMobileAlerts() {
       if (!("Notification" in window)) {
         console.error("This browser does not support desktop notification");
@@ -253,7 +325,7 @@ export default {
       }
       if (Notification.permission === "granted") {
         this.mobile = true;
-        this.$refs.Toast.showSnackbar('Notififications are enabled. You are now able to add to your wishlist. To disable, please go to your app settings and disable notifications', 'green', 'mdi-check-circle');
+        this.$refs.Toast.showSnackbar('Notifications are enabled. You are now able to add items to your wishlist. To disable, please go to your app settings and disable notifications', 'green', 'mdi-check-circle');
        
       } else if (Notification.permission !== "denied") {
         this.mobile = false;
@@ -331,6 +403,7 @@ export default {
             this.user.email = data.email
             this.authenticated=true;
             await this.Saving()
+            await this.SubscriptionCheck()
         } else {
           console.error('Error:', response.statusText);
           this.$store.commit('clearToken');

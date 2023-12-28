@@ -86,7 +86,6 @@ export default {
   async beforeMount() {
     await this.TokenPromise();
     this.isSelected = this.pickLowest();
-    await this.getAndSendNotificationToken();
   },
   data() {
     return {
@@ -116,6 +115,7 @@ export default {
       this.isSelected = store;
     },
     shareApp(product) {
+      
       if (navigator.share) {
         const totalSavings = Math.abs(parseFloat((product.woolworths_price - product.coles_price).toFixed(2)));
         const messageParts = [

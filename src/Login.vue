@@ -98,59 +98,34 @@ export default {
     components: {
      Toast
     },
-  head() {
-    return {
-      script: [
-    {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Supersavers - Login to Supersavers and Save Heaps",
-    "description": "Login in to your supersavers and start comparing prices from Woolworths, Coles and IGA",
-    "url": "https://supersavers.au/login",
-    "inLanguage": "en-US",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://supersavers.au/login"
-    },
-    "about": {
-      "@type": "Organization",
-      "name": "Supersavers",
-      "description": "Supersavers saves heaps on Groceries at Aussie Stores",
-      "url": "https://supersavers.au",
-      "logo": "https://supersavers.au/favicon.ico",
-      "sameAs": [
-        "https://www.facebook.com/supersavers",
-        "https://twitter.com/supersavers",
-        "https://www.instagram.com/supersavers"
-      ]
-    },
-    "datePublished": "2023-01-01T00:00:00Z",
-    "dateModified": "2023-01-02T12:30:00Z",
-    "image": "https://supersavers.au/banner.png",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Supersavers",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://supersavers.au/favicon.ico",
-        "width": 600,
-        "height": 60
-      }
-    },
-    "breadcrumb": {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 0.9,
-          "name": "Home",
-          "item": "https://supersavers.au/login"
-        }
-      ]
-    }
-  }
-  ]}
-  },   
+    metaInfo: {
+  // Page Title
+  title: 'Supersavers | Sign in ',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Sign in to your Supersavers account and unlock exclusive discounts on groceries. Save big with our deals and compare prices across Woolworths, Coles, and IGA to maximize your savings.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, login, sign in, groceries, discounts, savings, exclusive deals, compare prices, Woolworths, Coles, IGA, online grocery shopping, best prices, money-saving' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Save Heaps by Joining Today' }, // Open Graph title
+    { property: 'og:description', content: 'Sign in to your Supersavers account and unlock exclusive discounts on groceries. Save big with our deals and compare prices across Woolworths, Coles, and IGA to maximize your savings.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/login' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Save Heaps by Joining Today' }, // Twitter title
+    { name: 'twitter:description', content: 'Sign in to your Supersavers account and unlock exclusive discounts on groceries. Save big with our deals and compare prices across Woolworths, Coles, and IGA to maximize your savings.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
   async beforeMount() {
     await this.TokenPromise();
   },

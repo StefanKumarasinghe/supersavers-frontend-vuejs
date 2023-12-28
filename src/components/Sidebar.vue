@@ -71,7 +71,7 @@ export default {
   methods: {
     async logout() {
       this.$store.commit('clearToken');
-      this.$router.push('/');
+      location.href = "/";
     },
     async login() {
       this.$router.push('/login');

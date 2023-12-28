@@ -18,11 +18,23 @@
                       <a href="#about" class="black--text nav-link" :class="{ 'green--text': this.routeHash === 'about' }">About</a>
                     </router-link>   
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item me-lg-4">
                     <router-link :to="{ path: '/', hash: '#services' }" :class="{ 'navlink-highlighted': this.routeHash === 'services' }" @click.native="scrollToAbout('services')">
                       <a href="#services" class="black--text nav-link" :class="{ 'green--text': this.routeHash === 'services' }">Services</a>
                     </router-link>  
                   </li>
+                  
+                  <li class="nav-item me-lg-4">
+                    <router-link :to="{ path: '/billing-support' }"  >
+                      <a  class="black--text nav-link" >Billing</a>
+                    </router-link>
+                  </li>
+                  <li class="nav-item me-lg-4">
+                    <router-link :to="{ path: '/privacy-policy' }" >
+                      <a  class="black--text nav-link" >Privacy</a>
+                    </router-link>
+                  </li>
+                
                 </ul>
                 <ul class="navbar-nav">
                   <li class="nav-item me-lg-4">

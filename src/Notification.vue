@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-app v-if="authenticated">
+    <v-app v-show="authenticated">
 
       <v-container fluid>
         <div class="mx-3">
@@ -64,6 +64,34 @@ export default {
     components: {
      Toast
     },
+    metaInfo: {
+  // Page Title
+  title: 'Supersavers | Deals & Notifications',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Manage your deal notifications with Supersavers. Choose items you want to be notified about when they go on sale at Woolworths, Coles, and IGA. Customize your notifications and save more on groceries!' }, // Page description
+    { name: 'keywords', content: 'Supersavers, deal notifications, manage notifications, customize alerts, grocery deals, Woolworths, Coles, IGA' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Deal Notifications' }, // Open Graph title
+    { property: 'og:description', content: 'Manage your deal notifications with Supersavers. Choose items you want to be notified about when they go on sale at Woolworths, Coles, and IGA. Customize your notifications and save more on groceries!' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/notifications' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Deal Notifications' }, // Twitter title
+    { name: 'twitter:description', content: 'Manage your deal notifications with Supersavers. Choose items you want to be notified about when they go on sale at Woolworths, Coles, and IGA. Customize your notifications and save more on groceries!' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
     data() {
       return {
         loading:true,
@@ -92,6 +120,24 @@ export default {
         }
       });
     },
+    async SubscriptionCheck() {
+        try {
+        const response = await fetch(`${this.$GroceryAPI}/valid_subscription`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+        },
+        });
+        if (!response.ok) {
+        this.$router.push('/subscription')
+        }else{
+        this.authenticated=true
+        }
+    } catch (error) {
+        console.error('Something went wrong with verifying your subscription', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when accessing our server', 'red', 'mdi-alert-circle');
+    }
+    },
     async VerifyAuth() {
       try {
           const response = await fetch(`${this.$GroceryAPI}/verified`, {
@@ -104,7 +150,7 @@ export default {
               console.error('Error:', response.statusText);
               this.$router.push('/verify');
             }else {
-              this.authenticated=true
+              this.SubscriptionCheck()
             }
           } catch (error) {
           console.error('Something went wrong with verification', error);

@@ -60,7 +60,7 @@ export default {
     },
     async beforeMount() {
         await this.TokenPromise();
-        await this.getAndSendNotificationToken();
+        
     },
     data() {
         return {

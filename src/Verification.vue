@@ -34,6 +34,34 @@ export default {
     components: {
      Toast
     },
+    metaInfo: {
+  // Page Title
+  title: 'Supersavers | Email Verification',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Verify your email to activate your Supersavers account. Complete the email verification process and start saving on groceries with real-time price comparisons across Woolworths, Coles, and IGA.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, email verification, verify email, activate account, save on groceries, Woolworths, Coles, IGA' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Email Verification' }, // Open Graph title
+    { property: 'og:description', content: 'Verify your email to activate your Supersavers account. Complete the email verification process and start saving on groceries with real-time price comparisons across Woolworths, Coles, and IGA.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/email-verification' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Email Verification' }, // Twitter title
+    { name: 'twitter:description', content: 'Verify your email to activate your Supersavers account. Complete the email verification process and start saving on groceries with real-time price comparisons across Woolworths, Coles, and IGA.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
     data() {
       return {
         notAuthenticated:false,
@@ -78,6 +106,7 @@ export default {
         }
       },
       async CheckToken() {
+        if (this.token) {
           try {
             const response = await fetch(`${this.$GroceryAPI}/verify-email?token=${this.token}`);
             if (response.ok) {
@@ -91,6 +120,9 @@ export default {
             console.error('Error:', error);
             this.$refs.Toast.showSnackbar('Something went wrong when validating the token', 'red', 'mdi-alert-circle');
           }
+        }else {
+          this.$refs.Toast.showSnackbar('Please check your email for the link', 'green', 'mdi-check-circle');
+        }
       },
       async VerifyAuth() {
       try { 

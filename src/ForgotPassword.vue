@@ -55,6 +55,33 @@
 <script>
 import Toast from './components/Toast.vue';
   export default {
+    metaInfo: {
+  // Page Title
+  title: 'Supersavers | Forgot Password',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Forgot your Supersavers password? No worries! Recover your account and regain access to exclusive discounts on groceries. Follow the steps to reset your password and continue saving.' }, // Page description
+    { name: 'keywords', content: 'Supersavers, forgot password, password recovery, account recovery, reset password, regain access, exclusive discounts, groceries, savings' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Forgot Password' }, // Open Graph title
+    { property: 'og:description', content: 'Forgot your Supersavers password? No worries! Recover your account and regain access to exclusive discounts on groceries. Follow the steps to reset your password and continue saving.' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/forgot-password' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Forgot Password' }, // Twitter title
+    { name: 'twitter:description', content: 'Forgot your Supersavers password? No worries! Recover your account and regain access to exclusive discounts on groceries. Follow the steps to reset your password and continue saving.' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
     components: {
       Toast
     },

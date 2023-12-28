@@ -3,6 +3,20 @@
   <v-app v-if="authenticated">
     <v-container fluid>
       <div class="mx-3">
+      <!-- Modal -->
+      <div class="bg-dark mx-auto position-fixed top-25 m-3" style="top:20%; left: 0; right: 0; margin:auto; z-index: 20;" v-show="barshow">
+  <div class="w-100 text-center p-4 ">
+    <v-progress-linear
+            :value="counterStatus*20"
+            height="4"
+            
+            color="green"
+            background-color="white"
+          ></v-progress-linear>
+    <div id="barcode_canvas" class="scanner-box w-100 overflow-hidden" style="max-height: 300px;"></div>
+    <button class="btn btn-block w-100 bg-danger text-white fw-bold p-4" @click="stopBar()">Cancel Scan</button>
+  </div>
+</div>
         <h1 class="fw-bold">What's new?</h1>
         <p class="fw-bold" >Save Heaps on Groceries by Comparing deals from <span class="text-success">Woolworths</span>, <span class="text-danger">Coles</span> and <span class="text-white bg-danger p-1">IGA</span></p>
         <p class="fw-bold text-danger">
@@ -11,7 +25,7 @@
       </div>
       <div style="position: relative;">
       <v-row align="center" class="my-5 align-item-center">
-      <v-col cols="9" md="10" lg="6">
+      <v-col cols="7" md="8" lg="6">
         <v-text-field
           v-model="searchTerm"
           @keydown.enter="fetchProducts"
@@ -27,7 +41,10 @@
           hide-details="true"
         ></v-text-field>
       </v-col>
-      <v-col cols="2" md="2" lg="2">
+      <v-col class="d-sm-none" cols="3" md="1" lg="1">  <button @click="initScanner()" style="border:3px solid black; border-radius:30px; width:60px; height:60px;" type="button" >
+      <v-icon class="text-dark fw-bold">mdi-barcode-scan</v-icon>
+    </button></v-col>
+      <v-col cols="1" md="1" lg="1">
         <v-menu  offset-y :close-on-content-click="false">
             <template v-slot:activator="{ on, attrs }">
               <v-span fab v-on="on" v-bind="attrs"  ><img src="@/assets/filter.png" style="width:30px" alt="Filter Icon" /> </v-span>            
@@ -47,6 +64,12 @@
             </v-list>
           </v-menu>
       </v-col>
+      <v-container fluid class="py-0 px-0 my-3"  v-if="membership">
+         <div class="fw-bold p-3 bg-danger my-3 text-white">
+          <h5 class="fw-bold">Your Free Trial has Expired</h5>
+          <p>To continue using supersavers, you must choose a subscription. You can manage your subscription <a href="/subscription">here</a></p>
+         </div>
+      </v-container>
       <v-container class="py-0 px-0 position-absolute" style="z-index:3; top: 90%;" v-if="(shownlist.length > 1) && savingload">
           <v-list class="shadow-lg">
             <v-list-item v-for="recommendation in shownlist" :key="recommendation">
@@ -65,7 +88,9 @@
     </v-tab>
     <v-tabs-slider color="transparent"></v-tabs-slider>
   </v-tabs>
+ 
       </v-app-bar>
+   
       <v-divider class="my-5" color="grey" v-if="!loading"></v-divider>
       <!-- Progress linear -->
       <v-progress-linear class="my-2"  v-if="loading"
@@ -73,6 +98,30 @@
         color="green"
         indeterminate
       ></v-progress-linear>
+      <div v-show="showButtons" class="" >
+        <h2 class="fw-bold ">Top finds at Stores</h2>
+        <div>
+        <v-row class="text-center align-items-center justify-center my-0 py-0" >
+  <v-col cols="4">
+    <a v-if="IGAproducts.length > 0" href="#iga-top-finds" :to="{ path: '/search', hash: '#iga-top-finds' }" class=" d-block text-white py-2 px-2 fw-bold ">
+      <h4 class="fw-bold bg-danger text-white p-3">IGA</h4>
+    </a>
+  </v-col>
+  <v-col cols="4">
+    <a v-if="Woolproducts.length > 0" href="#woolworths-top-finds" :to="{ path: '/search', hash: '#woolworths-top-finds' }" class="text-success fw-bold  px-2 ">
+      <h4 class="fw-bold">Woolworths</h4>
+    </a>
+  </v-col>
+  <v-col cols="4">
+    <a v-if="Colesproducts.length > 0" href="#coles-top-finds" :to="{ path: '/search', hash: '#coles-top-finds' }" class="px-2 text-danger  fw-bold ">
+      <h4 class="fw-bold">Coles</h4>
+    </a>
+  </v-col>
+</v-row>
+</div>
+
+
+    </div>
       <div fluid v-if="lowestPricedProduct" class="my-5 py-3 text-center-sm text-left-md">
         <h2 class="my-2 fw-bold bg-success text-white p-3">Lowest product found</h2>
           <v-row align="center" class="my-1 p-0">
@@ -102,6 +151,7 @@
           </v-row>
       </div>
       <!-- Best deal at Woolworths and Coles -->
+    
       <div v-if="combinedProducts.length" class="my-4"> 
         <v-row>
           <v-col cols="12">
@@ -213,8 +263,60 @@
           </v-col>
         </v-row>
       </div>
+          <!-- Woolworths Products -->
+          
+      <div class="my-5 " >
+      <br>
+    <!-- Woolworths Products -->
+    <h3 v-if="Woolproducts.length > 0" id="woolworths-top-finds" class="fw-bold mt-5 mx-3 mb-3">Top finds from <span class="text-success">Woolworths</span></h3>
+    <v-row>
+      <v-col v-for="product in Woolproducts.slice(0, 4)" :key="product.name" cols="6" sm="6" md="4" lg="3">
+        <v-card>
+          <v-img :src="product.image" class="mx-auto" width="90%" height="200"></v-img>
+          <v-card-title class="fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          {{ product.name }}
+          </v-card-title>
+
+          <v-card-subtitle class="fw-bold text-success" v-if="product.woolworths_price">{{ ` AUD $${product.woolworths_price}` }}</v-card-subtitle>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Coles Products -->
+    <h3 v-if="Colesproducts.length > 0" id="coles-top-finds" class="fw-bold mt-5 mb-3 mx-3">Top finds from <span class="text-danger">Coles</span></h3>
+    <v-row>
+      <v-col v-for="product in Colesproducts.slice(0, 4)" :key="product.name" cols="6" sm="6" md="4" lg="3">
+        <v-card>
+          <v-img :src="product.image" class="mx-auto" width="90%"  height="200"></v-img>
+          <v-card-title class="fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          {{ product.name }}
+          </v-card-title>
+          <v-card-subtitle class="fw-bold text-success" v-if="product.coles_price">{{ `AUD $${product.coles_price}` }}</v-card-subtitle>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- IGA Products -->
+    <h3 v-if="IGAproducts.length > 0" id="iga-top-finds" class="fw-bold mt-5 mb-3 mx-3">Top finds from <span class="text-white bg-danger p-1">IGA</span></h3>
+    <v-row>
+      <v-col v-for="product in IGAproducts.slice(0, 4)" :key="product.name" cols="6" sm="6" md="4" lg="3">
+        <v-card>
+          <v-img :src="product.image"  class="mx-auto" width="90%" height="200"></v-img>
+          <v-card-title class="fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          {{ product.name }}
+          </v-card-title>
+          <v-card-subtitle class="fw-bold text-success" v-if="product.iga_price">{{ `AUD $${product.iga_price}` }}</v-card-subtitle>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
+
       <Toast ref="Toast" />
     </v-container>
+    <!--LOOKUP-->
+
+
+
   </v-app>
 </template>
 
@@ -222,15 +324,51 @@
   import DealsCard from './components/DealsCard.vue';
   import SearchCard from './components/SearchCard.vue';
   import Toast from './components/Toast.vue';
+  import Quagga from 'quagga';
+  
 
   export default {
+    metaInfo: {
+  // Page Title
+  title: 'Supersavers | Search and Save on Groceries',
+
+  // Meta Tags
+  meta: [
+    { charset: 'utf-8' }, // Character set
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }, // Responsive design
+
+    // SEO Meta Tags
+    { name: 'description', content: 'Search for anything and compare prices directly with Coles, Woolworths, and IGA. View exclusive deals, add items to your grocery list, and get notified about the latest savings. Supersavers helps you save heaps on groceries!' }, // Page description
+    { name: 'keywords', content: 'Supersavers, search, compare prices, groceries, exclusive deals, savings, grocery list, notifications, Coles, Woolworths, IGA' }, // Keywords for SEO
+
+    // Open Graph (OG) Meta Tags
+    { property: 'og:title', content: 'Supersavers | Search and Save on Groceries' }, // Open Graph title
+    { property: 'og:description', content: 'Search for anything and compare prices directly with Coles, Woolworths, and IGA. View exclusive deals, add items to your grocery list, and get notified about the latest savings. Supersavers helps you save heaps on groceries!' }, // Open Graph description
+    { property: 'og:image', content: 'https://supersavers.au/banner.png' }, // Open Graph image
+    { property: 'og:url', content: 'https://supersavers.au/search' }, // Open Graph URL
+    { property: 'og:type', content: 'website' }, // Open Graph type (e.g., article, website)
+
+    // Twitter Meta Tags
+    { name: 'twitter:title', content: 'Supersavers | Search and Save on Groceries' }, // Twitter title
+    { name: 'twitter:description', content: 'Search for anything and compare prices directly with Coles, Woolworths, and IGA. View exclusive deals, add items to your grocery list, and get notified about the latest savings. Supersavers helps you save heaps on groceries!' }, // Twitter description
+    { name: 'twitter:image', content: 'https://supersavers.au/banner.png' }, // Twitter image
+    { name: 'twitter:card', content: 'summary_large_image' }, // Twitter card type
+  ],
+},
+
     data() {
       return {
+        barshow:false,
+        productsLookup:[],
+        membership:false,
+        counterStatus:0,
+        scannedBarcode: null,
         savingload: false,
         saving:0,
         authenticated:false,
         loading: false,
         loading_start:true,
+        showButtons:false,
         storeFilters: {
           "Deals At Woolies": true,
           "Deals At Coles": true,
@@ -289,6 +427,16 @@
           return smallest === Infinity ? null : smallest;
         };
       },
+      Woolproducts() {
+        return this.productsLookup.filter(item => item.source === "Woolworths");
+
+      },
+      Colesproducts() {
+        return this.productsLookup.filter(item => item.source === "Coles");
+      },
+      IGAproducts() {
+        return this.productsLookup.filter(item => item.source === "IGA");
+      },
       bestStore(product) {
         return this.bestStoreForProduct(product)
       },
@@ -306,7 +454,7 @@
         return this.products.filter(p => p.source === 'Combined' && p.coles_price && p.woolworths_price);
       },
       lowestPricedProduct() {
-        if (!this.products.length || !this.searchTerm) return null;
+        if (!this.products.length) return null;
         let lowest = null;
         let minPrice = 0;
         for (const product of this.products) {
@@ -341,11 +489,14 @@
         });
       }
     },
+
     async beforeMount() {
+      
       try {
         await Promise.all([
             this.getUserLocation(),
             this.TokenPromise(),
+            
         ]);
         } catch (error) {
             console.error('Error:', error);
@@ -353,6 +504,174 @@
         }
     },
     methods: {
+      async SubscriptionCheck() {
+        try {
+        const response = await fetch(`${this.$GroceryAPI}/valid_subscription`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+        },
+        });
+
+        if (!response.ok) {
+        this.membership=true
+      } 
+    } catch (error) {
+        console.error('Something went wrong with your subscription', error);
+        this.$refs.Toast.showSnackbar('Something went wrong when accessing our server', 'red', 'mdi-alert-circle');
+    }
+    },
+      async initScanner() {
+      this.barshow =true;
+  // Ensure the target element exists
+  const targetElement = document.querySelector('#barcode_canvas');
+
+
+  // Initialize Quagga
+Quagga.init({
+  inputStream: {
+    name: 'Live',
+    type: 'LiveStream',
+    target: targetElement,
+    constraints: {
+      facingMode: 'environment', // or 'user'
+      width: { ideal: 640 },
+  height: { ideal: 480 }
+    },
+    area: {
+        top: "0%",
+        right: "0%",
+        left: "0%",
+        bottom: "0%"
+    },
+  },
+  decoder: {
+    readers: ['ean_reader'],
+    debug: {
+      drawScanline: true,
+      showPattern: true,
+    },
+    multiple: false,
+  },
+  locator: {
+    patchSize: 'medium',
+    halfSample: false,
+  },
+  numOfWorkers: navigator.hardwareConcurrency || 4,
+  frequency: 10,
+  locate: true,
+}, (err) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  // Customize the scan box styles
+  const scanBox = document.querySelector('.drawingBuffer');
+
+  if (scanBox) {
+  scanBox.classList.add('scanner-box');
+}
+
+
+  // Quagga initialization successful, start the live stream
+  Quagga.start();
+// Initialize a map to store code frequencies
+const codeFrequencyMap = new Map();
+
+// Initialize a counter to keep track of the number of detections
+let detectionCounter = 0;
+
+
+
+Quagga.onDetected((result) => {
+
+  if (this.loading) {
+    return;
+  }
+  
+  // Increment detection counter
+  detectionCounter++;
+  this.counterStatus = detectionCounter
+
+  // Get the detected code
+  const code = result.codeResult.code;
+  console.log(code);
+
+  // Update code frequency in the map
+  if (codeFrequencyMap.has(code)) {
+    codeFrequencyMap.set(code, codeFrequencyMap.get(code) + 1);
+  } else {
+    codeFrequencyMap.set(code, 1);
+  }
+
+  // Check if 20 detections have been reached
+  if (detectionCounter >= 5) {
+    // Find the code with the highest frequency
+    let maxFrequency = 0;
+    let mostFrequentCode;
+    codeFrequencyMap.forEach((frequency, currentCode) => {
+      if (frequency > maxFrequency) {
+        maxFrequency = frequency;
+        mostFrequentCode = currentCode;
+      }
+    });
+
+    // Optionally, stop Quagga to prevent further detections
+    Quagga.stop();
+
+    // Call your handling function with the most frequent code
+    this.handleBarcode(mostFrequentCode);
+
+    // Reset counters
+    detectionCounter = 0;
+    this.counterStatus = 0;
+    codeFrequencyMap.clear();
+  }
+});
+
+
+
+
+});
+
+// Add CSS for the scanner animation
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes scanner-animation {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+  }
+`;
+document.head.appendChild(style);
+
+},
+async handleBarcode(code) {
+  this.loading=true
+  this.scannedBarcode = code;
+  this.$refs.Toast.showSnackbar('Barcode was scanned. Now checking if it is correct', 'green', 'mdi-check-circle');
+  this.stopBar()
+  try {
+          const response = await fetch(`${this.$GroceryAPI}/barcode/${encodeURIComponent(this.scannedBarcode)}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.AuthToken}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+    if (data.Products && data.Products.length > 0) {
+        const productName = data.Products[0].Name;
+        const firstThreeWords = productName.split(' ').slice(0, 4).join(' ');
+        this.searchTerm = firstThreeWords + " " + data.Products[0].PackageSize ;
+    }
+          await this.fetchProducts();
+          }
+        } catch (error) {
+          this.$refs.Toast.showSnackbar("Something went wrong with the barcode search", 'red', 'mdi-alert-circle');
+  } 
+ 
+},
     async OnCallSuggestion() {
         try {
           const response = await fetch(`${this.$GroceryAPI}/search_suggestions`);
@@ -390,6 +709,7 @@
             }else {
               this.authenticated=true
               await this.Saving()
+              await this.SubscriptionCheck()
             }
           } catch (error) {
           console.error('Something went wrong with verification', error);
@@ -475,6 +795,7 @@
       async fetchProductsCat(productNames) {
           const products = [];
           let responses;
+          this.showButtons=false
           try {
               // Use Promise.all to run the promises concurrently
               responses = await Promise.all(
@@ -505,6 +826,7 @@
           }
 
           this.loading = false;
+          this.productsLookup = []
           this.products = products; // Set the products after all responses have been processed
           this.storeFilters['Deals At Woolies'] = false;
           this.storeFilters['Deals At Coles'] = false;
@@ -515,6 +837,7 @@
       async fetchProducts() {
         try {
           this.loading = true;
+          this.showButtons = false;
           this.savingload = false;
           this.shownlist = [];
           const response = await fetch(`${this.$GroceryAPI}/search/${encodeURIComponent(this.searchTerm)}/${encodeURIComponent(this.postalCode)}`, {
@@ -527,6 +850,8 @@
             const data = await response.json();
             this.products = data;
             this.loading = false;
+            await this.fetchLookup()
+            
            
           } else {
             const errorData = await response.json();
@@ -536,6 +861,30 @@
           this.$refs.Toast.showSnackbar("Error in retrieving data...", 'red', 'mdi-alert-circle');
         } 
       },
+      async fetchLookup() {
+      try {
+        const response = await fetch(`${this.$GroceryAPI}/quick/lookup/${encodeURIComponent(this.searchTerm)}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.AuthToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Assuming data is an array with three categories [Woolworths, Coles, IGA]
+          this.productsLookup = [
+            ...data[0].slice(0, 5), // Add the first 5 Woolworths products
+            ...data[1].slice(0, 5), // Add the first 5 Coles products
+            ...data[2].slice(0, 5), // Add the first 5 IGA products
+          ];
+          this.showButtons = true
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
       bestStoreForProduct(product) {
         const storePrices = {
           'Woolworths': product.woolworths_price,
@@ -713,7 +1062,16 @@
           console.error('Error retrieving postal code:', error);
         }
       },
+      stopBar () {
+        this.counterStatus = 0
+        this.barshow =false;
+        Quagga.stop()
+      }
     },
+    beforeDestroy() {
+    Quagga.stop();
+    },
+    
     components: {
       SearchCard,
       DealsCard,
@@ -727,6 +1085,7 @@
 .custom-active-tab {
   color: green; /* Change to your desired active tab text color */
 }
+
 
   .container {
     width: 100%;
@@ -814,5 +1173,9 @@
   .iga_logo {
     background-color: red;
   }
+
+
+
+
 
 </style>

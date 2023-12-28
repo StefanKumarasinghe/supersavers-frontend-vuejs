@@ -11,6 +11,8 @@ import ForgotPassword from './ForgotPassword.vue';
 import Verification from './Verification.vue';
 import Notification from './Notification.vue';
 import ResetPassword from './ResetPassword.vue';
+import PrivacyPolicy from './PrivacyPolicy.vue';
+import BillingSupport from './BillingSupport.vue';
 import store from './store';
 import Account from './Account.vue';
 import Subscription from './Subscription.vue';
@@ -18,17 +20,22 @@ import Subscription from './Subscription.vue';
 // Import Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+import VueMeta from 'vue-meta';
+
 
 Vue.config.productionTip = false;
 
 // Use the router
 Vue.use(VueRouter);
+Vue.use(VueMeta);
+
 
 Vue.prototype.$GroceryAPI = "https://api.supersavers.au";
 
 // Define routes
 const routes = [
   { path: '/', name:'explore', component: Explore },
+  { path: '/privacy-policy', name:'privacy', component: PrivacyPolicy },
   { path: '/register', name:'register', component: Register },
   { path: '/verify', name: 'verify', component: Verification },
   { path: '/notification', name: 'notification', component: Notification },
@@ -38,25 +45,22 @@ const routes = [
   { path: '/forgot-password', name:'forgotPassword', component: ForgotPassword },
   { path: '/reset-password', component: ResetPassword },
   { path: '/account',name:'account', component: Account },
-  { path: '/subscription', name:'subscription', component: Subscription}
+  { path: '/subscription', name:'subscription', component: Subscription},
+  { path: '/billing-support', name:'billing', component: BillingSupport}
 ];
-
 // Create the router instance
 const router = new VueRouter({
   mode: 'history',
   routes
 });
-
 // Navigation guard to check authentication before navigating to each route
 router.beforeEach((to, from, next) => {
   // These routes do not require login token
-  const requiresAuth = !['/', '/login', '/register', '/forgot-password', '/reset-password', '/verify'].includes(to.path);
-
+  const requiresAuth = !['/', '/login', '/register', '/forgot-password', '/reset-password', '/verify',  '/privacy-policy',  '/billing-support'].includes(to.path);
   // If authentication is required and the user is not authenticated, redirect to login
   if (requiresAuth && !store.getters.getToken) {
     next('/login');
   } else {
-    // Continue to the next route
     next();
   }
 });
