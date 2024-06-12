@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supersavers - Grocery Saving App</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,7 +52,7 @@
   <div class="container">
     <header>
       <h1>Supersavers - Grocery Saving App</h1>
-      <p>Compare prices from Coles and Woolworths and save on groceries! Developed by Joe Cin Ng (UX Designer) and Stefan Ralph (Scrum Master) (</p>
+      <p>Compare prices from Coles and Woolworths and save on groceries! Developed by Joe Cin Ng (UX Designer) and Stefan Ralph (Scrum Master) </p>
     </header>
 
     <section>
